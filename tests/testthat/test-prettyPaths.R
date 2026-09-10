@@ -12,7 +12,7 @@ test_that("path() creates correct connection and defaults", {
   expect_equal(path$to, "x1")
   expect_equal(path$side_from, "bottom")
   expect_equal(path$side_to, "left")
-  expect_equal(path$cov_curve, NULL)
+  expect_null(path$cov_curve)
 })
 
 

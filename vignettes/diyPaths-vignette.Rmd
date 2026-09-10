@@ -1,8 +1,8 @@
 ---
-title: "prettyPaths-vignette"
+title: "diy.sem.plot-vignette"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{prettyPaths-vignette}
+  %\VignetteIndexEntry{diy.sem.plot-vignette}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,3 +17,8 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(diy.sem.plot)
 ```
+
+## Introduction
+
+- What diy.sem.plot does
+- Why manual control instead of automated layout (e.g. semPlot)

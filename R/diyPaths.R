@@ -42,17 +42,17 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #' @param to The target variable name within lavaan model.
 #' @param side_from Side of source node where path originates ("top", "bottom", "left", "right"). Default is "right".
 #' @param side_to Side of target node where path terminates ("top", "bottom", "left", "right"). Default is "left".
-#' @param cov_curve Numeric value for curvature of covariance paths (or variance loops) Default is NULL.
+#' @param cov_curve Numeric value for curvature of covariance/correlation paths. Default is NULL.
 #' @param nudge_text_x Numeric fine tuning adjustment for path estimate text along the x-axis. Default is `0`.
 #' @param nudge_text_y Numeric fine tuning adjustment for path estimate text along the y-axis. Default is `0`.
 #' @param variance_position Placement of variance/residual paths ("top" or "bottom"). Default is "top".
 #'
 #' @details
 #' `from`/`to` in [path()] must exactly match the variable name used in the
-#'  \pkg{lavaan} model syntax. Furthermore, the order must also be correct for regression or loading paths. Misspelled or mismatched paths will
+#'  \pkg{lavaan} model syntax. Furthermore, the order must also be correct for regression or loading paths. Misspelled or mismatched paths will be
 #'  excluded  from the diagram without raising an error.
 #'
-#' `Cov_curve`'s value can be used to adjust direction of curve on covariance/correlation path.
+#' `cov_curve`'s value can be used to adjust direction of curve on covariance/correlation path.
 #'  For a mostly vertical path (i.e. node1: x = 0, y = 1 -> node2: x = 0, y = 1), positive curvature bends it left and negative curvature
 #'  bends it right. For a mostly horizontal path (i.e. node1: x = 1, y = 0 -> node2: x = 2, y = 0), positive curvature bends
 #'  it down and negative curvature bends it up. Best results typically range from -1 to 1.

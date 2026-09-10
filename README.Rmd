@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-diy.sem.plot allows you to manually plot fully customizable path diagrams for structural equation models (SEM) using the diy_paths() function. It avoids the inflexibility of automated SEM plotting tools and the tedium of drawing diagrams in external applications.
+diy.sem.plot allows you to manually plot fully customisable path diagrams for structural equation models (SEM) using the diyPaths() function. It avoids the inflexibility of automated SEM plotting tools and the tedium of drawing diagrams in external applications.
 
 You map out where nodes go using simple coordinates and specify the attachment points (sides of the relevant nodes) where each path begins and ends. A range of fine-tuning options are included, facilitating the creation of a path diagram exactly as you envision it, entirely within R.
 
@@ -27,7 +27,7 @@ Currently diy.sem.plot only works for lavaan fitted models.
 
 Run the following to install the development version of the package.
 
-```{r}
+``` {r, eval =FALSE}
 remotes::install_github("snagy86/diy.sem.plot")
 ```
 
@@ -35,11 +35,10 @@ remotes::install_github("snagy86/diy.sem.plot")
 
 Below is a brief example of what the function is capable of. More examples can be found in the vignette for the package. 
 
-```{r example}
-library(diy.sem.pot)
+```{r example1, fig.width = 10, fig.height = 6, out.width = "100%"}
 
 # full SEM example, this model may not make theoretical sense.
-
+library(diy.sem.plot)
 library(lavaan)
 library(ggplot2)
 
@@ -113,13 +112,15 @@ p <- diyPaths(
    path_positions = path_positions,
    standardised = TRUE,
    est_stars = TRUE,
-   observed_variable_size_adjust = 0.55, # making observed variables smaller than latent
+   observed_variable_size_adjust = 0.6, # making observed variables smaller than latent
    observed_node_text_size = 3,
    show_grid = TRUE,
-   grid_axis_scale = 0.4
+   grid_axis_scale = 0.4,
+   margin_x = -0,
+   margin_y_bottom = -0,
+   margin_y_top = -0
 )
 
 print(p)
 ```
-
 
