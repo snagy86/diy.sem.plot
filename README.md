@@ -24,54 +24,7 @@ Currently diy.sem.plot only works for lavaan fitted models.
 
 Run the following to install the development version of the package.
 
-``` r
-remotes::install_github("snagy86/diy.sem.plot")
-#> Using GitHub PAT from the git credential store.
-#> Downloading GitHub repo snagy86/diy.sem.plot@HEAD
-#> rlang       (1.1.7 -> 1.3.0) [CRAN]
-#> glue        (1.8.0 -> 1.8.1) [CRAN]
-#> vctrs       (0.7.1 -> 0.7.3) [CRAN]
-#> magrittr    (2.0.4 -> 2.0.5) [CRAN]
-#> S7          (0.2.1 -> 0.2.2) [CRAN]
-#> stringi     (1.8.7 -> 1.8.9) [CRAN]
-#> xfun        (0.56  -> 0.60 ) [CRAN]
-#> xml2        (1.5.2 -> 1.6.0) [CRAN]
-#> png         (0.1-8 -> 0.1-9) [CRAN]
-#> Rcpp        (1.1.1 -> 1.1.2) [CRAN]
-#> curl        (7.0.0 -> 8.0.0) [CRAN]
-#> systemfonts (1.3.1 -> 1.3.2) [CRAN]
-#> ggplot2     (4.0.2 -> 4.0.3) [CRAN]
-#> Installing 13 packages: rlang, glue, vctrs, magrittr, S7, stringi, xfun, xml2, png, Rcpp, curl, systemfonts, ggplot2
-#> Installing packages into 'C:/Users/snagy/AppData/Local/Temp/RtmpSIaooi/temp_libpathad83d911622'
-#> (as 'lib' is unspecified)
-#> package 'rlang' successfully unpacked and MD5 sums checked
-#> package 'glue' successfully unpacked and MD5 sums checked
-#> package 'vctrs' successfully unpacked and MD5 sums checked
-#> package 'magrittr' successfully unpacked and MD5 sums checked
-#> package 'S7' successfully unpacked and MD5 sums checked
-#> package 'stringi' successfully unpacked and MD5 sums checked
-#> package 'xfun' successfully unpacked and MD5 sums checked
-#> package 'xml2' successfully unpacked and MD5 sums checked
-#> package 'png' successfully unpacked and MD5 sums checked
-#> package 'Rcpp' successfully unpacked and MD5 sums checked
-#> package 'curl' successfully unpacked and MD5 sums checked
-#> package 'systemfonts' successfully unpacked and MD5 sums checked
-#> package 'ggplot2' successfully unpacked and MD5 sums checked
-#> 
-#> The downloaded binary packages are in
-#>  C:\Users\snagy\AppData\Local\Temp\RtmpawQuCs\downloaded_packages
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>       ✔  checking for file 'C:\Users\snagy\AppData\Local\Temp\RtmpawQuCs\remotes1c1c7a02d59\snagy86-diy.sem.plot-33d36f3/DESCRIPTION'
-#>       ─  preparing 'diy.sem.plot':
-#>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   ✔  checking DESCRIPTION meta-information
-#>       ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>       ─  building 'diy.sem.plot_0.1.0.tar.gz'
-#>      
-#> 
-#> Installing package into 'C:/Users/snagy/AppData/Local/Temp/RtmpSIaooi/temp_libpathad83d911622'
-#> (as 'lib' is unspecified)
-```
+`` ` {r} remotes::install_github("snagy86/diy.sem.plot") `` \`
 
 ## Example
 
@@ -88,7 +41,6 @@ library(lavaan)
 #> This is lavaan 0.7-2
 #> lavaan is FREE software! Please report any bugs.
 library(ggplot2)
-#> Warning: package 'ggplot2' was built under R version 4.5.3
 
 data(HolzingerSwineford1939, package = "lavaan")
 
