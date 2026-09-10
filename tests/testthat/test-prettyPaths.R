@@ -17,7 +17,7 @@ test_that("path() creates correct connection and defaults", {
 
 
 
-test_that("prettyPaths generates a ggplot object from a simple fit", {
+test_that("diyPaths generates a ggplot object from a simple fit", {
   data(HolzingerSwineford1939, package = "lavaan")
   fit_simple <- lavaan::sem('visual =~ x1 + x2 + x3', data = HolzingerSwineford1939)
 
@@ -34,6 +34,6 @@ test_that("prettyPaths generates a ggplot object from a simple fit", {
     path("visual", "x3")
   )
 
-  p <- prettyPaths(fit = fit_simple, node_positions = node_pos, path_positions = path_pos)
+  p <- diyPaths(fit = fit_simple, node_positions = node_pos, path_positions = path_pos)
   expect_s3_class(p, "ggplot")
 })

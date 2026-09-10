@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(prettySEM)
+library(diy.sem.plot)
 
-test_check("prettySEM")
+test_check("diy.sem.plot")
