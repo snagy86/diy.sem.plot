@@ -1,0 +1,36 @@
+Package: diy.sem.plot
+Type: Package
+Title: Manually Plot Path Diagrams for Structural Equation Models
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Sebastian", "Nagy",
+      email = "snagy8610@gmail.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: Manually plot fully customisable path diagrams for structural equation
+             models fitted with 'lavaan', rendered using 'ggplot2'. Node positions are
+             set using simple x/y coordinates. Paths between nodes are drawn
+             automatically, with estimates centered on the midpoint, therefore you are only required to
+             specify which side of each relevant node a path should originate
+             from and terminate at. A range of further fine-tuning options are
+             included, facilitating creation of a path diagram exactly as you
+             envision it, entirely within R.
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports:
+    ggplot2,
+    ggtext,
+    ggforce,
+    lavaan,
+    grid
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat 
+Config/testthat/edition: 3
+URL: https://github.com/snagy86/prettySEM
+BugReports: https://github.com/snagy86/prettySEM/issues
+VignetteBuilder: knitr
