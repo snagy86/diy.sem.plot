@@ -126,3 +126,8 @@ print(p)
 ```
 
 <img src="man/figures/README-example1-1.png" alt="" width="100%" />
+
+<figure>
+<img src="README-example-1.png" alt="SEM Path Diagram" />
+<figcaption aria-hidden="true">SEM Path Diagram</figcaption>
+</figure>
