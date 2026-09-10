@@ -113,13 +113,13 @@ p <- diyPaths(
    path_positions = path_positions,
    standardised = TRUE,
    est_stars = TRUE,
-   observed_variable_size_adjust = 0.55, # making observed variables smaller than latent
+   observed_variable_size_adjust = 0.6, # making observed variables smaller than latent
    observed_node_text_size = 3,
    show_grid = TRUE,
    grid_axis_scale = 0.4,
-   margin_x = 0,
-   margin_y_bottom = 0,
-   margin_y_top = 0
+   margin_x = -0,
+   margin_y_bottom = -0,
+   margin_y_top = -0
 )
 
 print(p)
