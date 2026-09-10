@@ -24,12 +24,14 @@ Currently diy.sem.plot only works for lavaan fitted models.
 
 Run the following to install the development version of the package.
 
-`` ` {r} remotes::install_github("snagy86/diy.sem.plot") `` \`
+``` r
+remotes::install_github("snagy86/diy.sem.plot")
+`` `
 
 ## Example
 
-Below is a brief example of what the function is capable of. More
-examples can be found in the vignette for the package.
+Below is a brief example of what the function is capable of. More examples can be found in the vignette for the package. 
+```
 
 ``` r
 library(diy.sem.plot)
@@ -117,8 +119,10 @@ p <- diyPaths(
    show_grid = TRUE,
    grid_axis_scale = 0.4
 )
+```
 
+``` r
 print(p)
 ```
 
-<img src="man/figures/README-example-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="100%" />
