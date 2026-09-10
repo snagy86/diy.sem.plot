@@ -125,4 +125,4 @@ p <- diyPaths(
 print(p)
 ```
 
-<img src="man/figures/README-example-1.png" alt="" width="100%" />
+<img src="man/figures/README-example1-1.png" alt="" width="100%" />
