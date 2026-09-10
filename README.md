@@ -7,8 +7,8 @@
 
 <!-- badges: end -->
 
-diy.sem.plot allows you to manually plot fully customizable path
-diagrams for structural equation models (SEM) using the diy_paths()
+diy.sem.plot allows you to manually plot fully customisable path
+diagrams for structural equation models (SEM) using the diyPaths()
 function. It avoids the inflexibility of automated SEM plotting tools
 and the tedium of drawing diagrams in external applications.
 
@@ -38,7 +38,6 @@ examples can be found in the vignette for the package.
 # full SEM example, this model may not make theoretical sense.
 library(diy.sem.plot)
 library(lavaan)
-#> Warning: package 'lavaan' was built under R version 4.5.3
 #> This is lavaan 0.7-2
 #> lavaan is FREE software! Please report any bugs.
 library(ggplot2)
@@ -126,8 +125,3 @@ print(p)
 ```
 
 <img src="man/figures/README-example1-1.png" alt="" width="100%" />
-
-<figure>
-<img src="README-example-1.png" alt="SEM Path Diagram" />
-<figcaption aria-hidden="true">SEM Path Diagram</figcaption>
-</figure>
