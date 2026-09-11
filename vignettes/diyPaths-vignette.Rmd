@@ -16,9 +16,95 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(diy.sem.plot)
+library(ggplot2)
+library(lavaan)
 ```
 
 ## Introduction
 
-- What diy.sem.plot does
-- Why manual control instead of automated layout (e.g. semPlot)
+When plotting path diagrams for structural equation models (SEM) in R, users must choose between automated plotting tools and drawing diagrams entirely by hand. While automated SEM plotting tools are fast, they lack granular customisability and are often not suitable for use as a final product. Conversely, doing this work manually in an external drawing programme is tedious for large models and completely disconnected from R, meaning estimates must be individually adjusted if the data or model changes.
+
+\pkg{diy.sem.plot} bridges these approaches to give users the best of both worlds, keeping your layout and design manually controlled while handling the rendering automatically. After fitting an SEM model as a lavaan object, users simply define node locations using $x$-$y$ coordinates and specify the attachment points on the perimeter of each node where paths begin and end. The primary function, `diyPaths()`, processes this information to generate a \pkg{ggplot2} output. It automatically centers estimates on each path's midpoint, adjusts arrow directions according to path types, and assigns the correct geometric shapes to each variable type. The package includes extensive arguments that facilitate near-complete control over fine-tuning every visual detail, resulting in a path diagram exactly as you envision it, entirely within R.
+
+The package contains four functions: the primary `diyPaths()` function alongside three helper functions (`node()`, `path()`, and `panel_title()`) designed to simplify argument specification and prevent errors. I find the most intuitive way to learn how to use \pkg{diy.sem.plot} is through practical examples, which is primary vignette focus of this vignette.
+
+Note: The example models are not meant to make theoretical sense and they are purely for illustrative purposes.
+
+#Example 1: Making a Simple Path Diagram
+
+The first step is to specify and fit your model as a lavaan object. Here, we use the mtcars dataset to specify a multiple regression model where vehicle weight (wt) and horsepower (hp) simultaneously predict miles per gallon (mpg), while also estimating the covariance between the two predictors.
+
+```{r}
+data <- mtcars
+
+model <- '
+  mpg ~  wt + hp
+  wt ~~ hp
+'
+
+fit <- sem(model, data = data)
+```
+
+Next, we need to specify each node's position on the diagram. For this,we will create an object called `nodes` and specify it as a list of node objects created using the helper function `node()`. `The node() function takes four key arguments: name (the variable name in your lavaan model), x and y (its coordinate placement on the grid) and an optional label that specifies the text actually displayed on the node in the final diagram (defaulting to the variable name if left unspecified).
+
+Since we have not rendered the diagram yet, we'll make an initial estimate for node positions and fine-tune them afterward.
+
+```{r}
+nodes <- list(
+  node(name = "wt", x = 1, y = 2, label = "Weight"),
+  node(name = "hp", x = 1, y = 1, label = "Horse Power"),
+  node(name = "mpg", x = 3, y = 1, label = "Miles Per\n Gallon")
+)
+```
+
+Next, we need to specify each path's position relative to its respective starting and ending nodes. We create an object called `path_positions`, structured similarly to `node_positions`, as a list of path specifications created using the `path()` helper function.
+
+The `path()` function takes four main arguments alongside four optional fine-tuning parameters. Each path requires a starting node (`from`) and an ending node (`to`), matched to their `lavaan` names. From there, `side_from` and `side_to` dictate which perimeter edge (top, bottom, left, or right) the path anchors to on the respective nodes.
+
+For further control, you can use `nudge_text_x` and `nudge_text_y `to adjust where a path's parameter estimate appears on the diagram. For covariances or correlations, the numeric `cov_curve` argument controls the scale and direction of the arced paths bend. While variance and residual loops are generally toggled off automatically, explicitly defining them as paths allows you to use the `variance_position` argument to place the variance indicator on either the top or bottom of the node box.
+
+Again as we have not rendered the diagram yet, we'll make an initial estimate for path positions.
+
+```{r}
+
+paths <- list(
+  path(from = "wt", to = "mpg", side_from = "right", side_to = "left"),
+  path(from = "hp",  to = "mpg", side_from = "right", side_to = "left"),
+  path(from = "wt",  to ="hp", side_from = "left", side_to = "left", cov_curve = -4) 
+)
+```
+
+Finally we can render our diagram as a `ggplot` object using the function `diyPaths`. This function only requires three arguements `fit`, `node_positions`, and `path_positions` to successfully render the diagram everything else is optional. `fit` takes the fitted lavaan object of your model, `node_positions` will take the object containing the list of `node()` in our case `nodes`, and `path_positions` will take the object containing the list of `path()` in our case `paths`.
+
+We will now run our first draft render. To help with fine-tuning our layout we will overlay a grid on the diagram by setting the optional arguement `show_grid` to be `TRUE`.
+
+```{r}
+diyPaths(fit, node_positions = nodes, path_positions = paths, show_grid = TRUE)
+```
+Now that we can see our render, it is time to do some fine-tuning. First, most notably, our covariance curve is facing the wrong way. We can fix this by adjusting the sign of the value within the path's `cov_curve` argument. For a mostly vertical path, a positive curvature bends it right and a negative curvature bends it left. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up. We will then use the grid to center the boxes and give them a bit of space, and remove the overlayed grid by deleting the `show_grid` argument.
+
+Finally, we should add an indication of path significance. `diyPaths()` has a few options for this. For our plot, we will be maximal and include significance stars and 95% confidence intervals for the estimates by changing the arguments `est_stars` and `est_ci` to equal `TRUE`. We will also change the line type to represent significance using the classic convention of dashed lines for non-significant paths and solid lines for significant paths by changing the argument `sig_linetype` equal to `TRUE`.
+
+```{r}
+diyPaths(fit, 
+         node_positions = list(
+           node(name = "wt", x = 1, y = 3, label = "Weight"),
+           node(name = "hp", x = 1, y = 1, label = "Horse Power"),
+           node(name = "mpg", x = 4, y = 2, label = "Miles Per \nGallon")), 
+         path_positions = list(
+           path(from = "wt", to = "mpg", side_from = "right",
+                side_to = "left"),
+           path(from = "hp",  to = "mpg", side_from = "right",
+                side_to = "left"),
+           path(from = "wt",  to ="hp", side_from = "left", side_to
+                = "left", cov_curve = 0.4)),
+         est_stars = TRUE,
+         est_ci = TRUE,
+         sig_linetype = TRUE
+         )
+
+```
+
+#Example 2: Full SEM Model
+
+#Example 3: Multi-Group Path Model 

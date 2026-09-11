@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 diy.sem.plot allows you to manually plot fully customisable path diagrams for structural equation models (SEM) using the diyPaths() function. It avoids the inflexibility of automated SEM plotting tools and the tedium of drawing diagrams in external applications.
 
-You map out where nodes go using simple coordinates and specify the attachment points (sides of the relevant nodes) where each path begins and ends. A range of fine-tuning options are included, facilitating the creation of a path diagram exactly as you envision it, entirely within R.
+You map out where nodes go using simple coordinates and specify the attachment points on the perimeter of each node where paths begin and end. A range of fine-tuning options are included, facilitating the creation of a path diagram exactly as you envision it, entirely within R.
 
 Currently diy.sem.plot only works for lavaan fitted models.
 
@@ -33,7 +33,7 @@ remotes::install_github("snagy86/diy.sem.plot")
 
 ## Example
 
-Below is a brief example of what the function is capable of. More examples can be found in the vignette for the package. 
+Below is a brief example of what the function is capable of. More examples and full explanation of work flow can be found in the package's vignette. 
 
 ```{r example1, fig.width = 10, fig.height = 6, out.width = "100%"}
 

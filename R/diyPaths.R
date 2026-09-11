@@ -154,7 +154,7 @@ panel_title <- function(panel = 1, title = NULL) {
 #' @param panel_cols Integer for number columns to use when arranging multi-group panels. Default is `NULL`.
 #' @param non_transparent_text Logical. If `TRUE`, path estimate labels receive a white background mask. Default is `TRUE`.
 #' @param show_grid Logical. Whether to overlay a coordinate grid. Default is `FALSE`.
-#' @param grid_axis_scale Sets the spacing of gridlines when `show_grid = TRUE`. Default is `1`.
+#' @param grid_axis_scale Sets the spacing of grid-lines when `show_grid = TRUE`. Default is `1`.
 #' @param margin_x Padding for plot limits along the x-axis. Default is `0`.
 #' @param margin_y_bottom Padding for plot limits at the bottom. Default is `0`.
 #' @param margin_y_top Padding for plot limits at the top. Default is `0`.
@@ -289,9 +289,9 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
                      show_group_labels = FALSE,
                      panel_titles = NULL,
                      panel_cols = NULL,
-                     margin_x = 0,
-                     margin_y_bottom = 0,
-                     margin_y_top = 0){
+                     margin_x = 0.5,
+                     margin_y_bottom = 0.5,
+                     margin_y_top = 0.5){
 
   pos_df <- do.call(rbind, lapply(node_positions, function(v) {
     data.frame(
