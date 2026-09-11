@@ -31,9 +31,12 @@ diyPaths(
   node_height = 0.8,
   latent_variable_size_adjust = 1,
   observed_variable_size_adjust = 1,
-  margin_x = 1.5,
-  margin_y_bottom = 1.5,
-  margin_y_top = 1.5
+  show_group_labels = FALSE,
+  panel_titles = NULL,
+  panel_cols = NULL,
+  margin_x = 0,
+  margin_y_bottom = 0,
+  margin_y_top = 0
 )
 }
 \arguments{
@@ -88,6 +91,16 @@ diyPaths(
 \item{latent_variable_size_adjust}{Numeric multiplier scaling latent variable ellipses. Default is \code{1}.}
 
 \item{observed_variable_size_adjust}{Numeric multiplier scaling observed variable rectangles relative to \code{node_width}/\code{node_height}. Default is \code{1}.}
+
+\item{show_group_labels}{Logical. For multi-group models, whether to annotate each panel
+with its panel number and the raw group value it represents (e.g. "Panel 1: Group = male").
+Needed to identify which diagram represents each group and its internal panel number when creating panel titles.
+Default is \code{FALSE}.}
+
+\item{panel_titles}{Specify a list of titles for panels, I highly suggest \code{\link[=panel_title]{panel_title()}} helper function. Any panel not referenced is
+left untitled. Default is \code{NULL}.}
+
+\item{panel_cols}{Integer for number columns to use when arranging multi-group panels. Default is \code{NULL}.}
 
 \item{margin_x}{Padding for plot limits along the x-axis. Default is \code{1.5}.}
 
@@ -209,5 +222,4 @@ p <- diyPaths(
 )
 
 print(p)
-
 }

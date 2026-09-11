@@ -18,7 +18,9 @@ and ends. A range of fine-tuning options are included, facilitating the
 creation of a path diagram exactly as you envision it, entirely within
 R.
 
-Currently diy.sem.plot only works for lavaan fitted models.
+Currently diy.sem.plot only works with models fitted with `lavaan`, and
+supports path analysis, confirmatory factor analysis, and full
+structural equation models. 
 
 ## Installation
 

@@ -2,4 +2,5 @@
 
 export(diyPaths)
 export(node)
+export(panel_title)
 export(path)

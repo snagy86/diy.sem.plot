@@ -86,6 +86,29 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
     variance_position = variance_position
   )
 }
+#' Create a title for a diyPaths panel
+#'
+#' @description
+#' Helper function to assign a custom title to a specific panel produced by
+#' [diyPaths()]. .
+#' Use the `show_group_labels` argument in [diyPaths()] to view each panel's plot
+#' number and which group it refers to.
+#'
+#' @param panel Integer value for the a panel's panel number  this title applies to. Default is `1`.
+#' @param title The title text to display.
+#'
+#' @examples
+#' # titling a single, non-grouped model
+#' panel_title(title = "My SEM Model")
+#'
+#' # titling the second panel of a multi-group model
+#' panel_title(panel = 2, title = "Female Participants")
+#'
+#' @return A list containing the panel index and its title.
+#' @export
+panel_title <- function(panel = 1, title = NULL) {
+  list(panel = as.integer(panel), title = as.character(title))
+}
 
 #' Manually plot path diagrams for structural equation models
 #'
@@ -109,7 +132,7 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 #' @param variance_p Logical. Whether to display p-values on variance paths. Default is `FALSE`.
 #' @param variance_ci Logical. Whether to display confidence intervals on variance paths. Default is `FALSE`.
 #' @param sig_linetype Logical. If `TRUE`, renders non-significant paths with dashed lines. Default is `FALSE`.
-#' @param alpha Statistical significance threshold used to determine non-significant paths when `sig_linetype = TRUE` (not to be confused with plot transparency). Default is `0.05`.
+#' @param p_threshold Statistical significance threshold used to determine non-significant paths when `sig_linetype = TRUE`. Default is `0.05`.
 #' @param show_variances Logical. Whether to display variance and residual paths. Default is `FALSE`.
 #' @param latent_node_text_size Text font size for latent variable labels. Default is `4`.
 #' @param observed_node_text_size Text font size for observed variable labels. Default is `4`.
@@ -119,15 +142,22 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 #' @param node_width Base width for nodes. Default is `1.5`.
 #' @param node_height Base height for node shapes. Default is `0.8`.
 #' @param latent_variable_size_adjust Numeric multiplier scaling latent variable ellipses. Default is `1`.
-#' @param observed_variable_size_adjust Numeric multiplier scaling observed variable rectangles relative to `node_width`/`node_height`. Default is `1`.
+#' @param observed_variable_size_adjust Numeric multiplier scaling observed variable rectangles. Default is `1`.
+#' @param show_group_labels Logical. For multi-group models, whether to annotate each panel
+#'   with its panel number and the raw group value it represents (e.g. "Panel 1: Group = male").
+#'   Needed to identify which diagram represents each group and its internal panel number when creating panel titles.
+#'   Default is `FALSE`.
+#' @param panel_titles Specify a list of titles for panels, I highly suggest [panel_title()] helper function. Any panel not referenced is
+#'   left untitled. Default is `NULL`.
+#' @param panel_cols Integer for number columns to use when arranging multi-group panels. Default is `NULL`.
 #' @param non_transparent_text Logical. If `TRUE`, path estimate labels receive a white background mask. Default is `TRUE`.
 #' @param show_grid Logical. Whether to overlay a coordinate grid. Default is `FALSE`.
 #' @param grid_axis_scale Sets the spacing of gridlines when `show_grid = TRUE`. Default is `1`.
-#' @param margin_x Padding for plot limits along the x-axis. Default is `1.5`.
-#' @param margin_y_bottom Padding for plot limits at the bottom. Default is `1.5`.
-#' @param margin_y_top Padding for plot limits at the top. Default is `1.5`.
+#' @param margin_x Padding for plot limits along the x-axis. Default is `0`.
+#' @param margin_y_bottom Padding for plot limits at the bottom. Default is `0`.
+#' @param margin_y_top Padding for plot limits at the top. Default is `0`.
 #'
-#' @details
+#'@details
 #'
 #' Using the function requires 4 steps and is best illustrated by the example below.
 #' Further examples can be found the vignette, along side how to set up common path diagram
@@ -237,28 +267,29 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 #' )
 #'
 #' print(p)
-#'
+
 diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, digits = 3,
-                        est_stars = FALSE, est_p = FALSE, est_ci = FALSE,
-                        variance_stars = FALSE, variance_p = FALSE, variance_ci = FALSE,
-                        sig_linetype = FALSE, alpha = 0.05,
-                        show_variances = FALSE,
-                        show_grid = FALSE,
-                        grid_axis_scale = 1,
-                        non_transparent_text = TRUE,
-                        latent_node_text_size = 4,
-                        observed_node_text_size = 4,
-                        path_text_size = 3.5,
-                        line_thickness = 0.6,
-                        arrow_size = 0.2,
-                        node_width = 1.5, node_height = 0.8,
-                        latent_variable_size_adjust = 1,
-                        observed_variable_size_adjust = 1,
-                        margin_x = 1.5,
-                        margin_y_bottom = 1.5,
-                        margin_y_top = 1.5){
-
-
+                     est_stars = FALSE, est_p = FALSE, est_ci = FALSE,
+                     variance_stars = FALSE, variance_p = FALSE, variance_ci = FALSE,
+                     sig_linetype = FALSE, p_threshold = 0.05,
+                     show_variances = FALSE,
+                     show_grid = FALSE,
+                     grid_axis_scale = 1,
+                     non_transparent_text = TRUE,
+                     latent_node_text_size = 4,
+                     observed_node_text_size = 4,
+                     path_text_size = 3.5,
+                     line_thickness = 0.6,
+                     arrow_size = 0.2,
+                     node_width = 1.5, node_height = 0.8,
+                     latent_variable_size_adjust = 1,
+                     observed_variable_size_adjust = 1,
+                     show_group_labels = FALSE,
+                     panel_titles = NULL,
+                     panel_cols = NULL,
+                     margin_x = 0,
+                     margin_y_bottom = 0,
+                     margin_y_top = 0){
 
   pos_df <- do.call(rbind, lapply(node_positions, function(v) {
     data.frame(
@@ -270,7 +301,7 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
     )
   }))
 
-  pe <- if (standardised){
+  pe_full <- if (standardised){
     stan <- lavaan::standardizedsolution(fit)
     names(stan)[names(stan) == "est.std"] <- "est"
     stan
@@ -278,274 +309,305 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
     lavaan::parameterestimates(fit)
   }
 
-  latent_vars <- unique(pe$lhs[pe$op == "=~"])
-  pos_df$is_latent <- pos_df$name %in% latent_vars
+  group_ids <- if ("group" %in% names(pe_full)) sort(unique(pe_full$group)) else 1
+  raw_group_values <- if (length(group_ids) > 1) lavaan::lavInspect(fit, "group.label") else NULL
 
-  pos_df$w <- ifelse(pos_df$is_latent, node_width * latent_variable_size_adjust, node_width * observed_variable_size_adjust)
-  pos_df$h <- ifelse(pos_df$is_latent, node_height * latent_variable_size_adjust, node_height * observed_variable_size_adjust)
-  pos_df$a <- pos_df$w / 2
-  pos_df$b <- pos_df$h / 2
+  plots <- vector("list", length(group_ids))
 
-  pos_df$xmin <- pos_df$x - pos_df$w / 2
-  pos_df$xmax <- pos_df$x + pos_df$w / 2
-  pos_df$ymin <- pos_df$y - pos_df$h / 2
-  pos_df$ymax <- pos_df$y + pos_df$h / 2
+  for (g in seq_along(group_ids)) {
 
-  allowed_ops <- c("=~", "~~", "~")
+    pe <- if (length(group_ids) > 1) pe_full[pe_full$group == group_ids[g], ] else pe_full
 
-  paths <- pe[pe$op %in% allowed_ops, c("lhs", "op", "rhs", "est", "ci.lower", "ci.upper", "pvalue")]
-  colnames(paths) <- c("lhs", "type", "rhs", "est", "ci.lower", "ci.upper", "pvalue")
+    latent_vars <- unique(pe$lhs[pe$op == "=~"])
+    pos_df$is_latent <- pos_df$name %in% latent_vars
 
-  is_loading <- paths$type == "=~"
-  is_reg <- paths$type == "~"
-  is_cov <- paths$type == "~~" & paths$lhs != paths$rhs
-  is_var <- paths$type == "~~" & paths$lhs == paths$rhs
+    pos_df$w <- ifelse(pos_df$is_latent, node_width * latent_variable_size_adjust, node_width * observed_variable_size_adjust)
+    pos_df$h <- ifelse(pos_df$is_latent, node_height * latent_variable_size_adjust, node_height * observed_variable_size_adjust)
+    pos_df$a <- pos_df$w / 2
+    pos_df$b <- pos_df$h / 2
 
-  paths$from <- NA
-  paths$to <- NA
+    pos_df$xmin <- pos_df$x - pos_df$w / 2
+    pos_df$xmax <- pos_df$x + pos_df$w / 2
+    pos_df$ymin <- pos_df$y - pos_df$h / 2
+    pos_df$ymax <- pos_df$y + pos_df$h / 2
 
-  paths$from[is_loading] <- paths$lhs[is_loading]
-  paths$to[is_loading] <- paths$rhs[is_loading]
+    allowed_ops <- c("=~", "~~", "~")
 
-  paths$from[is_reg] <- paths$rhs[is_reg]
-  paths$to[is_reg] <- paths$lhs[is_reg]
+    paths <- pe[pe$op %in% allowed_ops, c("lhs", "op", "rhs", "est", "ci.lower", "ci.upper", "pvalue")]
+    colnames(paths) <- c("lhs", "type", "rhs", "est", "ci.lower", "ci.upper", "pvalue")
 
-  paths$from[is_cov | is_var] <- paths$lhs[is_cov | is_var]
-  paths$to[is_cov | is_var] <- paths$rhs[is_cov | is_var]
+    is_loading <- paths$type == "=~"
+    is_reg <- paths$type == "~"
+    is_cov <- paths$type == "~~" & paths$lhs != paths$rhs
+    is_var <- paths$type == "~~" & paths$lhs == paths$rhs
 
-  if (!show_variances) paths <- paths[!(paths$type == "~~" & paths$from == paths$to), ]
+    paths$from <- NA
+    paths$to <- NA
 
-  digs <- paste0("%.", digits, "f")
+    paths$from[is_loading] <- paths$lhs[is_loading]
+    paths$to[is_loading] <- paths$rhs[is_loading]
 
-  paths$value <- sprintf(digs, paths$est)
-  paths$ci.lower <- sprintf(digs, paths$ci.lower)
-  paths$ci.upper <- sprintf(digs, paths$ci.upper)
+    paths$from[is_reg] <- paths$rhs[is_reg]
+    paths$to[is_reg] <- paths$lhs[is_reg]
 
-  stars  <- character(nrow(paths))
-  stars[!is.na(paths$pvalue) & paths$pvalue <= 0.001] <- "***"
-  stars[!is.na(paths$pvalue) & paths$pvalue > 0.001 & paths$pvalue <= 0.01] <- "**"
-  stars[!is.na(paths$pvalue) & paths$pvalue > 0.01 & paths$pvalue <= 0.05] <- "*"
+    paths$from[is_cov | is_var] <- paths$lhs[is_cov | is_var]
+    paths$to[is_cov | is_var] <- paths$rhs[is_cov | is_var]
 
-  use_stars <- ifelse(paths$type == "~~" & paths$from == paths$to, variance_stars, est_stars)
-  use_p <- ifelse(paths$type == "~~" & paths$from == paths$to, variance_p, est_p)
-  use_ci <- ifelse(paths$type == "~~" & paths$from == paths$to, variance_ci, est_ci)
+    if (!show_variances) paths <- paths[!(paths$type == "~~" & paths$from == paths$to), ]
 
-  paths$label_text <- as.character(paths$value)
-  paths$label_text[use_stars] <- paste0(paths$label_text[use_stars], stars[use_stars])
+    digs <- paste0("%.", digits, "f")
 
-  sub_text <- character(nrow(paths))
-  ci_valid <- use_ci & !is.na(paths$ci.lower) & !is.na(paths$ci.upper)
-  sub_text[ci_valid] <- paste0("[", paths$ci.lower[ci_valid], ", ", paths$ci.upper[ci_valid], "]")
+    paths$value <- sprintf(digs, paths$est)
+    paths$ci.lower <- sprintf(digs, paths$ci.lower)
+    paths$ci.upper <- sprintf(digs, paths$ci.upper)
 
-  p_valid <- use_p & !is.na(paths$pvalue)
-  ps <- character(nrow(paths))
-  ps[p_valid] <- ifelse(paths$pvalue[p_valid] < 0.001, "p < .001", paste0("p = ", sprintf(digs, paths$pvalue[p_valid])))
+    stars  <- character(nrow(paths))
+    stars[!is.na(paths$pvalue) & paths$pvalue <= 0.001] <- "***"
+    stars[!is.na(paths$pvalue) & paths$pvalue > 0.001 & paths$pvalue <= 0.01] <- "**"
+    stars[!is.na(paths$pvalue) & paths$pvalue > 0.01 & paths$pvalue <= 0.05] <- "*"
 
-  both_sub <- nchar(sub_text) > 0 & nchar(ps) > 0
-  sub_text[both_sub] <- paste0(sub_text[both_sub], " ", ps[both_sub])
-  sub_text[!both_sub & nchar(ps) > 0] <- ps[!both_sub & nchar(ps) > 0]
+    use_stars <- ifelse(paths$type == "~~" & paths$from == paths$to, variance_stars, est_stars)
+    use_p <- ifelse(paths$type == "~~" & paths$from == paths$to, variance_p, est_p)
+    use_ci <- ifelse(paths$type == "~~" & paths$from == paths$to, variance_ci, est_ci)
 
-  has_sub <- nchar(sub_text) > 0
-  if (any(has_sub)) {
-    paths$label_text[has_sub] <- paste0(paths$label_text[has_sub],
-                                        "<br><span style='font-size:7pt;'>",
-                                        sub_text[has_sub], "</span>")
-  }
+    paths$label_text <- as.character(paths$value)
+    paths$label_text[use_stars] <- paste0(paths$label_text[use_stars], stars[use_stars])
 
-  paths$linetype <- if (sig_linetype) ifelse(!is.na(paths$pvalue) & paths$pvalue > alpha, "dashed", "solid") else "solid"
+    sub_text <- character(nrow(paths))
+    ci_valid <- use_ci & !is.na(paths$ci.lower) & !is.na(paths$ci.upper)
+    sub_text[ci_valid] <- paste0("[", paths$ci.lower[ci_valid], ", ", paths$ci.upper[ci_valid], "]")
 
-  paths$side_from <- "right"
-  paths$side_to <- "left"
-  paths$nudge_x <- 0
-  paths$nudge_y <- 0
-  paths$variance_position <- "top"
-  paths$curvature <- ifelse(
-    paths$type == "~~" & paths$from != paths$to, 0.4,
-    ifelse(paths$type == "~~" & paths$from == paths$to,
-           ifelse(paths$variance_position == "bottom", 1.5, -1.5),
-           0)
-  )
+    p_valid <- use_p & !is.na(paths$pvalue)
+    ps <- character(nrow(paths))
+    ps[p_valid] <- ifelse(paths$pvalue[p_valid] < 0.001, "p < .001", paste0("p = ", sprintf(digs, paths$pvalue[p_valid])))
 
-  for (p in path_positions) {
-    match <- ifelse(
-      paths$type == "~~",
-      (paths$from == p$from & paths$to == p$to) | (paths$from == p$to & paths$to == p$from),
-      paths$from == p$from & paths$to == p$to
+    both_sub <- nchar(sub_text) > 0 & nchar(ps) > 0
+    sub_text[both_sub] <- paste0(sub_text[both_sub], " ", ps[both_sub])
+    sub_text[!both_sub & nchar(ps) > 0] <- ps[!both_sub & nchar(ps) > 0]
+
+    has_sub <- nchar(sub_text) > 0
+    if (any(has_sub)) {
+      paths$label_text[has_sub] <- paste0(paths$label_text[has_sub],
+                                          "<br><span style='font-size:7pt;'>",
+                                          sub_text[has_sub], "</span>")
+    }
+
+    paths$linetype <- if (sig_linetype) ifelse(!is.na(paths$pvalue) & paths$pvalue > p_threshold, "dashed", "solid") else "solid"
+
+    paths$side_from <- "right"
+    paths$side_to <- "left"
+    paths$nudge_x <- 0
+    paths$nudge_y <- 0
+    paths$variance_position <- "top"
+    paths$curvature <- ifelse(
+      paths$type == "~~" & paths$from != paths$to, 0.4,
+      ifelse(paths$type == "~~" & paths$from == paths$to,
+             ifelse(paths$variance_position == "bottom", 1.5, -1.5),
+             0)
     )
-    if (any(match)) {
-      paths$side_from[match] <- p$side_from
-      paths$side_to[match] <- p$side_to
-      if (!is.null(p$cov_curve)) paths$curvature[match] <- p$cov_curve
-      if (!is.null(p$nudge_text_x)) paths$nudge_x[match] <- p$nudge_text_x
-      if (!is.null(p$nudge_text_y)) paths$nudge_y[match] <- p$nudge_text_y
-      if (!is.null(p$variance_position)) paths$variance_position[match] <- p$variance_position
-    }
-  }
 
-  pos_map <- split(pos_df, pos_df$name)
-  get_pt <- function(node, side) {
-    switch(side,
-           "right" = c(node$xmax, node$y),
-           "left" = c(node$xmin, node$y),
-           "top" = c(node$x, node$ymax),
-           "bottom" = c(node$x, node$ymin),
-           c(node$x, node$y))
-  }
-
-  n <- nrow(paths)
-  start_x <- numeric(n); start_y <- numeric(n)
-  end_x <- numeric(n); end_y   <- numeric(n)
-
-  for (i in 1:n) {
-    start_pt <- get_pt(pos_map[[paths$from[i]]], paths$side_from[i])
-    end_pt <- get_pt(pos_map[[paths$to[i]]], paths$side_to[i])
-
-    start_x[i] <- start_pt[1]
-    start_y[i] <- start_pt[2]
-    end_x[i] <- end_pt[1]
-    end_y[i] <- end_pt[2]
-  }
-
-  paths$x <- start_x; paths$y <- start_y
-  paths$xend <- end_x; paths$yend <- end_y
-
-  paths$mid_x <- (paths$x + paths$xend) / 2 + paths$nudge_x
-  paths$mid_y <- (paths$y + paths$yend) / 2 + paths$nudge_y
-
-  is_cov_path <- paths$type == "~~" & paths$from != paths$to
-  if (any(is_cov_path)) {
-    for (i in which(is_cov_path)) {
-      x1 <- paths$x[i]; y1 <- paths$y[i]
-      x2 <- paths$xend[i]; y2 <- paths$yend[i]
-      curv <- paths$curvature[i]
-
-      dx <- x2 - x1
-      dy <- y2 - y1
-      d  <- sqrt(dx^2 + dy^2)
-
-      perp_x <- dy / d
-      perp_y <- -dx / d
-      bump   <- curv * d / 2
-
-      m_x <- (x1 + x2) / 2
-      m_y <- (y1 + y2) / 2
-
-      paths$mid_x[i] <- m_x + perp_x * bump + paths$nudge_x[i]
-      paths$mid_y[i] <- m_y + perp_y * bump + paths$nudge_y[i]
-    }
-  }
-
-  is_var_path <- paths$type == "~~" & paths$from == paths$to
-  if (any(is_var_path)) {
-    for (i in which(is_var_path)) {
-      variance_map <- pos_map[[paths$from[i]]]
-      variance_position <- paths$variance_position[i]
-      if (variance_position == "bottom") {
-        paths$x[i] <- variance_map$x - 0.2 + paths$nudge_x[i]
-        paths$y[i] <- variance_map$ymin
-        paths$xend[i] <- variance_map$x + 0.2 + paths$nudge_x[i]
-        paths$yend[i] <- variance_map$ymin
-        paths$mid_x[i] <- variance_map$x + paths$nudge_x[i]
-        paths$mid_y[i] <- variance_map$ymin - 0.4 + paths$nudge_y[i]
-      } else {
-        paths$x[i] <- variance_map$x - 0.2 + paths$nudge_x[i]
-        paths$y[i] <- variance_map$ymax
-        paths$xend[i] <- variance_map$x + 0.2 + paths$nudge_x[i]
-        paths$yend[i] <- variance_map$ymax
-        paths$mid_x[i] <- variance_map$x + paths$nudge_x[i]
-        paths$mid_y[i] <- variance_map$ymax + 0.4 + paths$nudge_y[i]
+    for (p in path_positions) {
+      match <- ifelse(
+        paths$type == "~~",
+        (paths$from == p$from & paths$to == p$to) | (paths$from == p$to & paths$to == p$from),
+        paths$from == p$from & paths$to == p$to
+      )
+      if (any(match)) {
+        paths$side_from[match] <- p$side_from
+        paths$side_to[match] <- p$side_to
+        if (!is.null(p$cov_curve)) paths$curvature[match] <- p$cov_curve
+        if (!is.null(p$nudge_text_x)) paths$nudge_x[match] <- p$nudge_text_x
+        if (!is.null(p$nudge_text_y)) paths$nudge_y[match] <- p$nudge_text_y
+        if (!is.null(p$variance_position)) paths$variance_position[match] <- p$variance_position
       }
     }
-  }
 
-  measured_df <- pos_df[!pos_df$is_latent, ]
-  latent_df <- pos_df[pos_df$is_latent, ]
-
-  directional_paths <- paths[paths$type %in% c("=~", "~"), ]
-  cov_paths <- paths[paths$type == "~~" & paths$from != paths$to, ]
-  variance_paths <- paths[paths$type == "~~" & paths$from == paths$to, ]
-
-  p <- ggplot2::ggplot()
-
-  if (nrow(measured_df) > 0) {
-    p <- p + ggplot2::geom_rect(data = measured_df,
-                                ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-                                fill = "white", color = "black") +
-      ggplot2::geom_text(data = measured_df,
-                         ggplot2::aes(x = x, y = y, label = label),
-                         size = observed_node_text_size)
-  }
-
-  if (nrow(latent_df) > 0) {
-    p <- p + ggforce::geom_ellipse(data = latent_df,
-                                   ggplot2::aes(x0 = x, y0 = y, a = a, b = b, angle = 0),
-                                   fill = "white", color = "black", linewidth = 0.5) +
-      ggplot2::geom_text(data = latent_df,
-                         ggplot2::aes(x = x, y = y, label = label),
-                         size = latent_node_text_size)
-  }
-
-  if (nrow(directional_paths) > 0) {
-    p <- p +
-      ggplot2::geom_segment(data = directional_paths,
-                            ggplot2::aes(x = x, y = y, xend = xend, yend = yend, linetype = linetype),
-                            linewidth = line_thickness,
-                            arrow = ggplot2::arrow(length = grid::unit(arrow_size, "cm"), type = "closed")) +
-      ggtext::geom_richtext(data = directional_paths, ggplot2::aes(x = mid_x, y = mid_y, label = label_text),
-                            fill = if (non_transparent_text) "white" else NA, label.color = NA,
-                            label.padding = grid::unit(rep(2, 4), "pt"), size = path_text_size)
-  }
-
-  if (nrow(cov_paths) > 0) {
-    for (i in seq_len(nrow(cov_paths))) {
-      p <- p + ggplot2::geom_curve(data = cov_paths[i, ],
-                                   ggplot2::aes(x = x, y = y, xend = xend, yend = yend, linetype = linetype),
-                                   linewidth = line_thickness,
-                                   curvature = cov_paths$curvature[i],
-                                   arrow = ggplot2::arrow(length = grid::unit(arrow_size, "cm"), ends = "both"))
+    pos_map <- split(pos_df, pos_df$name)
+    get_pt <- function(node, side) {
+      switch(side,
+             "right" = c(node$xmax, node$y),
+             "left" = c(node$xmin, node$y),
+             "top" = c(node$x, node$ymax),
+             "bottom" = c(node$x, node$ymin),
+             c(node$x, node$y))
     }
-    p <- p + ggtext::geom_richtext(data = cov_paths, ggplot2::aes(x = mid_x, y = mid_y, label = label_text),
-                                   fill = if (non_transparent_text) "white" else NA, label.color = NA,
-                                   label.padding = grid::unit(rep(2, 4), "pt"), size = path_text_size)
-  }
 
-  if (nrow(variance_paths) > 0) {
-    for (i in seq_len(nrow(variance_paths))) {
-      curv_val <- if (variance_paths$variance_position[i] == "bottom") 1.5 else -1.5
-      p <- p + ggplot2::geom_curve(data = variance_paths[i, ],
-                                   ggplot2::aes(x = x, y = y, xend = xend, yend = yend, linetype = linetype),
-                                   linewidth = line_thickness,
-                                   curvature = variance_paths$curvature[i],
-                                   arrow = ggplot2::arrow(length = grid::unit(arrow_size, "cm"), type = "closed"))
+    n <- nrow(paths)
+    start_x <- numeric(n); start_y <- numeric(n)
+    end_x <- numeric(n); end_y   <- numeric(n)
+
+    for (i in 1:n) {
+      start_pt <- get_pt(pos_map[[paths$from[i]]], paths$side_from[i])
+      end_pt <- get_pt(pos_map[[paths$to[i]]], paths$side_to[i])
+
+      start_x[i] <- start_pt[1]
+      start_y[i] <- start_pt[2]
+      end_x[i] <- end_pt[1]
+      end_y[i] <- end_pt[2]
     }
-    p <- p + ggtext::geom_richtext(data = variance_paths, ggplot2::aes(x = mid_x, y = mid_y, label = label_text),
-                                   fill = if (non_transparent_text) "white" else NA, label.color = NA,
-                                   label.padding = grid::unit(rep(2, 4), "pt"), size = path_text_size)
-  }
 
-  grid_or_no <- if (show_grid) {
-    ggplot2::theme_bw() +
-      ggplot2::theme(
-        panel.grid.major = ggplot2::element_line(color = "grey", linetype = "dashed"),
-        panel.grid.minor = ggplot2::element_line(color = "grey", linetype = "dotted"),
-        axis.text = ggplot2::element_text(size = 9, color = "black"),
-        axis.title = ggplot2::element_text(size = 10),
-        axis.ticks = ggplot2::element_line(color = "black"),
-        panel.background = ggplot2::element_rect(fill = "white")
+    paths$x <- start_x; paths$y <- start_y
+    paths$xend <- end_x; paths$yend <- end_y
+
+    paths$mid_x <- (paths$x + paths$xend) / 2 + paths$nudge_x
+    paths$mid_y <- (paths$y + paths$yend) / 2 + paths$nudge_y
+
+    is_cov_path <- paths$type == "~~" & paths$from != paths$to
+    if (any(is_cov_path)) {
+      for (i in which(is_cov_path)) {
+        x1 <- paths$x[i]; y1 <- paths$y[i]
+        x2 <- paths$xend[i]; y2 <- paths$yend[i]
+        curv <- paths$curvature[i]
+
+        dx <- x2 - x1
+        dy <- y2 - y1
+        d  <- sqrt(dx^2 + dy^2)
+
+        perp_x <- dy / d
+        perp_y <- -dx / d
+        bump   <- curv * d / 2
+
+        m_x <- (x1 + x2) / 2
+        m_y <- (y1 + y2) / 2
+
+        paths$mid_x[i] <- m_x + perp_x * bump + paths$nudge_x[i]
+        paths$mid_y[i] <- m_y + perp_y * bump + paths$nudge_y[i]
+      }
+    }
+
+    is_var_path <- paths$type == "~~" & paths$from == paths$to
+    if (any(is_var_path)) {
+      for (i in which(is_var_path)) {
+        variance_map <- pos_map[[paths$from[i]]]
+        variance_position <- paths$variance_position[i]
+        if (variance_position == "bottom") {
+          paths$x[i] <- variance_map$x - 0.2 + paths$nudge_x[i]
+          paths$y[i] <- variance_map$ymin
+          paths$xend[i] <- variance_map$x + 0.2 + paths$nudge_x[i]
+          paths$yend[i] <- variance_map$ymin
+          paths$mid_x[i] <- variance_map$x + paths$nudge_x[i]
+          paths$mid_y[i] <- variance_map$ymin - 0.4 + paths$nudge_y[i]
+        } else {
+          paths$x[i] <- variance_map$x - 0.2 + paths$nudge_x[i]
+          paths$y[i] <- variance_map$ymax
+          paths$xend[i] <- variance_map$x + 0.2 + paths$nudge_x[i]
+          paths$yend[i] <- variance_map$ymax
+          paths$mid_x[i] <- variance_map$x + paths$nudge_x[i]
+          paths$mid_y[i] <- variance_map$ymax + 0.4 + paths$nudge_y[i]
+        }
+      }
+    }
+
+    measured_df <- pos_df[!pos_df$is_latent, ]
+    latent_df <- pos_df[pos_df$is_latent, ]
+
+    directional_paths <- paths[paths$type %in% c("=~", "~"), ]
+    cov_paths <- paths[paths$type == "~~" & paths$from != paths$to, ]
+    variance_paths <- paths[paths$type == "~~" & paths$from == paths$to, ]
+
+    p <- ggplot2::ggplot()
+
+    if (nrow(measured_df) > 0) {
+      p <- p + ggplot2::geom_rect(data = measured_df,
+                                  ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+                                  fill = "white", color = "black") +
+        ggplot2::geom_text(data = measured_df,
+                           ggplot2::aes(x = x, y = y, label = label),
+                           size = observed_node_text_size)
+    }
+
+    if (nrow(latent_df) > 0) {
+      p <- p + ggforce::geom_ellipse(data = latent_df,
+                                     ggplot2::aes(x0 = x, y0 = y, a = a, b = b, angle = 0),
+                                     fill = "white", color = "black", linewidth = 0.5) +
+        ggplot2::geom_text(data = latent_df,
+                           ggplot2::aes(x = x, y = y, label = label),
+                           size = latent_node_text_size)
+    }
+
+    if (nrow(directional_paths) > 0) {
+      p <- p +
+        ggplot2::geom_segment(data = directional_paths,
+                              ggplot2::aes(x = x, y = y, xend = xend, yend = yend, linetype = linetype),
+                              linewidth = line_thickness,
+                              arrow = ggplot2::arrow(length = grid::unit(arrow_size, "cm"), type = "closed")) +
+        ggtext::geom_richtext(data = directional_paths, ggplot2::aes(x = mid_x, y = mid_y, label = label_text),
+                              fill = if (non_transparent_text) "white" else NA, label.color = NA,
+                              label.padding = grid::unit(rep(2, 4), "pt"), size = path_text_size)
+    }
+
+    if (nrow(cov_paths) > 0) {
+      for (i in seq_len(nrow(cov_paths))) {
+        p <- p + ggplot2::geom_curve(data = cov_paths[i, ],
+                                     ggplot2::aes(x = x, y = y, xend = xend, yend = yend, linetype = linetype),
+                                     linewidth = line_thickness,
+                                     curvature = cov_paths$curvature[i],
+                                     arrow = ggplot2::arrow(length = grid::unit(arrow_size, "cm"), ends = "both"))
+      }
+      p <- p + ggtext::geom_richtext(data = cov_paths, ggplot2::aes(x = mid_x, y = mid_y, label = label_text),
+                                     fill = if (non_transparent_text) "white" else NA, label.color = NA,
+                                     label.padding = grid::unit(rep(2, 4), "pt"), size = path_text_size)
+    }
+
+    if (nrow(variance_paths) > 0) {
+      for (i in seq_len(nrow(variance_paths))) {
+        p <- p + ggplot2::geom_curve(data = variance_paths[i, ],
+                                     ggplot2::aes(x = x, y = y, xend = xend, yend = yend, linetype = linetype),
+                                     linewidth = line_thickness,
+                                     curvature = variance_paths$curvature[i],
+                                     arrow = ggplot2::arrow(length = grid::unit(arrow_size, "cm"), type = "closed"))
+      }
+      p <- p + ggtext::geom_richtext(data = variance_paths, ggplot2::aes(x = mid_x, y = mid_y, label = label_text),
+                                     fill = if (non_transparent_text) "white" else NA, label.color = NA,
+                                     label.padding = grid::unit(rep(2, 4), "pt"), size = path_text_size)
+    }
+
+    grid_or_no <- if (show_grid) {
+      ggplot2::theme_bw() +
+        ggplot2::theme(
+          panel.grid.major = ggplot2::element_line(color = "grey", linetype = "dashed"),
+          panel.grid.minor = ggplot2::element_line(color = "grey", linetype = "dotted"),
+          axis.text = ggplot2::element_text(size = 9, color = "black"),
+          axis.title = ggplot2::element_text(size = 10),
+          axis.ticks = ggplot2::element_line(color = "black"),
+          panel.background = ggplot2::element_rect(fill = "white")
+        )
+    } else {
+      ggplot2::theme_void()
+    }
+
+    x_limits <- c(min(pos_df$xmin) - margin_x, max(pos_df$xmax) + margin_x)
+    y_limits <- c(min(pos_df$ymin) - margin_y_bottom, max(pos_df$ymax) + margin_y_top)
+
+    p <- p + ggplot2::scale_linetype_identity() +
+      ggplot2::scale_x_continuous(breaks = seq(floor(x_limits[1]), ceiling(x_limits[2]), by = grid_axis_scale)) +
+      ggplot2::scale_y_continuous(breaks = seq(floor(y_limits[1]), ceiling(y_limits[2]), by = grid_axis_scale)) +
+      ggplot2::coord_fixed(xlim = x_limits, ylim = y_limits) +
+      grid_or_no
+
+    if (!is.null(panel_titles)) {
+      match_idx <- which(vapply(panel_titles, function(pt) pt$panel == g, logical(1)))
+      if (length(match_idx) > 0) p <- p + ggplot2::labs(title = panel_titles[[match_idx[1]]]$title)
+    }
+
+    if (show_group_labels && length(group_ids) > 1) {
+      p <- p + ggplot2::annotate(
+        "text", x = Inf, y = -Inf,
+        label = paste0("Panel ", g, ": Group = ", raw_group_values[g]),
+        hjust = 1.05, vjust = -0.5, size = 3, colour = "grey40"
       )
-  } else {
-    ggplot2::theme_void()
+    }
+
+    plots[[g]] <- p
   }
 
-  x_limits <- c(min(pos_df$xmin) - margin_x, max(pos_df$xmax) + margin_x)
-  y_limits <- c(min(pos_df$ymin) - margin_y_bottom, max(pos_df$ymax) + margin_y_top)
+  if (length(plots) == 1) return(plots[[1]])
 
-  p <- p + ggplot2::scale_linetype_identity() +
-    ggplot2::scale_x_continuous(breaks = seq(floor(x_limits[1]), ceiling(x_limits[2]), by = grid_axis_scale)) +
-    ggplot2::scale_y_continuous(breaks = seq(floor(y_limits[1]), ceiling(y_limits[2]), by = grid_axis_scale)) +
-    ggplot2::coord_fixed(xlim = x_limits, ylim = y_limits) +
-    grid_or_no
+  cols <- if (!is.null(panel_cols)) {
+    panel_cols
+  } else {
+     min(length(plots), 2)
+  }
 
-  return(p)
-
+  patchwork::wrap_plots(plots, ncol = cols)
 }
