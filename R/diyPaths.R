@@ -16,7 +16,8 @@ utils::globalVariables(c(
 #'
 #' @examples
 #'
-#' #a list that specifies a node positioned on x = 1,  y = 2, and relabelled from  its lavaan model name
+#' #a list that specifies a node positioned on x = 1,  y = 2,
+#' #and relabelled from  its lavaan model name
 #'
 #' node(name = "bpm", x = 1, y = 2,  label = "Beats per Minute")
 #'
@@ -65,7 +66,8 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #'
 #' path(from = "anx", to = "dep", side_from = "right", side_to = "left")
 #'
-#' #a list that specifies a covariance/correlation path of node "anxiety" and node "depression". Order of "from" and "to" does not matter for covariance/correlation.
+#' #a list that specifies a covariance/correlation path of node "anxiety" and node "depression".
+#' #Order of "from" and "to" does not matter for covariance/correlation.
 #'
 #'
 #' path(from = "dep", to = "anx", side_from = "left", side_to = "left", cov_curve = -0.6)
@@ -234,7 +236,7 @@ panel_title <- function(panel = 1, title = NULL) {
 #' #Specify the paths
 #'
 #' path_positions <- list(
-#'   path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1), #nudging to stop white space overlap
+#'   path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1),
 #'   path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
 #'   path(from = "visual", to = "x3", side_from = "bottom", side_to = "top", nudge_text_x = 0.1),
 #'

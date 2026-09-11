@@ -24,7 +24,8 @@ designed for use within the \code{node_positions} argument of \code{\link[=diyPa
 }
 \examples{
 
-#a list that specifies a node positioned on x = 1,  y = 2, and relabelled from  its lavaan model name
+#a list that specifies a node positioned on x = 1,  y = 2,
+#and relabelled from  its lavaan model name
 
 node(name = "bpm", x = 1, y = 2,  label = "Beats per Minute")
 

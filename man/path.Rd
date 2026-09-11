@@ -55,7 +55,8 @@ it down and negative curvature bends it up. Best results typically range from -1
 
 path(from = "anx", to = "dep", side_from = "right", side_to = "left")
 
-#a list that specifies a covariance/correlation path of node "anxiety" and node "depression". Order of "from" and "to" does not matter for covariance/correlation.
+#a list that specifies a covariance/correlation path of node "anxiety" and node "depression".
+#Order of "from" and "to" does not matter for covariance/correlation.
 
 
 path(from = "dep", to = "anx", side_from = "left", side_to = "left", cov_curve = -0.6)

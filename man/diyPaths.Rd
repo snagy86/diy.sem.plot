@@ -17,7 +17,7 @@ diyPaths(
   variance_p = FALSE,
   variance_ci = FALSE,
   sig_linetype = FALSE,
-  alpha = 0.05,
+  p_threshold = 0.05,
   show_variances = FALSE,
   show_grid = FALSE,
   grid_axis_scale = 1,
@@ -64,7 +64,7 @@ diyPaths(
 
 \item{sig_linetype}{Logical. If \code{TRUE}, renders non-significant paths with dashed lines. Default is \code{FALSE}.}
 
-\item{alpha}{Statistical significance threshold used to determine non-significant paths when \code{sig_linetype = TRUE} (not to be confused with plot transparency). Default is \code{0.05}.}
+\item{p_threshold}{Statistical significance threshold used to determine non-significant paths when \code{sig_linetype = TRUE}. Default is \code{0.05}.}
 
 \item{show_variances}{Logical. Whether to display variance and residual paths. Default is \code{FALSE}.}
 
@@ -90,7 +90,7 @@ diyPaths(
 
 \item{latent_variable_size_adjust}{Numeric multiplier scaling latent variable ellipses. Default is \code{1}.}
 
-\item{observed_variable_size_adjust}{Numeric multiplier scaling observed variable rectangles relative to \code{node_width}/\code{node_height}. Default is \code{1}.}
+\item{observed_variable_size_adjust}{Numeric multiplier scaling observed variable rectangles. Default is \code{1}.}
 
 \item{show_group_labels}{Logical. For multi-group models, whether to annotate each panel
 with its panel number and the raw group value it represents (e.g. "Panel 1: Group = male").
@@ -102,11 +102,11 @@ left untitled. Default is \code{NULL}.}
 
 \item{panel_cols}{Integer for number columns to use when arranging multi-group panels. Default is \code{NULL}.}
 
-\item{margin_x}{Padding for plot limits along the x-axis. Default is \code{1.5}.}
+\item{margin_x}{Padding for plot limits along the x-axis. Default is \code{0}.}
 
-\item{margin_y_bottom}{Padding for plot limits at the bottom. Default is \code{1.5}.}
+\item{margin_y_bottom}{Padding for plot limits at the bottom. Default is \code{0}.}
 
-\item{margin_y_top}{Padding for plot limits at the top. Default is \code{1.5}.}
+\item{margin_y_top}{Padding for plot limits at the top. Default is \code{0}.}
 }
 \value{
 A \code{ggplot} object representing the SEM diagram.
@@ -189,7 +189,7 @@ node_positions <- list(
 #Specify the paths
 
 path_positions <- list(
-  path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1), #nudging to stop white space overlap
+  path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1),
   path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
   path(from = "visual", to = "x3", side_from = "bottom", side_to = "top", nudge_text_x = 0.1),
 

@@ -51,7 +51,7 @@ test_that("diyPaths defaults, panel numbers, and group labels work correctly", {
   sem_model <- '
     visual =~ x1 + x2 + x3
   '
-  fit <- sem(sem_model, data = HolzingerSwineford1939, group = "school")
+  fit <- lavaan::sem(sem_model, data = HolzingerSwineford1939, group = "school")
 
   node_positions <- list(
     node("visual", x = 1, y = 1),
@@ -66,7 +66,8 @@ test_that("diyPaths defaults, panel numbers, and group labels work correctly", {
     path(from = "visual", to = "x3", side_from = "bottom", side_to = "top")
   )
 
-  fit_single <- sem(sem_model, data = HolzingerSwineford1939)
+  # Test single-group / default behavior (returns ggplot directly)
+  fit_single <- lavaan::sem(sem_model, data = HolzingerSwineford1939)
   p_single <- diyPaths(
     fit = fit_single,
     node_positions = node_positions,
@@ -74,7 +75,8 @@ test_that("diyPaths defaults, panel numbers, and group labels work correctly", {
   )
   expect_s3_class(p_single, "ggplot")
 
-   p_multi_default <- diyPaths(
+  # Test multi-group with default panel titles (NULL) and show_group_labels = TRUE
+  p_multi_default <- diyPaths(
     fit = fit,
     node_positions = node_positions,
     path_positions = path_positions,
@@ -82,6 +84,7 @@ test_that("diyPaths defaults, panel numbers, and group labels work correctly", {
   )
   expect_s3_class(p_multi_default, "patchwork")
 
+  # Test multi-group with custom panel_title for only one panel (leaving others untitled)
   partial_titles <- list(
     panel_title(panel = 1, title = "Custom Group 1")
   )
