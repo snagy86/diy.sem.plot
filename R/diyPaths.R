@@ -136,15 +136,15 @@ panel_title <- function(panel = 1, title = NULL) {
 #' @param sig_linetype Logical. If `TRUE`, renders non-significant paths with dashed lines. Default is `FALSE`.
 #' @param p_threshold Statistical significance threshold used to determine non-significant paths when `sig_linetype = TRUE`. Default is `0.05`.
 #' @param show_variances Logical. Whether to display variance and residual paths. Default is `FALSE`.
-#' @param latent_node_text_size Text font size for latent variable labels. Default is `4`.
-#' @param observed_node_text_size Text font size for observed variable labels. Default is `4`.
+#' @param latent_node_text_size Text font size for latent node labels. Default is `4`.
+#' @param observed_node_text_size Text font size for observed node labels. Default is `4`.
 #' @param path_text_size Text font size for path estimate labels. Default is `3.5`.
 #' @param line_thickness Sets thickness of paths. Default is `0.6`.
 #' @param arrow_size Sets the size of arrow heads. Default is `0.2`.
 #' @param node_width Base width for nodes. Default is `1.5`.
-#' @param node_height Base height for node shapes. Default is `0.8`.
-#' @param latent_variable_size_adjust Numeric multiplier scaling latent variable ellipses. Default is `1`.
-#' @param observed_variable_size_adjust Numeric multiplier scaling observed variable rectangles. Default is `1`.
+#' @param node_height Base height for node shapes. Default is `1`.
+#' @param latent_node_size_adjust Numeric multiplier scaling latent node ellipses. Default is `1`.
+#' @param observed_node_size_adjust Numeric multiplier scaling observed node rectangles. Default is `1`.
 #' @param show_group_labels Logical. For multi-group models, whether to annotate each panel
 #'   with its panel number and the raw group value it represents (e.g. "Panel 1: Group = male").
 #'   Needed to identify which diagram represents each group and its internal panel number when creating panel titles.
@@ -158,6 +158,7 @@ panel_title <- function(panel = 1, title = NULL) {
 #' @param margin_x Padding for plot limits along the x-axis. Default is `0`.
 #' @param margin_y_bottom Padding for plot limits at the bottom. Default is `0`.
 #' @param margin_y_top Padding for plot limits at the top. Default is `0`.
+#' @param look_up_table Logical. If TRUE, also returns a lookup table detailing the width (x scale) and height (y scale) of latent and observed nodes, along with the text sizes used for latent, observed, and path labels. Default is FALSE.
 #'
 #'@details
 #'
@@ -262,7 +263,7 @@ panel_title <- function(panel = 1, title = NULL) {
 #'   path_positions = path_positions,
 #'   standardised = TRUE,
 #'   est_stars = TRUE,
-#'   observed_variable_size_adjust = 0.55, #making observed variables smaller than latent
+#'   observed_node_size_adjust = 0.55, #making observed nodes smaller than latent
 #'   observed_node_text_size = 3,
 #'   show_grid = TRUE,
 #'   grid_axis_scale = 0.4
@@ -283,15 +284,16 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
                      path_text_size = 3.5,
                      line_thickness = 0.6,
                      arrow_size = 0.2,
-                     node_width = 1.5, node_height = 0.8,
-                     latent_variable_size_adjust = 1,
-                     observed_variable_size_adjust = 1,
+                     node_width = 1.5, node_height = 1,
+                     latent_node_size_adjust = 1,
+                     observed_node_size_adjust = 1,
                      show_group_labels = FALSE,
                      panel_titles = NULL,
                      panel_cols = NULL,
                      margin_x = 0.5,
                      margin_y_bottom = 0.5,
-                     margin_y_top = 0.5){
+                     margin_y_top = 0.5,
+                     look_up_table = FALSE){
 
   pos_df <- do.call(rbind, lapply(node_positions, function(v) {
     data.frame(
@@ -311,6 +313,19 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
     lavaan::parameterestimates(fit)
   }
 
+  size_tbl <- data.frame(
+    type      = c("latent", "observed", "path"),
+    width     = c(node_width * latent_node_size_adjust,
+                  node_width * observed_node_size_adjust,
+                  NA),
+    height    = c(node_height * latent_node_size_adjust,
+                  node_height * observed_node_size_adjust,
+                  NA),
+    text_size = c(latent_node_text_size,
+                  observed_node_text_size,
+                  path_text_size)
+  )
+
   group_ids <- if ("group" %in% names(pe_full)) sort(unique(pe_full$group)) else 1
   raw_group_values <- if (length(group_ids) > 1) lavaan::lavInspect(fit, "group.label") else NULL
 
@@ -323,8 +338,8 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
     latent_vars <- unique(pe$lhs[pe$op == "=~"])
     pos_df$is_latent <- pos_df$name %in% latent_vars
 
-    pos_df$w <- ifelse(pos_df$is_latent, node_width * latent_variable_size_adjust, node_width * observed_variable_size_adjust)
-    pos_df$h <- ifelse(pos_df$is_latent, node_height * latent_variable_size_adjust, node_height * observed_variable_size_adjust)
+    pos_df$w <- ifelse(pos_df$is_latent, node_width * latent_node_size_adjust, node_width * observed_node_size_adjust)
+    pos_df$h <- ifelse(pos_df$is_latent, node_height * latent_node_size_adjust, node_height * observed_node_size_adjust)
     pos_df$a <- pos_df$w / 2
     pos_df$b <- pos_df$h / 2
 
@@ -389,8 +404,9 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
 
     has_sub <- nchar(sub_text) > 0
     if (any(has_sub)) {
+      sub_text_size <- path_text_size * (7 / 3.5)
       paths$label_text[has_sub] <- paste0(paths$label_text[has_sub],
-                                          "<br><span style='font-size:7pt;'>",
+                                          "<br><span style='font-size:", sub_text_size, "pt;'>",
                                           sub_text[has_sub], "</span>")
     }
 
@@ -603,13 +619,16 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
     plots[[g]] <- p
   }
 
-  if (length(plots) == 1) return(plots[[1]])
-
-  cols <- if (!is.null(panel_cols)) {
-    panel_cols
+  final <- if (length(plots) == 1) {
+    plots[[1]]
   } else {
-     min(length(plots), 2)
+    cols <- if (!is.null(panel_cols)) panel_cols else min(length(plots), 2)
+    patchwork::wrap_plots(plots, ncol = cols)
   }
 
-  patchwork::wrap_plots(plots, ncol = cols)
+  if (look_up_table) {
+    return(list(plot = final, node_size_table = size_tbl))
+  }
+
+  final
 }
