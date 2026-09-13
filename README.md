@@ -37,6 +37,7 @@ vignette.
 
 ``` r
 
+
 # full SEM example, this model may not make theoretical sense.
 library(diy.sem.plot)
 library(lavaan)
@@ -109,7 +110,7 @@ path_list <- list(
    path(from = "speed",   to = "x8", side_from = "right", side_to = "left"),
    path(from = "speed",   to = "x9", side_from = "right", side_to = "left"),
    
-  #latent variance/residualal
+  #latent variance/residual
    path(from = "textual", to = "textual", variance_position = "bottom"),
    path(from = "visual", to = "visual", variance_position = "top"),
    path(from = "speed", to = "speed", variance_position = "top"),
@@ -143,7 +144,9 @@ p <- diyPaths(
    est_ci = TRUE,
    show_variances = TRUE,
    show_grid = TRUE,
-   look_up_table = TRUE
+   look_up_table = TRUE,
+   margin_x = 0.2,
+   margin_y = 0.2
 )
 
 print(p)
