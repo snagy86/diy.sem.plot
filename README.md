@@ -87,8 +87,6 @@ node_list <- list(
 
 # Specify the paths
 
-# Specify the paths
-
 path_list <- list(
 
   # Structural paths
