@@ -7,31 +7,33 @@
 
 <!-- badges: end -->
 
-diy.sem.plot allows you to manually plot fully customisable path
-diagrams for structural equation models (SEM) using the diyPaths()
+::{diy.sem.plot} allows you to manually plot fully customisable path
+diagrams for structural equation models (SEM) using the `diyPaths()`
 function. It avoids the inflexibility of automated SEM plotting tools
 and the tedium of drawing diagrams in external applications.
 
 You map out where nodes go using simple coordinates and specify the
-attachment points (sides of the relevant nodes) where each path begins
-and ends. A range of fine-tuning options are included, facilitating the
+attachment points on the perimeter of each node where paths begin and
+end. A range of fine-tuning options are included, facilitating the
 creation of a path diagram exactly as you envision it, entirely within
 R.
 
-Currently diy.sem.plot only works with models fitted with `lavaan`.
+Currently diy.sem.plot only works for lavaan fitted models.
 
 ## Installation
 
 Run the following to install the development version of the package.
 
 ``` r
-remotes::install_github("snagy86/diy.sem.plot")
+install.packages("pak")
+pak::pkg_install("snagy86/diy.sem.plot")
 ```
 
 ## Example
 
 Below is a brief example of what the function is capable of. More
-examples can be found in the vignette for the package.
+examples and full explanation of work flow can be found in the package’s
+vignette.
 
 ``` r
 
@@ -57,71 +59,102 @@ sem_model <- '
 
 # fit the model
 
-fit <- sem(sem_model, data = HolzingerSwineford1939)
+fit_sem <- sem(sem_model, data = HolzingerSwineford1939)
 
 # specify the node position, this was done iteratively with show_grid to help with layout.
-
-node_positions <- list(
+node_list <- list(
    # main latent variable structure
    node("visual", x = 1, y = 1, label = "Visual"),
-   node("textual", x = 1, y = 2, label = "Textual"),
-   node("speed", x = 4, y = 1.5, label = "Speed"),
+   node("textual", x = 1, y = 3, label = "Textual"),
+   node("speed", x = 4, y = 2, label = "Speed"),
 
    # observed variables that visual perception ability loads onto
-   node("x1", x = -0.06, y = -0.5, label = "Visual\nPerception"), # \n creates a line break
+   node("x1", x = 0, y = -0.5, label = "Visual\nPerception"),
    node("x2", x = 1, y = -0.5, label = "Cubes"),
-   node("x3", x = 2.06, y = -0.5, label = "Lozenges"),
+   node("x3", x = 2, y = -0.5, label = "Lozenges"),
 
    # observed variables that textual ability loads onto
-   node("x4", x = -0.06, y = 3.5, label = "Paragraph\nComprehension"),
-   node("x5", x = 1, y = 3.5, label = "Sentence\nCompletion"),
-   node("x6", x = 2.06, y = 3.5, label = "Word\nMeaning"),
+   node("x4", x = 0, y = 4.5, label = "Paragraph\nComprehension"),
+   node("x5", x = 1, y = 4.5, label = "Sentence\nCompletion"),
+   node("x6", x = 2, y = 4.5, label = "Word\nMeaning"),
 
    # observed variables that speeded cognitive processing loads onto
-   node("x7", x = 6, y = 0.5, label = "Speeded\nAddition"),
-   node("x8", x = 6, y = 1.5, label = "Speeded\nCounting"),
-   node("x9", x = 6, y = 2.5, label = "Speeded\nDiscrimination")
+   node("x7", x = 6, y = 1.25, label = "Speeded\nAddition"),
+   node("x8", x = 6, y = 2, label = "Speeded\nCounting"),
+   node("x9", x = 6, y = 2.75, label = "Speeded\nDiscrimination")
 )
 
 # Specify the paths
 
-path_positions <- list(
-   path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1), # nudging to stop white space overlap
+path_list <- list(
+  #Structural 
+    path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
+    #variance loop visual
+     path(from = "visual",  to = "visual", variance_position = "top"),
+   path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
+   path(from = "visual",  to = "textual", side_from = "left", side_to = "left", cov_curve = -0.6),
+  
+   #visual loadings
+   path(from = "visual", to = "x1", side_from = "bottom", side_to = "top"), 
    path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
-   path(from = "visual", to = "x3", side_from = "bottom", side_to = "top", nudge_text_x = 0.1),
+   path(from = "visual", to = "x3", side_from = "bottom", side_to = "top"),
 
-   path(from = "textual", to = "x4", side_from = "top", side_to = "bottom", nudge_text_x = -0.1),
+   #textual loadings
+   path(from = "textual", to = "x4", side_from = "top", side_to = "bottom"),
    path(from = "textual", to = "x5", side_from = "top", side_to = "bottom"),
-   path(from = "textual", to = "x6", side_from = "top", side_to = "bottom", nudge_text_x = 0.1),
+   path(from = "textual", to = "x6", side_from = "top", side_to = "bottom"),
 
+   #speed loadings
    path(from = "speed",   to = "x7", side_from = "right", side_to = "left"),
    path(from = "speed",   to = "x8", side_from = "right", side_to = "left"),
    path(from = "speed",   to = "x9", side_from = "right", side_to = "left"),
+   
+  #latent variance/residualal
+   path(from = "textual", to = "textual", variance_position = "bottom"),
+   path(from = "visual", to = "visual", variance_position = "top"),
+   path(from = "speed", to = "speed", variance_position = "top"),
+  #Measurement Variances 
+   path(from = "x1", to = "x1", variance_position = "bottom"),
+   path(from = "x2", to = "x2", variance_position = "bottom"),
+   path(from = "x3", to = "x3", variance_position = "bottom"),
 
-   path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
-   path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
+   path(from = "x4", to = "x4", variance_position = "top"),
+   path(from = "x5", to = "x5", variance_position = "top"),
+   path(from = "x6", to = "x6", variance_position = "top"),
 
-   path(from = "visual",  to = "textual", side_from = "left", side_to = "left", cov_curve = -0.6)
+   path(from = "x7", to = "x7", variance_position = "right"),
+   path(from = "x8", to = "x8", variance_position = "right"),
+   path(from = "x9", to = "x9", variance_position = "right")
+  
 )
 
 # creating the diagram
 
 p <- diyPaths(
-   fit = fit,
-   node_positions = node_positions,
-   path_positions = path_positions,
+   fit = fit_sem,
+   node_positions = node_list,
+   path_positions = path_list,
    standardised = TRUE,
+   sig_linetype = TRUE,
+   observed_node_size_adjust = 0.5, 
+   observed_node_text_size = 3.5,
+   latent_node_text_size = 5,
    est_stars = TRUE,
-   observed_variable_size_adjust = 0.6, # making observed variables smaller than latent
-   observed_node_text_size = 3,
+   est_ci = TRUE,
+   show_variances = TRUE,
    show_grid = TRUE,
-   grid_axis_scale = 0.4,
-   margin_x = -0,
-   margin_y_bottom = -0,
-   margin_y_top = -0
+   look_up_table = TRUE
 )
 
 print(p)
+#> $plot
 ```
 
 <img src="man/figures/README-example1-1.png" alt="" width="100%" />
+
+    #> 
+    #> $look_up_table
+    #>       type width height text_size
+    #> 1   latent  1.50    1.0       5.0
+    #> 2 observed  0.75    0.5       3.5
+    #> 3     path    NA     NA       3.5

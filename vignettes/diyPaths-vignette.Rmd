@@ -256,7 +256,7 @@ path_list <- list(
   #latent variance/residualal
    path(from = "textual", to = "textual", variance_position = "bottom"),
    path(from = "visual", to = "visual", variance_position = "top"),
-   path(from = "spped", to = "speed", variance_position = "top"),
+   path(from = "speed", to = "speed", variance_position = "top"),
   #Measurement Loadigns
    path(from = "x1", to = "x1", variance_position = "bottom"),
    path(from = "x2", to = "x2", variance_position = "bottom"),
@@ -370,7 +370,7 @@ p <- diyPaths(
 print(p)
 ```
 
-We can use the text rendered by `show_group_labels` to construct proper titles for these diagrams. Diagram titles are specified in a similar way as nodes and paths. We first create an object called `title_list`, specifying it as a list of titles using the `panel_title()` helper function. This function takes two arguments: `panel_num`, which takes the panel number and identifies which diagram we are titling, and `title`, which is the actual text we want for that title. For models with no grouping variable, the panel argument can be omitted. The `title_list` object is then passed to the `panel_titles` argument in diyPaths().
+We can use the text rendered by `show_group_labels` to get information needed to construct proper titles for these diagrams. Diagram titles are specified in a similar way as nodes and paths. We first create an object called `title_list`, specifying it as a list of titles using the `panel_title()` helper function. This function takes two arguments: `panel_num`, which takes the panel number and identifies which diagram we are titling, and `title`, which is the actual text we want for that title. For models with no grouping variable, the panel argument can be omitted. The `title_list` object is then passed to the `panel_titles` argument in diyPaths().
 
 ```{r}
 title_list <- list(
