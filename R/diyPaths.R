@@ -10,18 +10,18 @@ utils::globalVariables(c(
 #' designed for use within the `node_positions` argument of [diyPaths()].
 #'
 #' @param name The name of the variable within the lavaan model.
-#' @param x Numeric value for a nodes x-coordinate relative to center of the node. Default is `0`.
-#' @param y Numeric value for a nodes y-coordinate relative to center of the node. Default is `0`.
+#' @param x Numeric value for a node's x-coordinate relative to center of the node. Default is `0`.
+#' @param y Numeric value for a node's y-coordinate relative to center of the node. Default is `0`.
 #' @param label Custom label to display instead of lavaan variable name. Defaults to the lavaan variable name.
 #'
 #' @examples
 #'
-#' #a list that specifies a node positioned on x = 1,  y = 2,
+#' #a list that specifies a node positioned on x = 1, y = 2,
 #' #and relabelled from  its lavaan model name
 #'
 #' node(name = "bpm", x = 1, y = 2,  label = "Beats per Minute")
 #'
-#' @return A list containing arguments for an individual nodes position and label within a diyPaths plot.
+#' @return A list containing arguments for an individual node's position and label within a diyPaths plot.
 #' @export
 
 node <- function(name, x = 0, y = 0, label = NULL) {
@@ -37,9 +37,9 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #'
 #' @description
 #' Helper function that creates a list of arguments which specify a given path's position and fine-tuning adjustments,
-#' designed for use within the `paths_positions` argument of [diyPaths()].
+#' designed for use within the `path_positions` argument of [diyPaths()].
 #'
-#' @param from The source variable name with in lavaan model.
+#' @param from The source variable name within lavaan model.
 #' @param to The target variable name within lavaan model.
 #' @param side_from Side of source node where path originates ("top", "bottom", "left", "right"). Default is "right".
 #' @param side_to Side of target node where path terminates ("top", "bottom", "left", "right"). Default is "left".
@@ -51,7 +51,7 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #' @details
 #' `from`/`to` in [path()] must exactly match the variable name used in the
 #'  \pkg{lavaan} model syntax. Furthermore, the order must also be correct for regression or loading paths. Misspelled or mismatched paths will be
-#'  excluded  from the diagram without raising an error.
+#'  excluded from the diagram without raising an error.
 #'
 #' `cov_curve`'s value can be used to adjust direction of curve on covariance/correlation path.
 #'  For a mostly vertical path (i.e. node1: x = 0, y = 1 -> node2: x = 0, y = 1), positive curvature bends it left and negative curvature
@@ -92,11 +92,11 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 #'
 #' @description
 #' Helper function to assign a custom title to a specific panel produced by
-#' [diyPaths()]. .
+#' [diyPaths()].
 #' Use the `show_group_labels` argument in [diyPaths()] to view each panel's plot
 #' number and which group it refers to.
 #'
-#' @param panel Integer value for the a panel's panel number  this title applies to. Default is `1`.
+#' @param panel Integer value for the panel number this title applies to. Default is `1`.
 #' @param title The title text to display.
 #'
 #' @examples
@@ -108,8 +108,8 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 #'
 #' @return A list containing the panel index and its title.
 #' @export
-panel_title <- function(panel = 1, title = NULL) {
-  list(panel = as.integer(panel), title = as.character(title))
+panel_title <- function(panel_num = 1, title = NULL) {
+  list(panel_num = as.integer(panel_num), title = as.character(title))
 }
 
 #' Manually plot path diagrams for structural equation models
@@ -136,6 +136,9 @@ panel_title <- function(panel = 1, title = NULL) {
 #' @param sig_linetype Logical. If `TRUE`, renders non-significant paths with dashed lines. Default is `FALSE`.
 #' @param p_threshold Statistical significance threshold used to determine non-significant paths when `sig_linetype = TRUE`. Default is `0.05`.
 #' @param show_variances Logical. Whether to display variance and residual paths. Default is `FALSE`.
+#' @param show_grid Logical. Whether to overlay a coordinate grid. Default is `FALSE`.
+#' @param grid_axis_scale Sets the spacing of grid-lines when `show_grid = TRUE`. Default is `1`.
+#' @param non_transparent_text Logical. If `TRUE`, path estimate labels receive a white background mask. Default is `TRUE`.
 #' @param latent_node_text_size Text font size for latent node labels. Default is `4`.
 #' @param observed_node_text_size Text font size for observed node labels. Default is `4`.
 #' @param path_text_size Text font size for path estimate labels. Default is `3.5`.
@@ -152,19 +155,15 @@ panel_title <- function(panel = 1, title = NULL) {
 #' @param panel_titles Specify a list of titles for panels, I highly suggest [panel_title()] helper function. Any panel not referenced is
 #'   left untitled. Default is `NULL`.
 #' @param panel_cols Integer for number columns to use when arranging multi-group panels. Default is `NULL`.
-#' @param non_transparent_text Logical. If `TRUE`, path estimate labels receive a white background mask. Default is `TRUE`.
-#' @param show_grid Logical. Whether to overlay a coordinate grid. Default is `FALSE`.
-#' @param grid_axis_scale Sets the spacing of grid-lines when `show_grid = TRUE`. Default is `1`.
-#' @param margin_x Padding for plot limits along the x-axis. Default is `0`.
-#' @param margin_y_bottom Padding for plot limits at the bottom. Default is `0`.
-#' @param margin_y_top Padding for plot limits at the top. Default is `0`.
-#' @param look_up_table Logical. If TRUE, also returns a lookup table detailing the width (x scale) and height (y scale) of latent and observed nodes, along with the text sizes used for latent, observed, and path labels. Default is FALSE.
+#' @param margin_x Padding for plot limits along the x-axis. Default is `0.5`.
+#' @param margin_y Padding for plot limits along y-axis. Default is `0.5`.
+#' @param look_up_table Logical. If `TRUE`, also returns a lookup table detailing the width (x scale) and height (y scale) of latent and observed nodes,
+#'                  along with the text sizes used for latent, observed, and path labels. Default is `FALSE`.
 #'
 #'@details
 #'
-#' Using the function requires 4 steps and is best illustrated by the example below.
-#' Further examples can be found the vignette, along side how to set up common path diagram
-#' structures using the function.
+#' Using the function requires 4 steps and is illustrated by the example below.
+#' See the vignette for in-depth examples and guidance on using the the functions arguments.
 #'
 #' 1. Specify and fit the SEM using \pkg{lavaan}.
 #'
@@ -180,9 +179,12 @@ panel_title <- function(panel = 1, title = NULL) {
 #'    and `path_positions`, along with any additional display augmentations (i.e. show significance stars on estimates).
 #'
 #' Creating a diagram for your specific model is inherently an iterative process. As such, steps 2-4 will likely need to be repeated
-#' with additional fine-tuning adjustments to achieve desired result.
+#' with additional fine-tuning adjustments to achieve the desired result.
 #'
-#' @return A `ggplot` object representing the SEM diagram.
+#' @return A `ggplot` (or `patchwork`, for multi-group models) object representing the SEM
+#'   path diagram. If `look_up_table = TRUE`, a list containing the diagram (`$plot`) and a lookup
+#'   `data.frame` of node width/height and text sizes for latent, observed, and path labels
+#'   (`$look_up_table`).
 #' @export
 #'
 #' @examples
@@ -266,7 +268,8 @@ panel_title <- function(panel = 1, title = NULL) {
 #'   observed_node_size_adjust = 0.55, #making observed nodes smaller than latent
 #'   observed_node_text_size = 3,
 #'   show_grid = TRUE,
-#'   grid_axis_scale = 0.4
+#'   grid_axis_scale = 0.4,
+#'   look_up_table = TRUE
 #' )
 #'
 #' print(p)
@@ -326,6 +329,21 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
                   path_text_size)
   )
 
+  latent_vars_all <- unique(pe_full$lhs[pe_full$op == "=~"])
+  pos_df$is_latent <- pos_df$name %in% latent_vars_all
+
+  pos_df$w <- ifelse(pos_df$is_latent, node_width * latent_node_size_adjust, node_width * observed_node_size_adjust)
+  pos_df$h <- ifelse(pos_df$is_latent, node_height * latent_node_size_adjust, node_height * observed_node_size_adjust)
+  pos_df$a <- pos_df$w / 2
+  pos_df$b <- pos_df$h / 2
+
+  pos_df$xmin <- pos_df$x - pos_df$w / 2
+  pos_df$xmax <- pos_df$x + pos_df$w / 2
+  pos_df$ymin <- pos_df$y - pos_df$h / 2
+  pos_df$ymax <- pos_df$y + pos_df$h / 2
+
+  sub_text_size <- path_text_size * (7 / 3.5)
+
   group_ids <- if ("group" %in% names(pe_full)) sort(unique(pe_full$group)) else 1
   raw_group_values <- if (length(group_ids) > 1) lavaan::lavInspect(fit, "group.label") else NULL
 
@@ -334,19 +352,6 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
   for (g in seq_along(group_ids)) {
 
     pe <- if (length(group_ids) > 1) pe_full[pe_full$group == group_ids[g], ] else pe_full
-
-    latent_vars <- unique(pe$lhs[pe$op == "=~"])
-    pos_df$is_latent <- pos_df$name %in% latent_vars
-
-    pos_df$w <- ifelse(pos_df$is_latent, node_width * latent_node_size_adjust, node_width * observed_node_size_adjust)
-    pos_df$h <- ifelse(pos_df$is_latent, node_height * latent_node_size_adjust, node_height * observed_node_size_adjust)
-    pos_df$a <- pos_df$w / 2
-    pos_df$b <- pos_df$h / 2
-
-    pos_df$xmin <- pos_df$x - pos_df$w / 2
-    pos_df$xmax <- pos_df$x + pos_df$w / 2
-    pos_df$ymin <- pos_df$y - pos_df$h / 2
-    pos_df$ymax <- pos_df$y + pos_df$h / 2
 
     allowed_ops <- c("=~", "~~", "~")
 
@@ -399,12 +404,11 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
     ps[p_valid] <- ifelse(paths$pvalue[p_valid] < 0.001, "p < .001", paste0("p = ", sprintf(digs, paths$pvalue[p_valid])))
 
     both_sub <- nchar(sub_text) > 0 & nchar(ps) > 0
-    sub_text[both_sub] <- paste0(sub_text[both_sub], " ", ps[both_sub])
+    sub_text[both_sub] <- paste0(sub_text[both_sub], ", ", ps[both_sub])
     sub_text[!both_sub & nchar(ps) > 0] <- ps[!both_sub & nchar(ps) > 0]
 
     has_sub <- nchar(sub_text) > 0
     if (any(has_sub)) {
-      sub_text_size <- path_text_size * (7 / 3.5)
       paths$label_text[has_sub] <- paste0(paths$label_text[has_sub],
                                           "<br><span style='font-size:", sub_text_size, "pt;'>",
                                           sub_text[has_sub], "</span>")
@@ -424,21 +428,24 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
              0)
     )
 
-    for (p in path_positions) {
+    for (pi in path_positions) {
       match <- ifelse(
         paths$type == "~~",
-        (paths$from == p$from & paths$to == p$to) | (paths$from == p$to & paths$to == p$from),
-        paths$from == p$from & paths$to == p$to
+        (paths$from == pi$from & paths$to == pi$to) | (paths$from == pi$to & paths$to == pi$from),
+        paths$from == pi$from & paths$to == pi$to
       )
       if (any(match)) {
-        paths$side_from[match] <- p$side_from
-        paths$side_to[match] <- p$side_to
-        if (!is.null(p$cov_curve)) paths$curvature[match] <- p$cov_curve
-        if (!is.null(p$nudge_text_x)) paths$nudge_x[match] <- p$nudge_text_x
-        if (!is.null(p$nudge_text_y)) paths$nudge_y[match] <- p$nudge_text_y
-        if (!is.null(p$variance_position)) paths$variance_position[match] <- p$variance_position
+        paths$side_from[match] <- pi$side_from
+        paths$side_to[match] <- pi$side_to
+        if (!is.null(pi$cov_curve)) paths$curvature[match] <- pi$cov_curve
+        if (!is.null(pi$nudge_text_x)) paths$nudge_x[match] <- pi$nudge_text_x
+        if (!is.null(pi$nudge_text_y)) paths$nudge_y[match] <- pi$nudge_text_y
+        if (!is.null(pi$variance_position)) paths$variance_position[match] <- pi$variance_position
       }
     }
+
+    is_var_type <- paths$type == "~~" & paths$from == paths$to
+    paths$curvature[is_var_type] <- ifelse(paths$variance_position[is_var_type] == "bottom", 1.5, -1.5)
 
     pos_map <- split(pos_df, pos_df$name)
     get_pt <- function(node, side) {
@@ -595,7 +602,7 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
     }
 
     x_limits <- c(min(pos_df$xmin) - margin_x, max(pos_df$xmax) + margin_x)
-    y_limits <- c(min(pos_df$ymin) - margin_y_bottom, max(pos_df$ymax) + margin_y_top)
+    y_limits <- c(min(pos_df$ymin) - margin_y, max(pos_df$ymax) + margin_y)
 
     p <- p + ggplot2::scale_linetype_identity() +
       ggplot2::scale_x_continuous(breaks = seq(floor(x_limits[1]), ceiling(x_limits[2]), by = grid_axis_scale)) +
@@ -627,7 +634,7 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
   }
 
   if (look_up_table) {
-    return(list(plot = final, node_size_table = size_tbl))
+    return(list(plot = final, look_up_table = size_tbl))
   }
 
   final

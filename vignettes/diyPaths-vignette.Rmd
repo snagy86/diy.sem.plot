@@ -22,17 +22,15 @@ library(lavaan)
 
 ## Introduction
 
-When plotting path diagrams for structural equation models (SEM) in R, users must choose between automated plotting tools and drawing diagrams entirely by hand. While automated SEM plotting tools are fast, they lack granular customisability and are often not suitable for use as a final product. Conversely, doing this work manually in an external drawing programme is tedious for large models and completely disconnected from R, meaning estimates must be individually adjusted if the data or model changes.
+When plotting path diagrams for structural equation models (SEM) in R, users must choose between automated plotting tools or drawing diagrams entirely by hand. While automated SEM plotting tools are fast, they lack granular customisability and are often not suitable for use as a final product. Conversely, doing this work manually in an external drawing programme is tedious for large models and is completely disconnected from R, meaning estimates must be individually adjusted if the data or model changes.
 
-\pkg{diy.sem.plot} bridges these approaches to give users the best of both worlds, keeping your layout and design manually controlled while handling the rendering automatically. After fitting a SEM as a lavaan object, users simply define node locations using $x$-$y$ coordinates and specify the attachment points on the perimeter of each node where paths begin and end. The primary function, `diyPaths()`, processes this information to generate a \pkg{ggplot2} output. It automatically centers estimates on each path's midpoint, adjusts arrow directions according to path types, and assigns the correct geometric shapes to each variable type. The package includes extensive arguments that facilitate near-complete control over fine-tuning every visual detail, resulting in a path diagram exactly as you envision it, entirely within R.
+\pkg{diy.sem.plot} bridges these approaches to give users the best of both worlds, enabling manual specification the layout and design  while handling the rendering automatically. After fitting a SEM as a `lavaan` object, users simply define node locations using x-y coordinates and specify the attachment points on the perimeter of each node where paths begin and end. The primary function, `diyPaths()`, processes this information to generate a `ggplot2` object. It automatically centers estimates on each path's midpoint and assigns the correct geometric shapes to each variable type. The package includes extensive arguments that facilitate near-complete control over fine-tuning every visual detail, resulting in a path diagram exactly as you envision it, entirely within R.
 
 The package contains four functions: the primary `diyPaths()` function alongside three helper functions (`node()`, `path()`, and `panel_title()`) designed to simplify argument specification and prevent errors. I find the most intuitive way to learn how to use \pkg{diy.sem.plot} is through practical examples. Through each, I will demonstrate the basic workflow and explore the arguments available.
 
-Note: The example models are not meant to make theoretical sense and they are purely for illustrative purposes.
+# Example 1: Making a Path Diagram  for a Simple Path Model
 
-#Example 1: Making a Path Diagram  for a Simple Path Model
-
-The first step is to specify and fit your model as a lavaan object. Here, we use the mtcars dataset to specify a multiple regression model where vehicle weight (wt) and horsepower (hp) simultaneously predict miles per gallon (mpg), while also estimating the covariance between the two predictors.
+The first step is to specify and fit your model as a `lavaan` object. Here, we use the mtcars dataset to specify a multiple regression model where vehicle weight (wt) and horsepower (hp) simultaneously predict miles per gallon (mpg), while also estimating the covariance between the two predictors.
 
 ```{r}
 data_cars <- mtcars
@@ -45,21 +43,21 @@ model_cars <- '
 fit_cars <- sem(model_cars, data = data_cars)
 ```
 
-Next, we need to specify each node's position on the diagram. For this,we will create an object called `nodes` and specify it as a list of node objects created using the helper function `node()`. `The node() function takes four key arguments: name (the variable name in your lavaan model), x and y (its coordinate placement on the grid) and an optional label that specifies the text actually displayed on the node in the final diagram (defaulting to the variable name if left unspecified).
+Next, we need to specify each node's position on the diagram. For this,we will create an object called `nodes` and specify it as a list of node objects created using the helper function `node()`. The `node()` function takes four key arguments: name (the variable name in your lavaan model), x and y (its coordinate placement on the grid) and an optional label that specifies the text actually displayed on the node in the final diagram (defaulting to the variable name if left unspecified).
 
-Since we have not rendered the diagram yet, we'll make an initial estimate for node positions and fine-tune them afterward.
+Since we have not rendered the diagram yet, we will make an initial estimate for node positions and fine-tune them afterward.
 
 ```{r}
-nodes <- list(
+node_list <- list(
   node(name = "wt", x = 1, y = 2, label = "Weight"),
   node(name = "hp", x = 1, y = 1, label = "Horse Power"),
   node(name = "mpg", x = 3, y = 1, label = "Miles Per\n Gallon")
 )
 ```
 
-Next, we need to specify each path's position relative to its respective starting and ending nodes. We create an object called `path_positions`, structured similarly to `node_positions`, as a list of path specifications created using the `path()` helper function.
+Next, we need to specify each path's position relative to its respective starting and ending nodes. We create an object called `paths` and specify it as a list of path specifications created using the `path()` helper function.
 
-The `path()` function takes four main arguments alongside four optional fine-tuning parameters. Each path requires a starting node (`from`) and an ending node (`to`), matched to their `lavaan` names. From there, `side_from` and `side_to` dictate which perimeter edge (top, bottom, left, or right) the path anchors to on the respective nodes.
+The `path()` function takes four main arguments alongside four optional fine-tuning parameters. Each path requires a starting node (`from`) and an ending node (`to`), matched to their `lavaan` variable names. The `side_from` argument dictates which perimeter edge (top, bottom, left, or right) the path anchors to on the starting node, and `side_to` dictates the same for the ending node.
 
 For further control, you can use `nudge_text_x` and `nudge_text_y `to adjust where a path's parameter estimate appears on the diagram. For covariances or correlations, the numeric `cov_curve` argument controls the scale and direction of the arced paths bend. While variance and residual loops are generally toggled off automatically, explicitly defining them as paths allows you to use the `variance_position` argument to place the variance indicator on either the top or bottom of the node box.
 
@@ -67,25 +65,26 @@ Again as we have not rendered the diagram yet, we'll make an initial estimate fo
 
 ```{r}
 
-paths <- list(
+path_list <- list(
   path(from = "wt", to = "mpg", side_from = "right", side_to = "left"),
   path(from = "hp",  to = "mpg", side_from = "right", side_to = "left"),
-  path(from = "wt",  to ="hp", side_from = "left", side_to = "left", cov_curve = -4) 
+  path(from = "wt",  to ="hp", side_from = "left", side_to = "left", cov_curve = -0.4) 
 )
 ```
 
-Finally we can render our diagram as a `ggplot` object using the function `diyPaths`. This function only requires three arguements `fit`, `node_positions`, and `path_positions` to successfully render the diagram everything else is optional. `fit` takes the fitted lavaan object of your model, `node_positions` will take the object containing the list of `node()` in our case `nodes`, and `path_positions` will take the object containing the list of `path()` in our case `paths`.
+Finally we can render our diagram as a `ggplot` object using the function `diyPaths`. This function only requires three arguments `fit`, `node_positions`, and `path_positions` to successfully render the diagram everything else is optional. `fit` takes the fitted lavaan object of your model, `node_positions` will take the object containing the list of `node()` in our case `node_list`, and `path_positions` will take the object containing the list of `path()` in our case `path_list`.
 
-We will now run our first draft render. To help with fine-tuning our layout we will overlay a grid on the diagram by setting the optional arguement `show_grid` to be `TRUE`.
+We will now run our first draft render. To help with fine-tuning our layout we will overlay a grid on the diagram by setting the optional argument `show_grid` to be `TRUE`.
 
 ```{r}
-diyPaths(fit = fit_cars, node_positions = nodes, path_positions = paths, show_grid = TRUE)
+diyPaths(fit = fit_cars, node_positions = nodes, path_positions = path_list, show_grid = TRUE)
 ```
-Now that we can see our render, it is time to do some fine-tuning. First, most notably, our covariance curve is facing the wrong way. We can fix this by adjusting the sign of the value within the path's `cov_curve` argument. For a mostly vertical path, a positive curvature bends it right and a negative curvature bends it left. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up. We will then use the grid to center the boxes and give them a bit of space, and remove the overlayed grid by deleting the `show_grid` argument.
 
-Finally, we should add an indication of path significance. `diyPaths()` has a few options for this. For our plot, we will be maximal and include significance stars and 95% confidence intervals for the estimates by changing the arguments `est_stars` and `est_ci` to equal `TRUE`. We will also change the line type to represent significance using the classic convention of dashed lines for non-significant paths and solid lines for significant paths by changing the argument `sig_linetype` equal to `TRUE`.
+Now that we can see our render, it is time to do some fine-tuning. First, most notably, our covariance curve is facing the wrong way. We can fix this by adjusting the sign of the value within the path's `cov_curve` argument. For a mostly vertical path, a positive curvature bends it right and a negative curvature bends it left. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up. We will then use the grid to center the boxes and give them a bit of space, and remove the over-layed grid by deleting the `show_grid` argument.
 
-This is quite a small model, so the default text size is not proportionate to the scale of the boxes. We can do some easy fine-tuning by scaling the path estimates' text size up via `path_text_size`, and since the nodes are observed variables, their text size via `observed_node_text_size`.
+Finally, we should add an indication of path significance. `diyPaths()` has a few options for this. For our plot, we will be maximal and include significance stars, 95% confidence intervals and p-values for the estimates by changing the arguments `est_stars`, `est_ci`, and `est_p` to equal `TRUE`. We will also change the line type to represent significance using the classic convention of dashed lines for non-significant paths and solid lines for significant paths by changing the argument `sig_linetype` equal to `TRUE`.
+
+This is quite a small model, so the default text size is not proportionate to the scale of the boxes. We can do some easy fine-tuning by scaling the path estimates' text size up via `path_text_size`, and since the nodes are observed variables, their text size via `observed_node_text_size`. Using forsight I realsied tthat the plot will not render within the margin (i.e appears off), we can djust this by
 
 ```{r}
 diyPaths(fit_cars, 
@@ -102,6 +101,7 @@ diyPaths(fit_cars,
                 = "left", cov_curve = 0.4)),
          est_stars = TRUE,
          est_ci = TRUE,
+         est_p = TRUE,
          sig_linetype = TRUE,
          observed_node_text_size = 10,
          path_text_size = 8
@@ -109,7 +109,7 @@ diyPaths(fit_cars,
 
 ```
 
-#Example 2: Making Path Diagram for a Full SEM 
+# Example 2: Making Path Diagram for a Full SEM 
 
 Here, we use the HolzingerSwineford1939 dataset to specify a three-factor model where each latent variable, visual perception ability, textual ability, and speeded cognitive processing, is measured by three observed indicators. Speeded cognitive processing is then regressed on both visual perception ability and textual ability, with visual perception ability and textual ability allowed to covary.
 
@@ -128,11 +128,11 @@ sem_model <- '
 fit_sem <- sem(sem_model, data = HolzingerSwineford1939)
 ```
 
-Next, we will create a draft of our model with rough estimations of where each node should go. As it is classic convention in SEM to have observed variables smaller than latent, we will scale them smaller by setting `observed_node_size_adjust` in `diyPaths` to be a decimal. This will change the width and height of observed boxes, making it harder to accurately estimate their position. To assist with making the final draft better, we will enable `show_grid` to be `TRUE`, set `grid_axis_scale` to `0.5` rather than `1`. Finally, set the argument `look_up_table` to `TRUE`, which returns the width and height of latent and observed nodes on the x and y scale, along with the text sizes used for latent, observed, and path labels. For this model I want to use standardised estimates. To do this, I set the argument `standardised` to `TRUE`.
+Next, we will draft our path diagram with rough estimations of where each node should go. As it is classic convention in SEM to have observed variables smaller than latent, we will scale them smaller by setting `observed_node_size_adjust` in `diyPaths` to be a decimal. To see the exact width and height of these scaled boxes, we set `look_up_table` to `TRUE`, which returns the width and height of latent and observed nodes on the x and y scale, along with the text sizes used for latent, observed, and path labels. We will also enable `show_grid` to be `TRUE` and set `grid_axis_scale` to a finer `0.5` rather than `1`, giving us a more precise reference to plot against. Finally, for this diagram I want to use standardised estimates, so I set the argument `standardised` to `TRUE`.
 
 ```{r}
 
-nodes <- list(
+node_list <- list(
    # main latent variable structure
    node("visual", x = 1, y = 1, label = "Visual"),
    node("textual", x = 1, y = 2.5, label = "Textual"),
@@ -156,7 +156,7 @@ nodes <- list(
 
 # Specify the paths
 
-paths <- list(
+path_list <- list(
   #Structural 
     path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
    path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
@@ -183,8 +183,8 @@ paths <- list(
 
 p <- diyPaths(
    fit = fit_sem,
-   node_positions = nodes,
-   path_positions = paths,
+   node_positions = node_list,
+   path_positions = path_list,
    standardised = TRUE,
    observed_node_size_adjust = 0.5, 
    show_grid = TRUE,
@@ -194,11 +194,12 @@ p <- diyPaths(
 
 print(p)
 ```
-This looks decent for a first draft. However, we clearly have given the observed variable nodes for textual and visual enough room on the x-axis. Looking at the grid and look-up table, we can see the boxes need at least 0.75 x units of space, not 0.5. They also sit a bit too close to their latent variable nodes, so we will increase their y values. As with the previous example, now that the layout is fixed, we can move on to the final touches: adding an indication of statistical significance, adjusting text sizes, and removing the grid overlay. 
+
+This looks decent for a first draft. However, the observed variable nodes for textual and visual clearly do not have enough room on the x-axis. Looking at the grid and look-up table, we can see the boxes need at least 0.75 x units of space, not 0.5. They also sit a bit too close to their latent variable nodes, so we will increase their y values. As with the previous example, now that the layout is fixed, we can move on to the final touches: adding an indication of statistical significance, adjusting text sizes, and removing the grid overlay. 
 
 ```{r}
 
-nodes <- list(
+node_list <- list(
    # main latent variable structure
    node("visual", x = 1, y = 1, label = "Visual"),
    node("textual", x = 1, y = 2.5, label = "Textual"),
@@ -222,7 +223,7 @@ nodes <- list(
 
 # Specify the paths
 
-paths <- list(
+path_list <- list(
   #Structural 
     path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
    path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
@@ -249,8 +250,8 @@ paths <- list(
 
 p <- diyPaths(
    fit = fit_sem,
-   node_positions = nodes,
-   path_positions = paths,
+   node_positions = node_list,
+   path_positions = path_list,
    standardised = TRUE,
    sig_linetype = TRUE,
    observed_node_size_adjust = 0.5, 
@@ -264,9 +265,9 @@ print(p)
 ```
 
 
-#Example 3: Making a Path Diagram  for a Multi-Group SEM  
+# Example 3: Making a Path Diagram for a Multi-Group SEM  
 
-In this example we will explore how to create a multi-group path diagram using `diyPaths()`. We will use the model we created above with the `HolzingerSwineford1939` data-set, but this time fit it separately by the school the children attended, either "Grant-White" or "Pasteur".
+In this example we will explore how to create a multi-group path diagram using `diyPaths()`. We will use the model we created above with the `HolzingerSwineford1939` dataset, but this time fit it separately by the school the children attended, either "Grant-White" or "Pasteur".
 
 ```{r}
 fit_sem_groups <- sem(sem_model, data = HolzingerSwineford1939, group = "school")
@@ -275,7 +276,7 @@ fit_sem_groups <- sem(sem_model, data = HolzingerSwineford1939, group = "school"
 We can reuse the diagram structure from Example 2 as-is. However, rendering this new model produces two SEM diagrams side by side, with no indication of which school each one represents. We can figure this out by setting `show_group_labels` to `TRUE`, which adds a small label to the bottom corner of each panel, showing its group and panel number.
 
 ```{r}
-nodes <- list(
+node_list <- list(
    # main latent variable structure
    node("visual", x = 1, y = 1, label = "Visual"),
    node("textual", x = 1, y = 2.5, label = "Textual"),
@@ -299,7 +300,7 @@ nodes <- list(
 
 # Specify the paths
 
-paths <- list(
+path_list <- list(
   #Structural 
     path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
    path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
@@ -326,8 +327,8 @@ paths <- list(
 
 p <- diyPaths(
    fit = fit_sem_groups,
-   node_positions = node_positions,
-   path_positions = path_positions,
+   node_positions = node_list,
+   path_positions = path_list,
    standardised = TRUE,
    sig_linetype = TRUE,
    observed_node_size_adjust = 0.5, 
@@ -340,19 +341,20 @@ p <- diyPaths(
 
 print(p)
 ```
-We can use the labels to construct proper titles for these diagrams. Diagram titles are specified in a similar way as nodes and paths. We first create an object called titles, specifying it as a list of titles using the `panel_title()` helper function. This function takes two arguments: `panel`, which takes the panel number and identifies which diagram we are titling, and `title`, which is the text we want for that title. For models with no grouping variable, the panel argument can be omitted. This `titles` object is then passed to the `panel_titles` argument in diyPaths().
+
+We can use the text rendered by `show_group_labels` to construct proper titles for these diagrams. Diagram titles are specified in a similar way as nodes and paths. We first create an object called `title_list`, specifying it as a list of titles using the `panel_title()` helper function. This function takes two arguments: `panel_num`, which takes the panel number and identifies which diagram we are titling, and `title`, which is the actual text we want for that title. For models with no grouping variable, the panel argument can be omitted. The `title_list` object is then passed to the `panel_titles` argument in diyPaths().
 
 ```{r}
-titles <- list(
+title_list <- list(
   panel_title(panel = 1, title = "SEM Diagram: Pasteur School"),
   panel_title(panel = 2, title = "SEM Diagram: Grant-White School")
 )
 ```
 
-We will apply our standard fine-tuning, as well as set show_group_labels to FALSE, since we now have proper titles instead. If we wanted to stack the plots atop each other rather than side by side we would adjust the `panel_cols` argument, which controls the number of columns used when arranging multi-group panels. For two models setting to 1 will give vertical stacking. 
+We will apply our standard fine-tuning, as well as set `show_group_labels` to `FALSE`, since we now have proper titles instead. If we wanted to stack the plots atop each other rather than side by side we would adjust the `panel_cols` argument, which controls the number of columns used when arranging multi-group panels. For two models setting to 1 will give vertical stacking. 
 
 ```{r}
-nodes <- list(
+node_list <- list(
    # main latent variable structure
    node("visual", x = 1, y = 1, label = "Visual"),
    node("textual", x = 1, y = 2.5, label = "Textual"),
@@ -376,7 +378,7 @@ nodes <- list(
 
 # Specify the paths
 
-paths <- list(
+path_list <- list(
   #Structural 
     path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
    path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
@@ -403,9 +405,9 @@ paths <- list(
 
 p <- diyPaths(
    fit = fit_sem_groups,
-   node_positions = nodes,
-   path_positions = paths,
-   panel_titles = titles,
+   node_positions = node_list,
+   path_positions = path_list,
+   panel_titles = title_list,
    standardised = TRUE,
    sig_linetype = TRUE,
    observed_node_size_adjust = 0.6,
