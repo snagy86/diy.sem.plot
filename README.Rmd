@@ -36,7 +36,7 @@ pak::pkg_install("snagy86/diy.sem.plot")
 
 Below is a brief example of what the function is capable of. More examples and full explanation of work flow can be found in the package's vignette. 
 
-```{r example1, fig.width = 10, fig.height = 6, out.width = "100%"}
+```{r example1, fig.width = 16, fig.height = 10, out.width = "100%"}
 
 # full SEM example, this model may not make theoretical sense.
 library(diy.sem.plot)
