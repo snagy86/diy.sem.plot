@@ -46,7 +46,7 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #' @param cov_curve Numeric value for curvature of covariance/correlation paths. Default is NULL.
 #' @param nudge_text_x Numeric fine tuning adjustment for path estimate text along the x-axis. Default is `0`.
 #' @param nudge_text_y Numeric fine tuning adjustment for path estimate text along the y-axis. Default is `0`.
-#' @param variance_position Placement of variance/residual paths ("top" or "bottom"). Default is "top".
+#' @param variance_position Placement of variance/residual paths ("top", "bottom", "left", or "right"). Default is "top".
 #'
 #' @details
 #' `from`/`to` in [path()] must exactly match the variable name used in the
@@ -294,8 +294,7 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
                      panel_titles = NULL,
                      panel_cols = NULL,
                      margin_x = 0.5,
-                     margin_y_bottom = 0.5,
-                     margin_y_top = 0.5,
+                     margin_y = 0.5,
                      look_up_table = FALSE){
 
   pos_df <- do.call(rbind, lapply(node_positions, function(v) {
@@ -445,8 +444,9 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
     }
 
     is_var_type <- paths$type == "~~" & paths$from == paths$to
-    paths$curvature[is_var_type] <- ifelse(paths$variance_position[is_var_type] == "bottom", 1.5, -1.5)
-
+    paths$curvature[is_var_type] <- ifelse(
+      paths$variance_position[is_var_type] %in% c("bottom", "right"), 1.5, -1.5
+    )
     pos_map <- split(pos_df, pos_df$name)
     get_pt <- function(node, side) {
       switch(side,
@@ -512,13 +512,27 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
           paths$yend[i] <- variance_map$ymin
           paths$mid_x[i] <- variance_map$x + paths$nudge_x[i]
           paths$mid_y[i] <- variance_map$ymin - 0.4 + paths$nudge_y[i]
-        } else {
+        } else if (variance_position == "top") {
           paths$x[i] <- variance_map$x - 0.2 + paths$nudge_x[i]
           paths$y[i] <- variance_map$ymax
           paths$xend[i] <- variance_map$x + 0.2 + paths$nudge_x[i]
           paths$yend[i] <- variance_map$ymax
           paths$mid_x[i] <- variance_map$x + paths$nudge_x[i]
           paths$mid_y[i] <- variance_map$ymax + 0.4 + paths$nudge_y[i]
+        } else if (variance_position == "left") {
+          paths$x[i] <- variance_map$xmin
+          paths$y[i] <- variance_map$y - 0.2 + paths$nudge_y[i]
+          paths$xend[i] <- variance_map$xmin
+          paths$yend[i] <- variance_map$y + 0.2 + paths$nudge_y[i]
+          paths$mid_x[i] <- variance_map$xmin - 0.4 + paths$nudge_x[i]
+          paths$mid_y[i] <- variance_map$y + paths$nudge_y[i]
+        } else if (variance_position == "right") {
+          paths$x[i] <- variance_map$xmax
+          paths$y[i] <- variance_map$y - 0.2 + paths$nudge_y[i]
+          paths$xend[i] <- variance_map$xmax
+          paths$yend[i] <- variance_map$y + 0.2 + paths$nudge_y[i]
+          paths$mid_x[i] <- variance_map$xmax + 0.4 + paths$nudge_x[i]
+          paths$mid_y[i] <- variance_map$y + paths$nudge_y[i]
         }
       }
     }

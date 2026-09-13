@@ -84,7 +84,7 @@ Now that we can see our render, it is time to do some fine-tuning. First, most n
 
 Finally, we should add an indication of path significance. `diyPaths()` has a few options for this. For our plot, we will be maximal and include significance stars, 95% confidence intervals and p-values for the estimates by changing the arguments `est_stars`, `est_ci`, and `est_p` to equal `TRUE`. We will also change the line type to represent significance using the classic convention of dashed lines for non-significant paths and solid lines for significant paths by changing the argument `sig_linetype` equal to `TRUE`.
 
-This is quite a small model, so the default text size is not proportionate to the scale of the boxes. We can do some easy fine-tuning by scaling the path estimates' text size up via `path_text_size`, and since the nodes are observed variables, their text size via `observed_node_text_size`. Using forsight I realsied tthat the plot will not render within the margin (i.e appears off), we can djust this by
+This is quite a small model, so the default text size is not proportionate to the scale of the boxes. We can do some easy fine-tuning by scaling the path estimates' text size up via `path_text_size`, and since the nodes are observed variables, their text size via `observed_node_text_size`. Using foresight, I realised that the plot will not render properly within the margins (i.e. nodes appear cut off at the edges). We can fix this by increasing the margins via `margin_x` and `margin_y` arguments, which are currently set to 0.
 
 ```{r}
 diyPaths(fit_cars, 
@@ -103,15 +103,17 @@ diyPaths(fit_cars,
          est_ci = TRUE,
          est_p = TRUE,
          sig_linetype = TRUE,
-         observed_node_text_size = 10,
-         path_text_size = 8
+         observed_node_text_size = 9,
+         path_text_size = 7,
+         margin_x = 1,
+         margin_y =1
          )
 
 ```
 
 # Example 2: Making Path Diagram for a Full SEM 
 
-Here, we use the HolzingerSwineford1939 dataset to specify a three-factor model where each latent variable, visual perception ability, textual ability, and speeded cognitive processing, is measured by three observed indicators. Speeded cognitive processing is then regressed on both visual perception ability and textual ability, with visual perception ability and textual ability allowed to covary.
+Here, we use the HolzingerSwineford1939 dataset from the \pkg{lavaan} package to specify a full SEM. The model has three latent variables, visual perception ability, textual ability, and speeded cognitive processing, each measured by three observed variables. Structurally, speeded cognitive processing is regressed on both visual perception ability and textual ability, with the latter two allowed to covary.
 
 ```{r}
 sem_model <- '
@@ -128,7 +130,9 @@ sem_model <- '
 fit_sem <- sem(sem_model, data = HolzingerSwineford1939)
 ```
 
-Next, we will draft our path diagram with rough estimations of where each node should go. As it is classic convention in SEM to have observed variables smaller than latent, we will scale them smaller by setting `observed_node_size_adjust` in `diyPaths` to be a decimal. To see the exact width and height of these scaled boxes, we set `look_up_table` to `TRUE`, which returns the width and height of latent and observed nodes on the x and y scale, along with the text sizes used for latent, observed, and path labels. We will also enable `show_grid` to be `TRUE` and set `grid_axis_scale` to a finer `0.5` rather than `1`, giving us a more precise reference to plot against. Finally, for this diagram I want to use standardised estimates, so I set the argument `standardised` to `TRUE`.
+Next, we will draft our path diagram with rough estimations of where each node should go. As it is classic convention in SEM to have observed variables smaller than latent, we will scale them smaller by setting `observed_node_size_adjust` in `diyPaths` to be a decimal. To see the exact width and height of these scaled boxes, we set `look_up_table` to `TRUE`, which returns the width and height of latent and observed nodes on the x and y scale, along with the text sizes used for latent, observed, and path labels. We will also enable `show_grid` to be `TRUE` and set `grid_axis_scale` to a finer `0.5` rather than `1`, giving us a more precise reference to plot against. 
+
+For this diagram I want to use standardised estimates, so I set the argument `standardised` to `TRUE`. I also want to see the variances and residuals, so I set the argument `show_variances` to `TRUE` which automatically applies them to all nodes.
 
 ```{r}
 
@@ -189,21 +193,24 @@ p <- diyPaths(
    observed_node_size_adjust = 0.5, 
    show_grid = TRUE,
    grid_axis_scale = 0.5,
-   look_up_table  = TRUE
+   look_up_table  = TRUE,
+   show_variances = TRUE
 )
 
 print(p)
 ```
 
-This looks decent for a first draft. However, the observed variable nodes for textual and visual clearly do not have enough room on the x-axis. Looking at the grid and look-up table, we can see the boxes need at least 0.75 x units of space, not 0.5. They also sit a bit too close to their latent variable nodes, so we will increase their y values. As with the previous example, now that the layout is fixed, we can move on to the final touches: adding an indication of statistical significance, adjusting text sizes, and removing the grid overlay. 
+This looks decent for a first draft. However, the observed variable nodes for textual and visual clearly do not have enough room on the x-axis. Looking at the grid and look-up table, we can see the boxes need at least 0.75 x units of space, not 0.5. They also sit a bit too close to their latent variable nodes, so we will increase their y values. Variance loops are also awkwardly placed, as `show_variances` defaults them to the top of the node. We can manually adjust this by specifying the variance loops we want to change as a path within the path list, and setting each variance loop's `variance_position` to the side of the node (top, bottom, left, or right) we want it to sit on..
+
+As with the previous example, now that the layout is fixed, we can move on to the final touches: adding an indication of statistical significance, adjusting text sizes, and removing the grid overlay. 
 
 ```{r}
 
 node_list <- list(
    # main latent variable structure
    node("visual", x = 1, y = 1, label = "Visual"),
-   node("textual", x = 1, y = 2.5, label = "Textual"),
-   node("speed", x = 4, y = 1.75, label = "Speed"),
+   node("textual", x = 1, y = 3, label = "Textual"),
+   node("speed", x = 4, y = 2, label = "Speed"),
 
    # observed variables that visual perception ability loads onto
    node("x1", x = 0, y = -0.5, label = "Visual\nPerception"),
@@ -211,14 +218,14 @@ node_list <- list(
    node("x3", x = 2, y = -0.5, label = "Lozenges"),
 
    # observed variables that textual ability loads onto
-   node("x4", x = 0, y = 4, label = "Paragraph\nComprehension"),
-   node("x5", x = 1, y = 4, label = "Sentence\nCompletion"),
-   node("x6", x = 2, y = 4, label = "Word\nMeaning"),
+   node("x4", x = 0, y = 4.5, label = "Paragraph\nComprehension"),
+   node("x5", x = 1, y = 4.5, label = "Sentence\nCompletion"),
+   node("x6", x = 2, y = 4.5, label = "Word\nMeaning"),
 
    # observed variables that speeded cognitive processing loads onto
-   node("x7", x = 6, y = 1, label = "Speeded\nAddition"),
-   node("x8", x = 6, y = 1.75, label = "Speeded\nCounting"),
-   node("x9", x = 6, y = 2.5, label = "Speeded\nDiscrimination")
+   node("x7", x = 6, y = 1.25, label = "Speeded\nAddition"),
+   node("x8", x = 6, y = 2, label = "Speeded\nCounting"),
+   node("x9", x = 6, y = 2.75, label = "Speeded\nDiscrimination")
 )
 
 # Specify the paths
@@ -226,8 +233,9 @@ node_list <- list(
 path_list <- list(
   #Structural 
     path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
+    #variance loop visual
+     path(from = "visual",  to = "visual", variance_position = "top"),
    path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
-
    path(from = "visual",  to = "textual", side_from = "left", side_to = "left", cov_curve = -0.6),
   
    #visual loadings
@@ -243,7 +251,25 @@ path_list <- list(
    #speed loadings
    path(from = "speed",   to = "x7", side_from = "right", side_to = "left"),
    path(from = "speed",   to = "x8", side_from = "right", side_to = "left"),
-   path(from = "speed",   to = "x9", side_from = "right", side_to = "left")
+   path(from = "speed",   to = "x9", side_from = "right", side_to = "left"),
+   
+  #latent variance/residualal
+   path(from = "textual", to = "textual", variance_position = "bottom"),
+   path(from = "visual", to = "visual", variance_position = "top"),
+   path(from = "spped", to = "speed", variance_position = "top"),
+  #Measurement Loadigns
+   path(from = "x1", to = "x1", variance_position = "bottom"),
+   path(from = "x2", to = "x2", variance_position = "bottom"),
+   path(from = "x3", to = "x3", variance_position = "bottom"),
+
+   path(from = "x4", to = "x4", variance_position = "top"),
+   path(from = "x5", to = "x5", variance_position = "top"),
+   path(from = "x6", to = "x6", variance_position = "top"),
+
+   path(from = "x7", to = "x7", variance_position = "right"),
+   path(from = "x8", to = "x8", variance_position = "right"),
+   path(from = "x9", to = "x9", variance_position = "right")
+  
 )
 
 # creating the diagram
@@ -258,7 +284,8 @@ p <- diyPaths(
    observed_node_text_size = 3.5,
    latent_node_text_size = 5,
    est_stars = TRUE,
-   est_ci = TRUE
+   est_ci = TRUE,
+   show_variances = TRUE
 )
 
 print(p)
@@ -273,7 +300,7 @@ In this example we will explore how to create a multi-group path diagram using `
 fit_sem_groups <- sem(sem_model, data = HolzingerSwineford1939, group = "school")
 ```
 
-We can reuse the diagram structure from Example 2 as-is. However, rendering this new model produces two SEM diagrams side by side, with no indication of which school each one represents. We can figure this out by setting `show_group_labels` to `TRUE`, which adds a small label to the bottom corner of each panel, showing its group and panel number.
+We reuse the diagram structure from Example 2, except we drop the variances, as the diagram is likely to become too cluttered with multiple diagrams When we rendering this new model produces two SEM diagrams separate two panels, side by side, with no indication of which school each one represents. We can figure this out by setting `show_group_labels` to `TRUE`, which adds a small label to the bottom corner of each panel, showing its group name and panel number.
 
 ```{r}
 node_list <- list(
@@ -302,10 +329,11 @@ node_list <- list(
 
 path_list <- list(
   #Structural 
-    path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
+   path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
    path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
 
-   path(from = "visual",  to = "textual", side_from = "left", side_to = "left", cov_curve = -0.6),
+   path(from = "visual",  to = "textual", side_from = "left", side_to = "left", 
+   cov_curve = -0.6),
   
    #visual loadings
    path(from = "visual", to = "x1", side_from = "bottom", side_to = "top"), 

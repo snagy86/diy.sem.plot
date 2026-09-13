@@ -28,7 +28,8 @@ Currently diy.sem.plot only works for lavaan fitted models.
 Run the following to install the development version of the package.
 
 ``` {r, eval =FALSE}
-remotes::install_github("snagy86/diy.sem.plot")
+install.packages("pak")
+pak::pkg_install("snagy86/diy.sem.plot")
 ```
 
 ## Example
