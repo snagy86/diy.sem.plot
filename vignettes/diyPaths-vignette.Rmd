@@ -24,11 +24,11 @@ library(lavaan)
 
 When plotting path diagrams for structural equation models (SEM) in R, users must choose between automated plotting tools or drawing diagrams entirely by hand. While automated SEM plotting tools are fast, they lack granular customisability and are often not suitable for use as a final product. Conversely, doing this work manually in an external drawing programme is tedious for large models and is completely disconnected from R, meaning estimates must be individually adjusted if the data or model changes.
 
-\pkg{diy.sem.plot} bridges these approaches to give users the best of both worlds, enabling manual specification the layout and design  while handling the rendering automatically. After fitting a SEM as a `lavaan` object, users simply define node locations using x-y coordinates and specify the attachment points on the perimeter of each node where paths begin and end. The primary function, `diyPaths()`, processes this information to generate a `ggplot2` object. It automatically centers estimates on each path's midpoint and assigns the correct geometric shapes to each variable type. The package includes extensive arguments that facilitate near-complete control over fine-tuning every visual detail, resulting in a path diagram exactly as you envision it, entirely within R.
+`diy.sem.plot` bridges these approaches to give users the best of both worlds, enabling manual specification the layout and design  while handling the rendering automatically. After fitting a SEM as a `lavaan` object, users simply define node locations using x-y coordinates and specify the attachment points on the perimeter of each node where paths begin and end. The primary function, `diyPaths()`, processes this information to generate a `ggplot2` object. It automatically centers estimates on each path's midpoint and assigns the correct geometric shapes to each variable type. The package includes extensive arguments that facilitate near-complete control over fine-tuning every visual detail, resulting in a path diagram exactly as you envision it, entirely within R.
 
-The package contains four functions: the primary `diyPaths()` function alongside three helper functions (`node()`, `path()`, and `panel_title()`) designed to simplify argument specification and prevent errors. I find the most intuitive way to learn how to use \pkg{diy.sem.plot} is through practical examples. Through each, I will demonstrate the basic workflow and explore the arguments available.
+The package contains four functions: the primary `diyPaths()` function alongside three helper functions (`node()`, `path()`, and `panel_title()`) designed to simplify argument specification and prevent errors. I find the most intuitive way to learn how to use `diy.sem.plot` is through practical examples. Through each, I will demonstrate the basic workflow and explore the arguments available.
 
-# Example 1: Making a Path Diagram  for a Simple Path Model
+### Example 1: Making a Path Diagram  for a Simple Path Model
 
 The first step is to specify and fit your model as a `lavaan` object. Here, we use the mtcars dataset to specify a multiple regression model where vehicle weight (wt) and horsepower (hp) simultaneously predict miles per gallon (mpg), while also estimating the covariance between the two predictors.
 
@@ -43,7 +43,7 @@ model_cars <- '
 fit_cars <- sem(model_cars, data = data_cars)
 ```
 
-Next, we need to specify each node's position on the diagram. For this,we will create an object called `nodes` and specify it as a list of node objects created using the helper function `node()`. The `node()` function takes four key arguments: name (the variable name in your lavaan model), x and y (its coordinate placement on the grid) and an optional label that specifies the text actually displayed on the node in the final diagram (defaulting to the variable name if left unspecified).
+Next, we need to specify each node's position on the diagram. For this,we will create an object called `node_list` and specify it as a list of node objects created using the helper function `node()`. The `node()` function takes four key arguments: name (the variable name in your `lavaan` model), x and y (its coordinate placement on the grid) and an optional label that specifies the text actually displayed on the node in the final diagram (defaulting to the variable name if left unspecified).
 
 Since we have not rendered the diagram yet, we will make an initial estimate for node positions and fine-tune them afterward.
 
@@ -57,9 +57,9 @@ node_list <- list(
 
 Next, we need to specify each path's position relative to its respective starting and ending nodes. We create an object called `paths` and specify it as a list of path specifications created using the `path()` helper function.
 
-The `path()` function takes four main arguments alongside four optional fine-tuning parameters. Each path requires a starting node (`from`) and an ending node (`to`), matched to their `lavaan` variable names. The `side_from` argument dictates which perimeter edge (top, bottom, left, or right) the path anchors to on the starting node, and `side_to` dictates the same for the ending node.
+The `path()` function takes four main arguments alongside four optional fine-tuning arguments. Each path requires a starting node (`from`) and an ending node (`to`), matched to their `lavaan` variable names. The `side_from` argument dictates which perimeter edge (top, bottom, left, or right) the path anchors to on the starting node, and `side_to` dictates the same for the ending node.
 
-For further control, you can use `nudge_text_x` and `nudge_text_y `to adjust where a path's parameter estimate appears on the diagram. For covariances or correlations, the numeric `cov_curve` argument controls the scale and direction of the arced paths bend. While variance and residual loops are generally toggled off automatically, explicitly defining them as paths allows you to use the `variance_position` argument to place the variance indicator on either the top or bottom of the node box.
+For further control, you can use `nudge_text_x` and `nudge_text_y` to adjust where a path's parameter estimate appears on the diagram. For covariances or correlations, the numeric `cov_curve` argument controls the scale of the arced path and the sign of the number dictates direction it bends. By default, variance and residual loops are toggled off (set show_variances = TRUE within `diyPaths` to display them). Explicitly defining a path for a node's variance/residual lets you override its default position using the variance_position argument, which accepts "top", "bottom", "left", or "right".
 
 Again as we have not rendered the diagram yet, we'll make an initial estimate for path positions.
 
@@ -72,12 +72,15 @@ path_list <- list(
 )
 ```
 
-Finally we can render our diagram as a `ggplot` object using the function `diyPaths`. This function only requires three arguments `fit`, `node_positions`, and `path_positions` to successfully render the diagram everything else is optional. `fit` takes the fitted lavaan object of your model, `node_positions` will take the object containing the list of `node()` in our case `node_list`, and `path_positions` will take the object containing the list of `path()` in our case `path_list`.
+Finally we can render our diagram as a `ggplot` object using the function `diyPaths()`. This function only requires three arguments `fit`, `node_positions`, and `path_positions` to successfully render the diagram everything else is optional. `fit` takes the fitted `lavaan` object of your model, `node_positions` will take the object containing the list of `node()` in our case `node_list`, and `path_positions` will take the object containing the list of `path()` in our case `path_list`.
 
 We will now run our first draft render. To help with fine-tuning our layout we will overlay a grid on the diagram by setting the optional argument `show_grid` to be `TRUE`.
 
-```{r}
-diyPaths(fit = fit_cars, node_positions = nodes, path_positions = path_list, show_grid = TRUE)
+```{r, fig.width = 10, fig.height = 8,out.width = "100%"}
+diyPaths(fit = fit_cars, 
+         node_positions = node_list, 
+         path_positions = path_list, 
+         show_grid = TRUE)
 ```
 
 Now that we can see our render, it is time to do some fine-tuning. First, most notably, our covariance curve is facing the wrong way. We can fix this by adjusting the sign of the value within the path's `cov_curve` argument. For a mostly vertical path, a positive curvature bends it right and a negative curvature bends it left. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up. We will then use the grid to center the boxes and give them a bit of space, and remove the over-layed grid by deleting the `show_grid` argument.
@@ -86,7 +89,7 @@ Finally, we should add an indication of path significance. `diyPaths()` has a fe
 
 This is quite a small model, so the default text size is not proportionate to the scale of the boxes. We can do some easy fine-tuning by scaling the path estimates' text size up via `path_text_size`, and since the nodes are observed variables, their text size via `observed_node_text_size`. Using foresight, I realised that the plot will not render properly within the margins (i.e. nodes appear cut off at the edges). We can fix this by increasing the margins via `margin_x` and `margin_y` arguments, which are currently set to 0.
 
-```{r}
+```{r, fig.width = 10, fig.height = 8,out.width = "100%"}
 diyPaths(fit_cars, 
          node_positions = list(
            node(name = "wt", x = 1, y = 3, label = "Weight"),
@@ -103,17 +106,17 @@ diyPaths(fit_cars,
          est_ci = TRUE,
          est_p = TRUE,
          sig_linetype = TRUE,
-         observed_node_text_size = 9,
-         path_text_size = 7,
+         observed_node_text_size = 8,
+         path_text_size = 6,
          margin_x = 1,
          margin_y =1
          )
 
 ```
 
-# Example 2: Making Path Diagram for a Full SEM 
+### Example 2: Making Path Diagram for a Full SEM 
 
-Here, we use the HolzingerSwineford1939 dataset from the \pkg{lavaan} package to specify a full SEM. The model has three latent variables, visual perception ability, textual ability, and speeded cognitive processing, each measured by three observed variables. Structurally, speeded cognitive processing is regressed on both visual perception ability and textual ability, with the latter two allowed to covary.
+Here, we use the HolzingerSwineford1939 dataset from the `lavaan` package to specify a full SEM. The model has three latent variables, visual perception ability, textual ability, and speeded cognitive processing, each measured by three observed variables. Structurally, speeded cognitive processing is regressed on both visual perception ability and textual ability, with the latter two allowed to covary.
 
 ```{r}
 sem_model <- '
@@ -130,11 +133,11 @@ sem_model <- '
 fit_sem <- sem(sem_model, data = HolzingerSwineford1939)
 ```
 
-Next, we will draft our path diagram with rough estimations of where each node should go. As it is classic convention in SEM to have observed variables smaller than latent, we will scale them smaller by setting `observed_node_size_adjust` in `diyPaths` to be a decimal. To see the exact width and height of these scaled boxes, we set `look_up_table` to `TRUE`, which returns the width and height of latent and observed nodes on the x and y scale, along with the text sizes used for latent, observed, and path labels. We will also enable `show_grid` to be `TRUE` and set `grid_axis_scale` to a finer `0.5` rather than `1`, giving us a more precise reference to plot against. 
+Next, we will draft our path diagram with rough estimations of where each node should go. As it is classic convention in SEM to have observed variables smaller than latent, we will scale them smaller by setting `observed_node_size_adjust` in `diyPaths()` to be a decimal. To see the exact width and height of these scaled boxes, we set `look_up_table` to `TRUE`, which returns the width and height of latent and observed nodes on the x and y scale, along with the text sizes used for latent, observed, and path labels. We will also enable `show_grid` to be `TRUE` and set `grid_axis_scale` to a finer `0.5` rather than `1`, giving us a more precise reference to plot against. 
 
 For this diagram I want to use standardised estimates, so I set the argument `standardised` to `TRUE`. I also want to see the variances and residuals, so I set the argument `show_variances` to `TRUE` which automatically applies them to all nodes.
 
-```{r}
+```{r, fig.width = 10, fig.height = 8,out.width = "100%"}
 
 node_list <- list(
    # main latent variable structure
@@ -200,11 +203,11 @@ p <- diyPaths(
 print(p)
 ```
 
-This looks decent for a first draft. However, the observed variable nodes for textual and visual clearly do not have enough room on the x-axis. Looking at the grid and look-up table, we can see the boxes need at least 0.75 x units of space, not 0.5. They also sit a bit too close to their latent variable nodes, so we will increase their y values. Variance loops are also awkwardly placed, as `show_variances` defaults them to the top of the node. We can manually adjust this by specifying the variance loops we want to change as a path within the path list, and setting each variance loop's `variance_position` to the side of the node (top, bottom, left, or right) we want it to sit on..
+This looks decent for a first draft. However, the observed variable nodes for textual and visual clearly do not have enough room on the x-axis. Looking at the grid and look-up table, we can see the boxes need at least 0.75 x units of space, not 0.5. They also sit a bit too close to their latent variable nodes, so we will increase their y values. Variance loops are also awkwardly placed, as `show_variances` defaults them to the top of the node. We can manually adjust this by specifying the variance loops we want to change as a path within the path list, and setting each variance loop's `variance_position` to the side of the node (top, bottom, left, or right) we want it to sit on.
 
 As with the previous example, now that the layout is fixed, we can move on to the final touches: adding an indication of statistical significance, adjusting text sizes, and removing the grid overlay. 
 
-```{r}
+```{r, fig.width = 10, fig.height = 8,out.width = "100%"}
 
 node_list <- list(
    # main latent variable structure
@@ -230,46 +233,44 @@ node_list <- list(
 
 # Specify the paths
 
-path_list <- list(
-  #Structural 
-    path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
-    #variance loop visual
-     path(from = "visual",  to = "visual", variance_position = "top"),
-   path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
-   path(from = "visual",  to = "textual", side_from = "left", side_to = "left", cov_curve = -0.6),
-  
-   #visual loadings
-   path(from = "visual", to = "x1", side_from = "bottom", side_to = "top"), 
-   path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
-   path(from = "visual", to = "x3", side_from = "bottom", side_to = "top"),
+path_list <- listpath_list <- list(
+  # Structural
+  path(from = "visual",  to = "speed",   side_from = "right", side_to = "left"),
+  path(from = "textual", to = "speed",   side_from = "right", side_to = "left"),
+  path(from = "visual",  to = "textual", side_from = "left",  side_to = "left", cov_curve = -0.6),
 
-   #textual loadings
-   path(from = "textual", to = "x4", side_from = "top", side_to = "bottom"),
-   path(from = "textual", to = "x5", side_from = "top", side_to = "bottom"),
-   path(from = "textual", to = "x6", side_from = "top", side_to = "bottom"),
+  # Visual loadings
+  path(from = "visual", to = "x1", side_from = "bottom", side_to = "top"),
+  path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
+  path(from = "visual", to = "x3", side_from = "bottom", side_to = "top"),
 
-   #speed loadings
-   path(from = "speed",   to = "x7", side_from = "right", side_to = "left"),
-   path(from = "speed",   to = "x8", side_from = "right", side_to = "left"),
-   path(from = "speed",   to = "x9", side_from = "right", side_to = "left"),
-   
-  #latent variance/residualal
-   path(from = "textual", to = "textual", variance_position = "bottom"),
-   path(from = "visual", to = "visual", variance_position = "top"),
-   path(from = "speed", to = "speed", variance_position = "top"),
-  #Measurement Loadigns
-   path(from = "x1", to = "x1", variance_position = "bottom"),
-   path(from = "x2", to = "x2", variance_position = "bottom"),
-   path(from = "x3", to = "x3", variance_position = "bottom"),
+  # Textual loadings
+  path(from = "textual", to = "x4", side_from = "top", side_to = "bottom"),
+  path(from = "textual", to = "x5", side_from = "top", side_to = "bottom"),
+  path(from = "textual", to = "x6", side_from = "top", side_to = "bottom"),
 
-   path(from = "x4", to = "x4", variance_position = "top"),
-   path(from = "x5", to = "x5", variance_position = "top"),
-   path(from = "x6", to = "x6", variance_position = "top"),
+  # Speed loadings
+  path(from = "speed", to = "x7", side_from = "right", side_to = "left"),
+  path(from = "speed", to = "x8", side_from = "right", side_to = "left"),
+  path(from = "speed", to = "x9", side_from = "right", side_to = "left"),
 
-   path(from = "x7", to = "x7", variance_position = "right"),
-   path(from = "x8", to = "x8", variance_position = "right"),
-   path(from = "x9", to = "x9", variance_position = "right")
-  
+  # Latent variance/residual
+  path(from = "visual",  to = "visual",  variance_position = "top"),
+  path(from = "textual", to = "textual", variance_position = "bottom"),
+  path(from = "speed",   to = "speed",   variance_position = "top"),
+
+  # Measurement variances/residuals 
+  path(from = "x1", to = "x1", variance_position = "bottom"),
+  path(from = "x2", to = "x2", variance_position = "bottom"),
+  path(from = "x3", to = "x3", variance_position = "bottom"),
+
+  path(from = "x4", to = "x4", variance_position = "top"),
+  path(from = "x5", to = "x5", variance_position = "top"),
+  path(from = "x6", to = "x6", variance_position = "top"),
+
+  path(from = "x7", to = "x7", variance_position = "right"),
+  path(from = "x8", to = "x8", variance_position = "right"),
+  path(from = "x9", to = "x9", variance_position = "right")
 )
 
 # creating the diagram
@@ -292,7 +293,7 @@ print(p)
 ```
 
 
-# Example 3: Making a Path Diagram for a Multi-Group SEM  
+### Example 3: Making a Path Diagram for a Multi-Group SEM  
 
 In this example we will explore how to create a multi-group path diagram using `diyPaths()`. We will use the model we created above with the `HolzingerSwineford1939` dataset, but this time fit it separately by the school the children attended, either "Grant-White" or "Pasteur".
 
@@ -300,14 +301,14 @@ In this example we will explore how to create a multi-group path diagram using `
 fit_sem_groups <- sem(sem_model, data = HolzingerSwineford1939, group = "school")
 ```
 
-We reuse the diagram structure from Example 2, except we drop the variances, as the diagram is likely to become too cluttered with multiple diagrams When we rendering this new model produces two SEM diagrams separate two panels, side by side, with no indication of which school each one represents. We can figure this out by setting `show_group_labels` to `TRUE`, which adds a small label to the bottom corner of each panel, showing its group name and panel number.
+We reuse the diagram structure from Example 2 as is. When we rendering this new model produces two SEM diagrams separate two panels, side by side, with no indication of which school each one represents. We can figure this out by setting `show_group_labels` to `TRUE`, which adds a small label to the bottom corner of each panel, showing its group name and panel number.
 
-```{r}
+```{r, fig.width = 10, fig.height = 8,out.width = "100%"}
 node_list <- list(
    # main latent variable structure
    node("visual", x = 1, y = 1, label = "Visual"),
-   node("textual", x = 1, y = 2.5, label = "Textual"),
-   node("speed", x = 4, y = 1.75, label = "Speed"),
+   node("textual", x = 1, y = 3, label = "Textual"),
+   node("speed", x = 4, y = 2, label = "Speed"),
 
    # observed variables that visual perception ability loads onto
    node("x1", x = 0, y = -0.5, label = "Visual\nPerception"),
@@ -315,40 +316,56 @@ node_list <- list(
    node("x3", x = 2, y = -0.5, label = "Lozenges"),
 
    # observed variables that textual ability loads onto
-   node("x4", x = 0, y = 4, label = "Paragraph\nComprehension"),
-   node("x5", x = 1, y = 4, label = "Sentence\nCompletion"),
-   node("x6", x = 2, y = 4, label = "Word\nMeaning"),
+   node("x4", x = 0, y = 4.5, label = "Paragraph\nComprehension"),
+   node("x5", x = 1, y = 4.5, label = "Sentence\nCompletion"),
+   node("x6", x = 2, y = 4.5, label = "Word\nMeaning"),
 
    # observed variables that speeded cognitive processing loads onto
-   node("x7", x = 6, y = 1, label = "Speeded\nAddition"),
-   node("x8", x = 6, y = 1.75, label = "Speeded\nCounting"),
-   node("x9", x = 6, y = 2.5, label = "Speeded\nDiscrimination")
+   node("x7", x = 6, y = 1.25, label = "Speeded\nAddition"),
+   node("x8", x = 6, y = 2, label = "Speeded\nCounting"),
+   node("x9", x = 6, y = 2.75, label = "Speeded\nDiscrimination")
 )
 
 # Specify the paths
 
-path_list <- list(
-  #Structural 
-   path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
-   path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
+path_list <- listpath_list <- list(
+  # Structural
+  path(from = "visual",  to = "speed",   side_from = "right", side_to = "left"),
+  path(from = "textual", to = "speed",   side_from = "right", side_to = "left"),
+  path(from = "visual",  to = "textual", side_from = "left",  side_to = "left", cov_curve = -0.6),
 
-   path(from = "visual",  to = "textual", side_from = "left", side_to = "left", 
-   cov_curve = -0.6),
-  
-   #visual loadings
-   path(from = "visual", to = "x1", side_from = "bottom", side_to = "top"), 
-   path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
-   path(from = "visual", to = "x3", side_from = "bottom", side_to = "top"),
+  # Visual loadings
+  path(from = "visual", to = "x1", side_from = "bottom", side_to = "top"),
+  path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
+  path(from = "visual", to = "x3", side_from = "bottom", side_to = "top"),
 
-   #textual loadings
-   path(from = "textual", to = "x4", side_from = "top", side_to = "bottom"),
-   path(from = "textual", to = "x5", side_from = "top", side_to = "bottom"),
-   path(from = "textual", to = "x6", side_from = "top", side_to = "bottom"),
+  # Textual loadings
+  path(from = "textual", to = "x4", side_from = "top", side_to = "bottom"),
+  path(from = "textual", to = "x5", side_from = "top", side_to = "bottom"),
+  path(from = "textual", to = "x6", side_from = "top", side_to = "bottom"),
 
-   #speed loadings
-   path(from = "speed",   to = "x7", side_from = "right", side_to = "left"),
-   path(from = "speed",   to = "x8", side_from = "right", side_to = "left"),
-   path(from = "speed",   to = "x9", side_from = "right", side_to = "left")
+  # Speed loadings
+  path(from = "speed", to = "x7", side_from = "right", side_to = "left"),
+  path(from = "speed", to = "x8", side_from = "right", side_to = "left"),
+  path(from = "speed", to = "x9", side_from = "right", side_to = "left"),
+
+  # Latent variance/residual
+  path(from = "visual",  to = "visual",  variance_position = "top"),
+  path(from = "textual", to = "textual", variance_position = "bottom"),
+  path(from = "speed",   to = "speed",   variance_position = "top"),
+
+  # Measurement variances/residuals 
+  path(from = "x1", to = "x1", variance_position = "bottom"),
+  path(from = "x2", to = "x2", variance_position = "bottom"),
+  path(from = "x3", to = "x3", variance_position = "bottom"),
+
+  path(from = "x4", to = "x4", variance_position = "top"),
+  path(from = "x5", to = "x5", variance_position = "top"),
+  path(from = "x6", to = "x6", variance_position = "top"),
+
+  path(from = "x7", to = "x7", variance_position = "right"),
+  path(from = "x8", to = "x8", variance_position = "right"),
+  path(from = "x9", to = "x9", variance_position = "right")
 )
 
 # creating the diagram
@@ -364,6 +381,7 @@ p <- diyPaths(
    latent_node_text_size = 5,
    est_stars = TRUE,
    est_ci = TRUE,
+   show_variances = TRUE,
    show_group_labels = TRUE
 )
 
@@ -379,54 +397,75 @@ title_list <- list(
 )
 ```
 
-We will apply our standard fine-tuning, as well as set `show_group_labels` to `FALSE`, since we now have proper titles instead. If we wanted to stack the plots atop each other rather than side by side we would adjust the `panel_cols` argument, which controls the number of columns used when arranging multi-group panels. For two models setting to 1 will give vertical stacking. 
+We will apply our standard fine-tuning, as well as set `show_group_labels` to `FALSE`, since we now have proper titles instead. 
 
-```{r}
+Currently, the panels are cluttered because they're crammed into the width of the document. To fix this, we'll stack the plots atop each other rather 
+than side by side by adjusting the panel_cols argument, which controls the number of columns used when arranging multi-group panels. For two 
+models, setting this to 1 will give vertical stacking.
+
+```{r, fig.width = 10, fig.height = 16, out.width = "100%"}
 node_list <- list(
    # main latent variable structure
    node("visual", x = 1, y = 1, label = "Visual"),
-   node("textual", x = 1, y = 2.5, label = "Textual"),
-   node("speed", x = 4, y = 1.75, label = "Speed"),
+   node("textual", x = 1, y = 3, label = "Textual"),
+   node("speed", x = 4, y = 2, label = "Speed"),
 
    # observed variables that visual perception ability loads onto
-   node("x1", x = -0.5, y = -0.8, label = "Visual\nPerception"),
-   node("x2", x = 1, y = -0.8, label = "Cubes"),
-   node("x3", x = 2.5, y = -0.8, label = "Lozenges"),
+   node("x1", x = 0, y = -0.5, label = "Visual\nPerception"),
+   node("x2", x = 1, y = -0.5, label = "Cubes"),
+   node("x3", x = 2, y = -0.5, label = "Lozenges"),
 
    # observed variables that textual ability loads onto
-   node("x4", x = -0.5, y = 4.3, label = "Paragraph\nComprehension"),
-   node("x5", x = 1, y = 4.3, label = "Sentence\nCompletion"),
-   node("x6", x = 2.5, y = 4.3, label = "Word\nMeaning"),
+   node("x4", x = 0, y = 4.5, label = "Paragraph\nComprehension"),
+   node("x5", x = 1, y = 4.5, label = "Sentence\nCompletion"),
+   node("x6", x = 2, y = 4.5, label = "Word\nMeaning"),
 
    # observed variables that speeded cognitive processing loads onto
-   node("x7", x = 6, y = 0.5, label = "Speeded\nAddition"),
-   node("x8", x = 6, y = 1.75, label = "Speeded\nCounting"),
-   node("x9", x = 6, y = 3, label = "Speeded\nDiscrimination")
+   node("x7", x = 6, y = 1.25, label = "Speeded\nAddition"),
+   node("x8", x = 6, y = 2, label = "Speeded\nCounting"),
+   node("x9", x = 6, y = 2.75, label = "Speeded\nDiscrimination")
 )
 
 # Specify the paths
 
 path_list <- list(
-  #Structural 
-    path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
-   path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
+  # Structural
+  path(from = "visual",  to = "speed",   side_from = "right", side_to = "left"),
+  path(from = "textual", to = "speed",   side_from = "right", side_to = "left"),
+  path(from = "visual",  to = "textual", side_from = "left",  side_to = "left", cov_curve = -0.6),
 
-   path(from = "visual",  to = "textual", side_from = "left", side_to = "left", cov_curve = -0.6),
-  
-   #visual loadings
-   path(from = "visual", to = "x1", side_from = "bottom", side_to = "top"), 
-   path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
-   path(from = "visual", to = "x3", side_from = "bottom", side_to = "top"),
+  # Visual loadings
+  path(from = "visual", to = "x1", side_from = "bottom", side_to = "top"),
+  path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
+  path(from = "visual", to = "x3", side_from = "bottom", side_to = "top"),
 
-   #textual loadings
-   path(from = "textual", to = "x4", side_from = "top", side_to = "bottom"),
-   path(from = "textual", to = "x5", side_from = "top", side_to = "bottom"),
-   path(from = "textual", to = "x6", side_from = "top", side_to = "bottom"),
+  # Textual loadings
+  path(from = "textual", to = "x4", side_from = "top", side_to = "bottom"),
+  path(from = "textual", to = "x5", side_from = "top", side_to = "bottom"),
+  path(from = "textual", to = "x6", side_from = "top", side_to = "bottom"),
 
-   #speed loadings
-   path(from = "speed",   to = "x7", side_from = "right", side_to = "left"),
-   path(from = "speed",   to = "x8", side_from = "right", side_to = "left"),
-   path(from = "speed",   to = "x9", side_from = "right", side_to = "left")
+  # Speed loadings
+  path(from = "speed", to = "x7", side_from = "right", side_to = "left"),
+  path(from = "speed", to = "x8", side_from = "right", side_to = "left"),
+  path(from = "speed", to = "x9", side_from = "right", side_to = "left"),
+
+  # Latent variance/residual
+  path(from = "visual",  to = "visual",  variance_position = "top"),
+  path(from = "textual", to = "textual", variance_position = "bottom"),
+  path(from = "speed",   to = "speed",   variance_position = "top"),
+
+  # Measurement variances/residuals 
+  path(from = "x1", to = "x1", variance_position = "bottom"),
+  path(from = "x2", to = "x2", variance_position = "bottom"),
+  path(from = "x3", to = "x3", variance_position = "bottom"),
+
+  path(from = "x4", to = "x4", variance_position = "top"),
+  path(from = "x5", to = "x5", variance_position = "top"),
+  path(from = "x6", to = "x6", variance_position = "top"),
+
+  path(from = "x7", to = "x7", variance_position = "right"),
+  path(from = "x8", to = "x8", variance_position = "right"),
+  path(from = "x9", to = "x9", variance_position = "right")
 )
 
 # creating the diagram
@@ -443,7 +482,9 @@ p <- diyPaths(
    path_text_size = 2.5,
    latent_node_text_size = 5,
    est_stars = TRUE,
-   est_ci = TRUE
+   est_ci = TRUE,
+   show_variances = TRUE,
+   panel_cols = 1
 )
 
 print(p)
