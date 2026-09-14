@@ -28,15 +28,15 @@ diyPaths(
   line_thickness = 0.6,
   arrow_size = 0.2,
   node_width = 1.5,
-  node_height = 0.8,
-  latent_variable_size_adjust = 1,
-  observed_variable_size_adjust = 1,
+  node_height = 1,
+  latent_node_size_adjust = 1,
+  observed_node_size_adjust = 1,
   show_group_labels = FALSE,
   panel_titles = NULL,
   panel_cols = NULL,
-  margin_x = 0,
-  margin_y_bottom = 0,
-  margin_y_top = 0
+  margin_x = 0.5,
+  margin_y = 0.5,
+  look_up_table = FALSE
 )
 }
 \arguments{
@@ -70,13 +70,13 @@ diyPaths(
 
 \item{show_grid}{Logical. Whether to overlay a coordinate grid. Default is \code{FALSE}.}
 
-\item{grid_axis_scale}{Sets the spacing of gridlines when \code{show_grid = TRUE}. Default is \code{1}.}
+\item{grid_axis_scale}{Sets the spacing of grid-lines when \code{show_grid = TRUE}. Default is \code{1}.}
 
 \item{non_transparent_text}{Logical. If \code{TRUE}, path estimate labels receive a white background mask. Default is \code{TRUE}.}
 
-\item{latent_node_text_size}{Text font size for latent variable labels. Default is \code{4}.}
+\item{latent_node_text_size}{Text font size for latent node labels. Default is \code{4}.}
 
-\item{observed_node_text_size}{Text font size for observed variable labels. Default is \code{4}.}
+\item{observed_node_text_size}{Text font size for observed node labels. Default is \code{4}.}
 
 \item{path_text_size}{Text font size for path estimate labels. Default is \code{3.5}.}
 
@@ -86,11 +86,11 @@ diyPaths(
 
 \item{node_width}{Base width for nodes. Default is \code{1.5}.}
 
-\item{node_height}{Base height for node shapes. Default is \code{0.8}.}
+\item{node_height}{Base height for node shapes. Default is \code{1}.}
 
-\item{latent_variable_size_adjust}{Numeric multiplier scaling latent variable ellipses. Default is \code{1}.}
+\item{latent_node_size_adjust}{Numeric multiplier scaling latent node ellipses. Default is \code{1}.}
 
-\item{observed_variable_size_adjust}{Numeric multiplier scaling observed variable rectangles. Default is \code{1}.}
+\item{observed_node_size_adjust}{Numeric multiplier scaling observed node rectangles. Default is \code{1}.}
 
 \item{show_group_labels}{Logical. For multi-group models, whether to annotate each panel
 with its panel number and the raw group value it represents (e.g. "Panel 1: Group = male").
@@ -102,14 +102,18 @@ left untitled. Default is \code{NULL}.}
 
 \item{panel_cols}{Integer for number columns to use when arranging multi-group panels. Default is \code{NULL}.}
 
-\item{margin_x}{Padding for plot limits along the x-axis. Default is \code{0}.}
+\item{margin_x}{Padding for plot limits along the x-axis. Default is \code{0.5}.}
 
-\item{margin_y_bottom}{Padding for plot limits at the bottom. Default is \code{0}.}
+\item{margin_y}{Padding for plot limits along y-axis. Default is \code{0.5}.}
 
-\item{margin_y_top}{Padding for plot limits at the top. Default is \code{0}.}
+\item{look_up_table}{Logical. If \code{TRUE}, also returns a look-up table detailing the width (x scale) and height (y scale) of latent and observed nodes,
+along with the text sizes used for latent, observed, and path labels. Default is \code{FALSE}.}
 }
 \value{
-A \code{ggplot} object representing the SEM diagram.
+A \code{ggplot} (or \code{patchwork}, for multi-group models) object representing the SEM
+path diagram. If \code{look_up_table = TRUE}, a list containing the diagram (\verb{$plot}) and a look-up
+\code{data.frame} of node width/height and text sizes for latent, observed, and path labels
+(\verb{$look_up_table}).
 }
 \description{
 Plot fully customisable path diagrams for structural equation models fitted with \pkg{lavaan}, rendered using \pkg{ggplot2}.
@@ -119,9 +123,8 @@ paths begins and ends. A range of further fine-tuning options are included, faci
 exactly as you envision it, entirely within R.
 }
 \details{
-Using the function requires 4 steps and is best illustrated by the example below.
-Further examples can be found the vignette, along side how to set up common path diagram
-structures using the function.
+Using the function requires 4 steps and is illustrated by the example below.
+See the vignette for in-depth examples and guidance on using the function's arguments.
 \enumerate{
 \item Specify and fit the SEM using \pkg{lavaan}.
 \item Specify \code{node_positions} as a list (\code{node_positions <- list(...)}) and,
@@ -135,7 +138,7 @@ and \code{path_positions}, along with any additional display augmentations (i.e.
 }
 
 Creating a diagram for your specific model is inherently an iterative process. As such, steps 2-4 will likely need to be repeated
-with additional fine-tuning adjustments to achieve desired result.
+with additional fine-tuning adjustments to achieve the desired result.
 }
 \examples{
 
@@ -164,7 +167,7 @@ fit <- sem(sem_model, data = HolzingerSwineford1939)
 
 #specify the node position, this was done iteratively with show_grid to help with layout.
 
-node_positions <- list(
+node_list <- list(
   #main latent variable structure
   node("visual", x = 1, y = 1, label = "Visual"),
   node("textual", x = 1, y = 2, label = "Textual"),
@@ -188,7 +191,7 @@ node_positions <- list(
 
 #Specify the paths
 
-path_positions <- list(
+path_list <- list(
   path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1),
   path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
   path(from = "visual", to = "x3", side_from = "bottom", side_to = "top", nudge_text_x = 0.1),
@@ -211,14 +214,15 @@ path_positions <- list(
 
 p <- diyPaths(
   fit = fit,
-  node_positions = node_positions,
-  path_positions = path_positions,
+  node_positions = node_list,
+  path_positions = path_list,
   standardised = TRUE,
   est_stars = TRUE,
-  observed_variable_size_adjust = 0.55, #making observed variables smaller than latent
+  observed_node_size_adjust = 0.55, #making observed nodes smaller than latent
   observed_node_text_size = 3,
   show_grid = TRUE,
-  grid_axis_scale = 0.4
+  grid_axis_scale = 0.4,
+  look_up_table = TRUE
 )
 
 print(p)

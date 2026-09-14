@@ -10,8 +10,8 @@ utils::globalVariables(c(
 #' designed for use within the `node_positions` argument of [diyPaths()].
 #'
 #' @param name The name of the variable within the lavaan model.
-#' @param x Numeric value for a node's x-coordinate relative to center of the node. Default is `0`.
-#' @param y Numeric value for a node's y-coordinate relative to center of the node. Default is `0`.
+#' @param x Numeric value for the x-coordinate of the node's center. Default is `0`.
+#' @param y Numeric value for the y-coordinate of the node's center. Default is `0`.
 #' @param label Custom label to display instead of lavaan variable name. Defaults to the lavaan variable name.
 #'
 #' @examples
@@ -49,12 +49,14 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #' @param variance_position Placement of variance/residual paths ("top", "bottom", "left", or "right"). Default is "top".
 #'
 #' @details
-#' `from`/`to` in [path()] must exactly match the variable name used in the
-#'  \pkg{lavaan} model syntax. Furthermore, the order must also be correct for regression or loading paths. Misspelled or mismatched paths will be
-#'  excluded from the diagram without raising an error.
+#'
+#' `from`/`to` in [path()] must exactly match the variable name used in the `lavaan` model syntax.
+#'  Furthermore, the order must also be correct for regression or loading paths. A misspelled or mismatched
+#'  `path()` entry will not raise an error, instead, it will use default attachment points and values, not applying
+#'   your specified customisations.
 #'
 #' `cov_curve`'s value can be used to adjust direction of curve on covariance/correlation path.
-#'  For a mostly vertical path (i.e. node1: x = 0, y = 1 -> node2: x = 0, y = 1), positive curvature bends it left and negative curvature
+#'  For a mostly vertical path (i.e. node1: x = 0, y = 1 -> node2: x = 0, y = 2), positive curvature bends it left and negative curvature
 #'  bends it right. For a mostly horizontal path (i.e. node1: x = 1, y = 0 -> node2: x = 2, y = 0), positive curvature bends
 #'  it down and negative curvature bends it up. Best results typically range from -1 to 1.
 #'
@@ -96,7 +98,7 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 #' Use the `show_group_labels` argument in [diyPaths()] to view each panel's plot
 #' number and which group it refers to.
 #'
-#' @param panel Integer value for the panel number this title applies to. Default is `1`.
+#' @param panel_num Integer value for the panel number this title applies to. Default is `1`.
 #' @param title The title text to display.
 #'
 #' @examples
@@ -104,7 +106,7 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 #' panel_title(title = "My SEM Model")
 #'
 #' # titling the second panel of a multi-group model
-#' panel_title(panel = 2, title = "Female Participants")
+#' panel_title(panel_num = 2, title = "Female Participants")
 #'
 #' @return A list containing the panel index and its title.
 #' @export
@@ -157,13 +159,13 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #' @param panel_cols Integer for number columns to use when arranging multi-group panels. Default is `NULL`.
 #' @param margin_x Padding for plot limits along the x-axis. Default is `0.5`.
 #' @param margin_y Padding for plot limits along y-axis. Default is `0.5`.
-#' @param look_up_table Logical. If `TRUE`, also returns a lookup table detailing the width (x scale) and height (y scale) of latent and observed nodes,
+#' @param look_up_table Logical. If `TRUE`, also returns a look-up table detailing the width (x scale) and height (y scale) of latent and observed nodes,
 #'                  along with the text sizes used for latent, observed, and path labels. Default is `FALSE`.
 #'
 #'@details
 #'
 #' Using the function requires 4 steps and is illustrated by the example below.
-#' See the vignette for in-depth examples and guidance on using the the functions arguments.
+#' See the vignette for in-depth examples and guidance on using the function's arguments.
 #'
 #' 1. Specify and fit the SEM using \pkg{lavaan}.
 #'
@@ -182,7 +184,7 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #' with additional fine-tuning adjustments to achieve the desired result.
 #'
 #' @return A `ggplot` (or `patchwork`, for multi-group models) object representing the SEM
-#'   path diagram. If `look_up_table = TRUE`, a list containing the diagram (`$plot`) and a lookup
+#'   path diagram. If `look_up_table = TRUE`, a list containing the diagram (`$plot`) and a look-up
 #'   `data.frame` of node width/height and text sizes for latent, observed, and path labels
 #'   (`$look_up_table`).
 #' @export
@@ -214,7 +216,7 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'
 #' #specify the node position, this was done iteratively with show_grid to help with layout.
 #'
-#' node_positions <- list(
+#' node_list <- list(
 #'   #main latent variable structure
 #'   node("visual", x = 1, y = 1, label = "Visual"),
 #'   node("textual", x = 1, y = 2, label = "Textual"),
@@ -238,7 +240,7 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'
 #' #Specify the paths
 #'
-#' path_positions <- list(
+#' path_list <- list(
 #'   path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1),
 #'   path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
 #'   path(from = "visual", to = "x3", side_from = "bottom", side_to = "top", nudge_text_x = 0.1),
@@ -261,8 +263,8 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'
 #' p <- diyPaths(
 #'   fit = fit,
-#'   node_positions = node_positions,
-#'   path_positions = path_positions,
+#'   node_positions = node_list,
+#'   path_positions = path_list,
 #'   standardised = TRUE,
 #'   est_stars = TRUE,
 #'   observed_node_size_adjust = 0.55, #making observed nodes smaller than latent
@@ -625,7 +627,7 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
       grid_or_no
 
     if (!is.null(panel_titles)) {
-      match_idx <- which(vapply(panel_titles, function(pt) pt$panel == g, logical(1)))
+      match_idx <- which(vapply(panel_titles, function(pt) pt$panel_num == g, logical(1)))
       if (length(match_idx) > 0) p <- p + ggplot2::labs(title = panel_titles[[match_idx[1]]]$title)
     }
 

@@ -16,7 +16,7 @@ path(
 )
 }
 \arguments{
-\item{from}{The source variable name with in lavaan model.}
+\item{from}{The source variable name within lavaan model.}
 
 \item{to}{The target variable name within lavaan model.}
 
@@ -30,22 +30,23 @@ path(
 
 \item{nudge_text_y}{Numeric fine tuning adjustment for path estimate text along the y-axis. Default is \code{0}.}
 
-\item{variance_position}{Placement of variance/residual paths ("top" or "bottom"). Default is "top".}
+\item{variance_position}{Placement of variance/residual paths ("top", "bottom", "left", or "right"). Default is "top".}
 }
 \value{
 A list containing arguments that specify position for a given path within a diyPaths plot.
 }
 \description{
 Helper function that creates a list of arguments which specify a given path's position and fine-tuning adjustments,
-designed for use within the \code{paths_positions} argument of \code{\link[=diyPaths]{diyPaths()}}.
+designed for use within the \code{path_positions} argument of \code{\link[=diyPaths]{diyPaths()}}.
 }
 \details{
-\code{from}/\code{to} in \code{\link[=path]{path()}} must exactly match the variable name used in the
-\pkg{lavaan} model syntax. Furthermore, the order must also be correct for regression or loading paths. Misspelled or mismatched paths will be
-excluded  from the diagram without raising an error.
+\code{from}/\code{to} in \code{\link[=path]{path()}} must exactly match the variable name used in the \code{lavaan} model syntax.
+Furthermore, the order must also be correct for regression or loading paths. A misspelled or mismatched
+\code{path()} entry will not raise an error, instead, it will use default attachment points and values, not applying
+your specified customisations.
 
 \code{cov_curve}'s value can be used to adjust direction of curve on covariance/correlation path.
-For a mostly vertical path (i.e. node1: x = 0, y = 1 -> node2: x = 0, y = 1), positive curvature bends it left and negative curvature
+For a mostly vertical path (i.e. node1: x = 0, y = 1 -> node2: x = 0, y = 2), positive curvature bends it left and negative curvature
 bends it right. For a mostly horizontal path (i.e. node1: x = 1, y = 0 -> node2: x = 2, y = 0), positive curvature bends
 it down and negative curvature bends it up. Best results typically range from -1 to 1.
 }

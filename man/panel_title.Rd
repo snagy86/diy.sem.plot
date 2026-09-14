@@ -4,10 +4,10 @@
 \alias{panel_title}
 \title{Create a title for a diyPaths panel}
 \usage{
-panel_title(panel = 1, title = NULL)
+panel_title(panel_num = 1, title = NULL)
 }
 \arguments{
-\item{panel}{Integer value for the a panel's panel number  this title applies to. Default is \code{1}.}
+\item{panel_num}{Integer value for the panel number this title applies to. Default is \code{1}.}
 
 \item{title}{The title text to display.}
 }
@@ -16,7 +16,7 @@ A list containing the panel index and its title.
 }
 \description{
 Helper function to assign a custom title to a specific panel produced by
-\code{\link[=diyPaths]{diyPaths()}}. .
+\code{\link[=diyPaths]{diyPaths()}}.
 Use the \code{show_group_labels} argument in \code{\link[=diyPaths]{diyPaths()}} to view each panel's plot
 number and which group it refers to.
 }
@@ -25,6 +25,6 @@ number and which group it refers to.
 panel_title(title = "My SEM Model")
 
 # titling the second panel of a multi-group model
-panel_title(panel = 2, title = "Female Participants")
+panel_title(panel_num = 2, title = "Female Participants")
 
 }
