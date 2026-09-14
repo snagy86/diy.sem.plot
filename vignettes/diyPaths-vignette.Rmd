@@ -29,9 +29,9 @@ When plotting path diagrams for structural equation models (SEM) in R, users mus
 
 `diy.sem.plot` bridges these approaches to give users the best of both worlds, enabling manual specification of the layout and design while handling the rendering automatically. The basic workflow of the package is simple. Users fit their model as a `lavaan` object, then create a list specifying each node's position on the diagram using x-y coordinates. Next, users create another list which specifies, for each path, which nodes it connects to and where on the perimeter (top, bottom, left, right) of the relevant nodes the path should begin and end. 
 
-The primary function, `diyPaths()`, processes this information and returns a `ggplot2` object of the diagram. It automatically centers estimates on each path's midpoint and assigns the correct geometric shapes to each variable type. The package includes extensive arguments that facilitate near-complete control for fine-tuning every visual detail, resulting in a path diagram exactly as you envision it, entirely within R.
+The primary function, `diyPaths()`, processes this information and returns a `ggplot2` object of the diagram. It automatically centers estimates on each path's midpoint and assigns the correct geometric shapes to each variable type. The package includes extensive arguments that facilitate near-complete control for fine-tuning every visual detail.
 
-The package contains four functions: the primary `diyPaths()` function alongside three helper functions (`node()`, `path()`, and `panel_title()`) designed to simplify argument specification and prevent errors. I find the most intuitive way to learn how to use `diy.sem.plot` is through practical examples. Through each, I will demonstrate the basic workflow and explore the arguments available.
+The package contains four functions: the primary `diyPaths()` function alongside three helper functions (`node()`, `path()`, and `panel_title()`) designed to simplify argument specification and prevent errors. The most intuitive way to learn how to use `diy.sem.plot` is through practical examples. Through each, I will demonstrate the basic workflow and explore the arguments available.
 
 ## Examples
 
@@ -52,7 +52,7 @@ fit_cars <- sem(model_cars, data = data_cars)
 
 Next, we need to specify each node's position on the diagram. For this,we will create an object called `node_list` and specify it as a list of node objects created using the helper function `node()`. The `node()` function takes four key arguments: name (the variable name in your `lavaan` model), x and y (its coordinate placement on the grid) and an optional label that specifies the text actually displayed on the node in the final diagram (defaulting to the variable name if left unspecified).
 
-Since we have not rendered the diagram yet, we will make an initial estimate for node positions and fine-tune them afterward.
+Since we have not rendered the diagram yet, we will make an initial estimate for node positions and fine-tune them afterwards.
 
 ```{r}
 node_list <- list(
@@ -90,7 +90,7 @@ diyPaths(fit = fit_cars,
          show_grid = TRUE)
 ```
 
-Now that we can see our render, it is time to do some fine-tuning. First, most notably, our covariance curve is facing the wrong way. We can fix this by adjusting the sign of the value within the path's `cov_curve` argument. For a mostly vertical path, a positive curvature bends it left and a negative curvature bends it right. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up. We will then use the grid to center the boxes and give them a bit of space, and remove the over-layed grid by deleting the `show_grid` argument.
+Now that we can see our render, it is time to do some fine-tuning. First, most notably, our covariance curve is facing the wrong way. We can fix this by adjusting the sign of the value within the path's `cov_curve` argument. For a mostly vertical path, a positive curvature bends it left and a negative curvature bends it right. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up. We will then use the grid to centres the boxes and give them a bit of space, and remove the grid by deleting the `show_grid` argument.
 
 We should add an indication of path significance. `diyPaths()` has a few options for this. For our plot, we will be maximal and include significance stars, 95% confidence intervals and p-values for the estimates by changing the arguments `est_stars`, `est_ci`, and `est_p` to equal `TRUE`. We will also change the line type to represent significance using the classic convention of dashed lines for non-significant paths and solid lines for significant paths by changing the argument `sig_linetype` equal to `TRUE`.
 

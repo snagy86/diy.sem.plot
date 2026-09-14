@@ -9,19 +9,19 @@ utils::globalVariables(c(
 #' Helper function that creates a list of arguments which specify a given node's position and its name in the diagram,
 #' designed for use within the `node_positions` argument of [diyPaths()].
 #'
-#' @param name The name of the variable within the lavaan model.
-#' @param x Numeric value for the x-coordinate of the node's center. Default is `0`.
-#' @param y Numeric value for the y-coordinate of the node's center. Default is `0`.
-#' @param label Custom label to display instead of lavaan variable name. Defaults to the lavaan variable name.
+#' @param name The name of the variable within the `lavaan` model.
+#' @param x Numeric value for the x-coordinate of the node's centre. Default is `0`.
+#' @param y Numeric value for the y-coordinate of the node's centre. Default is `0`.
+#' @param label Custom label to display instead of `lavaan` variable name. Defaults to the `lavaan` variable name.
 #'
 #' @examples
 #'
 #' #a list that specifies a node positioned on x = 1, y = 2,
-#' #and relabelled from  its lavaan model name
+#' #and relabelled from  its `lavaan` model name
 #'
 #' node(name = "bpm", x = 1, y = 2,  label = "Beats per Minute")
 #'
-#' @return A list containing arguments for an individual node's position and label within a diyPaths plot.
+#' @return A list containing arguments for an individual node's position and label within a `diyPaths` plot.
 #' @export
 
 node <- function(name, x = 0, y = 0, label = NULL) {
@@ -39,8 +39,8 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #' Helper function that creates a list of arguments which specify a given path's position and fine-tuning adjustments,
 #' designed for use within the `path_positions` argument of [diyPaths()].
 #'
-#' @param from The source variable name within lavaan model.
-#' @param to The target variable name within lavaan model.
+#' @param from The source variable name within `lavaan` model.
+#' @param to The target variable name within `lavaan` model.
 #' @param side_from Side of source node where path originates ("top", "bottom", "left", "right"). Default is "right".
 #' @param side_to Side of target node where path terminates ("top", "bottom", "left", "right"). Default is "left".
 #' @param cov_curve Numeric value for curvature of covariance/correlation paths. Default is NULL.
@@ -53,7 +53,7 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #' `from`/`to` in [path()] must exactly match the variable name used in the `lavaan` model syntax.
 #'  Furthermore, the order must also be correct for regression or loading paths. A misspelled or mismatched
 #'  `path()` entry will not raise an error, instead, it will use default attachment points and values, not applying
-#'   your specified customisations.
+#'   specific customisations.
 #'
 #' `cov_curve`'s value can be used to adjust direction of curve on covariance/correlation path.
 #'  For a mostly vertical path (i.e. node1: x = 0, y = 1 -> node2: x = 0, y = 2), positive curvature bends it left and negative curvature
@@ -110,6 +110,7 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 #'
 #' @return A list containing the panel index and its title.
 #' @export
+
 panel_title <- function(panel_num = 1, title = NULL) {
   list(panel_num = as.integer(panel_num), title = as.character(title))
 }
@@ -120,13 +121,14 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'
 #' Plot fully customisable path diagrams for structural equation models fitted with \pkg{lavaan}, rendered using \pkg{ggplot2}.
 #'
-#' Diagrams are built by specifying each node's coordinates and the attachment points (sides of relevant node) where each
-#' paths begins and ends. A range of further fine-tuning options are included, facilitating creation of a path diagram
-#' exactly as you envision it, entirely within R.
+#' To render the `ggplot` object of the diagram, function only requires users to supply a fitted `lavaan` model, specify node positions using x-y coordinates, and detail where on
+#' the perimeter of each node (top, bottom, left, or right) each path should begin and end. The render automatically inserts estimates centered on the midpoint and adjusting each node's
+#' shape to match its variable type. A range of optional fine-tuning arguments are included, facilitating the creation of a path diagram exactly as you envision it, entirely within R.
+#'
 #'
 #' @param fit A fitted model object of class `lavaan`.
-#' @param node_positions Specify a list of node position objects, I highly suggest using the [node()] helper function.
-#' @param path_positions Specify a list of path configuration objects, I highly suggest using the [path()] helper function.
+#' @param node_positions Specify a list of node position objects. Use the [node()] helper function to assist with this.
+#' @param path_positions Specify a list of path configuration objects. Use the [path()] helper function to assist with this.
 #' @param standardised Logical. If `TRUE`, uses standardised parameter estimates (`est.std`). Default is `FALSE`.
 #' @param digits Number of digits to display for estimates. Default is `3`.
 #' @param est_stars Logical. Whether to display significance stars on path estimates. Default is `FALSE`.
@@ -154,7 +156,7 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'   with its panel number and the raw group value it represents (e.g. "Panel 1: Group = male").
 #'   Needed to identify which diagram represents each group and its internal panel number when creating panel titles.
 #'   Default is `FALSE`.
-#' @param panel_titles Specify a list of titles for panels, I highly suggest [panel_title()] helper function. Any panel not referenced is
+#' @param panel_titles Specify a list of titles for panels. Use the [panel_title()] helper function to assist with this. Any panel not referenced is
 #'   left untitled. Default is `NULL`.
 #' @param panel_cols Integer for number columns to use when arranging multi-group panels. Default is `NULL`.
 #' @param margin_x Padding for plot limits along the x-axis. Default is `0.5`.
@@ -169,18 +171,18 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'
 #' 1. Specify and fit the SEM using \pkg{lavaan}.
 #'
-#' 2. Specify `node_positions` as a list (`node_positions <- list(...)`) and,
+#' 2. Specify `node_positions` as a list (`node_list <- list(...)`) and,
 #'    within it, define each node's position and label using the [node()]
 #'    helper function.
 #'
-#' 3. Specify `path_positions` as a list (`path_positions <- list(...)`) and,
+#' 3. Specify `path_positions` as a list (`path_list <- list(...)`) and,
 #'    within it, define each path's connection points, curvature, and label
 #'    adjustments using the [path()] helper function.
 #'
 #' 4. Call `diyPaths()`, passing in the fitted model, `node_positions`,
 #'    and `path_positions`, along with any additional display augmentations (i.e. show significance stars on estimates).
 #'
-#' Creating a diagram for your specific model is inherently an iterative process. As such, steps 2-4 will likely need to be repeated
+#' Creating a diagram for a specific model is inherently an iterative process. As such, steps 2-4 will likely need to be repeated
 #' with additional fine-tuning adjustments to achieve the desired result.
 #'
 #' @return A `ggplot` (or `patchwork`, for multi-group models) object representing the SEM
@@ -267,7 +269,7 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'   path_positions = path_list,
 #'   standardised = TRUE,
 #'   est_stars = TRUE,
-#'   observed_node_size_adjust = 0.55, #making observed nodes smaller than latent
+#'   observed_node_size_adjust = 0.55,
 #'   observed_node_text_size = 3,
 #'   show_grid = TRUE,
 #'   grid_axis_scale = 0.4,
@@ -343,7 +345,7 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
   pos_df$ymin <- pos_df$y - pos_df$h / 2
   pos_df$ymax <- pos_df$y + pos_df$h / 2
 
-  sub_text_size <- path_text_size * (7 / 3.5)
+  sub_text_size <- path_text_size * 2
 
   group_ids <- if ("group" %in% names(pe_full)) sort(unique(pe_full$group)) else 1
   raw_group_values <- if (length(group_ids) > 1) lavaan::lavInspect(fit, "group.label") else NULL

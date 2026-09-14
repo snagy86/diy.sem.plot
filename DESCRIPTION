@@ -10,13 +10,9 @@ Authors@R: c(
     )
   )
 Description: Manually plot fully customisable path diagrams for structural equation
-             models fitted with 'lavaan', rendered using 'ggplot2'. Node positions are
-             set using simple x/y coordinates. Paths between nodes are drawn
-             automatically, with estimates centered on the midpoint; therefore you are only required to
-             specify which side of each relevant node a path should originate
-             from and terminate at. A range of further fine-tuning options are
-             included, facilitating creation of a path diagram exactly as you
-             envision it, entirely within R.
+             models. Map out node positions using simple coordinates and specify where on the
+             perimeter of each node paths begin and end. Extensive fine-tuning options allow the creation of
+             a path diagram exactly as envisioned, entirely within R.
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports:
