@@ -40,7 +40,7 @@ pak::pkg_install("snagy86/diy.sem.plot")
 
 Below is a brief example of what the function is capable of. For more
 examples plus a full explanation of work flow and available arguments
-see the package’s vignette.
+see vignette(“diy.sem.plot”)\`.
 
 ``` r
 
