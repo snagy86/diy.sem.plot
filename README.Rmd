@@ -23,6 +23,12 @@ Users manually specify node positions using x-y coordinates, as well as where on
 
 ## Installation
 
+Run the following to install the released version of `diy.sem.plot` from CRAN.
+
+```{r, eval = FALSE}
+install.packages("diy.sem.plot")
+```
+
 Run the following to install the development version of the package.
 
 ``` {r, eval =FALSE}
