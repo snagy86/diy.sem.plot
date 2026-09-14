@@ -38,7 +38,7 @@ pak::pkg_install("snagy86/diy.sem.plot")
 
 ## Example
 
-Below is a brief example of what the function is capable of. For more examples plus a full explanation of work flow and available arguments see the package's vignette. 
+Below is a brief example of what the function is capable of. For more examples plus a full explanation of work flow and available arguments see vignette("diy.sem.plot")`. 
 
 ```{r example1, fig.width = 20, fig.height = 12}
 

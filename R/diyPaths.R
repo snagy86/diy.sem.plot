@@ -167,7 +167,7 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'@details
 #'
 #' Using the function requires 4 steps and is illustrated by the example below.
-#' See the vignette for in-depth examples and guidance on using the function's arguments.
+#' See `vignette("diy.sem.plot")` for in-depth examples and guidance on using the function's arguments.
 #'
 #' 1. Specify and fit the SEM using \pkg{lavaan}.
 #'

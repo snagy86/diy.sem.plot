@@ -1,11 +1,11 @@
 ---
-title: "diy.sem.plot: Manually plot path diagrams for structural equation models"
+title: "Manually plot path diagrams for structural equation models"
 output: 
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{diy.sem.plot}
+  %\VignetteIndexEntry{Manually plot path diagrams for structural equation models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
