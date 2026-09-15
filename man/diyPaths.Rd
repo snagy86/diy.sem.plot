@@ -111,7 +111,7 @@ along with the text sizes used for latent, observed, and path labels. Default is
 }
 \value{
 A \code{ggplot} (or \code{patchwork}, for multi-group models) object representing the SEM
-path diagram. If \code{look_up_table = TRUE}, a list containing the diagram (\verb{$plot}) and a look-up
+path diagram(s). If \code{look_up_table = TRUE}, a list containing the diagram(s) (\verb{$plot}) and a look-up
 \code{data.frame} of node width/height and text sizes for latent, observed, and path labels
 (\verb{$look_up_table}).
 }
@@ -127,10 +127,10 @@ Using the function requires 4 steps and is illustrated by the example below.
 See \code{vignette("diy.sem.plot")} for in-depth examples and guidance on using the function's arguments.
 \enumerate{
 \item Specify and fit the SEM using \pkg{lavaan}.
-\item Specify \code{node_positions} as a list (\code{node_list <- list(...)}) and,
+\item Specify \code{node_positions} as a list (\code{node_positions = list(...)}) and,
 within it, define each node's position and label using the \code{\link[=node]{node()}}
 helper function.
-\item Specify \code{path_positions} as a list (\code{path_list <- list(...)}) and,
+\item Specify \code{path_positions} as a list (\code{path_positions = list(...)}) and,
 within it, define each path's connection points, curvature, and label
 adjustments using the \code{\link[=path]{path()}} helper function.
 \item Call \code{diyPaths()}, passing in the fitted model, \code{node_positions},
@@ -210,18 +210,26 @@ path_list <- list(
   path(from = "visual",  to = "textual", side_from = "left", side_to = "left", cov_curve = -0.6)
 )
 
+#Creating title
+
+title_list <- list(
+  panel_title(panel_num = 1,
+              title = "My SEM Plot"))
+
 #creating the diagram
 
 p <- diyPaths(
   fit = fit,
   node_positions = node_list,
   path_positions = path_list,
+  panel_titles = title_list,
   standardised = TRUE,
   est_stars = TRUE,
   observed_node_size_adjust = 0.55,
   observed_node_text_size = 3,
+  latent_node_size_adjust = 0.8,
   show_grid = TRUE,
-  grid_axis_scale = 0.4,
+  grid_axis_scale = 0.5,
   look_up_table = TRUE
 )
 

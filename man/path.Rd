@@ -20,9 +20,9 @@ path(
 
 \item{to}{The target variable name within the \code{lavaan} model.}
 
-\item{side_from}{Side of source node where path originates ("top", "bottom", "left", "right"). Default is "right".}
+\item{side_from}{Side of source node where path starts ("top", "bottom", "left", "right"). Default is "right".}
 
-\item{side_to}{Side of target node where path terminates ("top", "bottom", "left", "right"). Default is "left".}
+\item{side_to}{Side of target node where path ends ("top", "bottom", "left", "right"). Default is "left".}
 
 \item{cov_curve}{Numeric value for curvature of covariance/correlation paths. Default is NULL.}
 
@@ -40,7 +40,7 @@ Helper function that creates a list of arguments which specify a given path's po
 designed for use within the \code{path_positions} argument of \code{\link[=diyPaths]{diyPaths()}}.
 }
 \details{
-\code{from}/\code{to} in \code{\link[=path]{path()}} must exactly match the variable name used in the \code{lavaan} model syntax.
+\code{from}/\code{to} in \code{path()} must exactly match the variable name used in the \code{lavaan} model syntax.
 Furthermore, the order must also be correct for regression or loading paths. A misspelled or mismatched
 \code{path()} entry will not raise an error, instead, it will use default attachment points and values, not applying
 specific customisations.

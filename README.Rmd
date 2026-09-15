@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 
 # diy.sem.plot
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/snagy86/diy.sem.plot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/snagy86/diy.sem.plot/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `diy.sem.plot` allows users to manually plot fully customisable path diagrams for structural equation models (SEM) in R. It avoids the inflexibility of automated SEM plotting tools and the tedium of drawing diagrams in external applications.

@@ -41,8 +41,8 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #'
 #' @param from The source variable name within the `lavaan` model.
 #' @param to The target variable name within the `lavaan` model.
-#' @param side_from Side of source node where path originates ("top", "bottom", "left", "right"). Default is "right".
-#' @param side_to Side of target node where path terminates ("top", "bottom", "left", "right"). Default is "left".
+#' @param side_from Side of source node where path starts ("top", "bottom", "left", "right"). Default is "right".
+#' @param side_to Side of target node where path ends ("top", "bottom", "left", "right"). Default is "left".
 #' @param cov_curve Numeric value for curvature of covariance/correlation paths. Default is NULL.
 #' @param nudge_text_x Numeric fine tuning adjustment for path estimate text along the x-axis. Default is `0`.
 #' @param nudge_text_y Numeric fine tuning adjustment for path estimate text along the y-axis. Default is `0`.
@@ -50,7 +50,7 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #'
 #' @details
 #'
-#' `from`/`to` in [path()] must exactly match the variable name used in the `lavaan` model syntax.
+#' `from`/`to` in `path()` must exactly match the variable name used in the `lavaan` model syntax.
 #'  Furthermore, the order must also be correct for regression or loading paths. A misspelled or mismatched
 #'  `path()` entry will not raise an error, instead, it will use default attachment points and values, not applying
 #'   specific customisations.
@@ -171,11 +171,11 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'
 #' 1. Specify and fit the SEM using \pkg{lavaan}.
 #'
-#' 2. Specify `node_positions` as a list (`node_list <- list(...)`) and,
+#' 2. Specify `node_positions` as a list (`node_positions = list(...)`) and,
 #'    within it, define each node's position and label using the [node()]
 #'    helper function.
 #'
-#' 3. Specify `path_positions` as a list (`path_list <- list(...)`) and,
+#' 3. Specify `path_positions` as a list (`path_positions = list(...)`) and,
 #'    within it, define each path's connection points, curvature, and label
 #'    adjustments using the [path()] helper function.
 #'
@@ -186,7 +186,7 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #' with additional fine-tuning adjustments to achieve the desired result.
 #'
 #' @return A `ggplot` (or `patchwork`, for multi-group models) object representing the SEM
-#'   path diagram. If `look_up_table = TRUE`, a list containing the diagram (`$plot`) and a look-up
+#'   path diagram(s). If `look_up_table = TRUE`, a list containing the diagram(s) (`$plot`) and a look-up
 #'   `data.frame` of node width/height and text sizes for latent, observed, and path labels
 #'   (`$look_up_table`).
 #' @export
@@ -261,18 +261,26 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'   path(from = "visual",  to = "textual", side_from = "left", side_to = "left", cov_curve = -0.6)
 #' )
 #'
+#' #Creating title
+#'
+#' title_list <- list(
+#'   panel_title(panel_num = 1,
+#'               title = "My SEM Plot"))
+#'
 #' #creating the diagram
 #'
 #' p <- diyPaths(
 #'   fit = fit,
 #'   node_positions = node_list,
 #'   path_positions = path_list,
+#'   panel_titles = title_list,
 #'   standardised = TRUE,
 #'   est_stars = TRUE,
 #'   observed_node_size_adjust = 0.55,
 #'   observed_node_text_size = 3,
+#'   latent_node_size_adjust = 0.8,
 #'   show_grid = TRUE,
-#'   grid_axis_scale = 0.4,
+#'   grid_axis_scale = 0.5,
 #'   look_up_table = TRUE
 #' )
 #'
