@@ -1,11 +1,11 @@
 ---
-title: "Manually plot path diagrams for structural equation models"
+title: "Manually Plot Path Diagrams for Structural Equation Models"
 output: 
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{Manually plot path diagrams for structural equation models}
+  %\VignetteIndexEntry{Manually Plot Path Diagrams for Structural Equation Models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -50,7 +50,7 @@ model_cars <- '
 fit_cars <- sem(model_cars, data = data_cars)
 ```
 
-Next, we need to specify each node's position on the diagram. For this,we will create an object called `node_list` and specify it as a list of node objects created using the helper function `node()`. The `node()` function takes four key arguments: name (the variable name in your `lavaan` model), x and y (its coordinate placement on the grid) and an optional label that specifies the text actually displayed on the node in the final diagram (defaulting to the variable name if left unspecified).
+Next, we need to specify each node's position on the diagram. For this,we will create an object called `node_list` and specify it as a list of node objects created using the helper function `node()`. The `node()` function takes four key arguments: name (the variable name in your `lavaan` model), x and y (its  coordinates on the diagram) and an optional label that specifies the text actually displayed on the node in the final diagram (defaulting to the variable name if left unspecified).
 
 Since we have not rendered the diagram yet, we will make an initial estimate for node positions and fine-tune them afterwards.
 
@@ -66,7 +66,7 @@ Next, we need to specify each path's position relative to its respective startin
 
 The `path()` function takes four main arguments alongside four optional fine-tuning arguments. Each path requires a starting node (`from`) and an ending node (`to`), matched to their `lavaan` variable names. The `side_from` argument dictates which perimeter edge (top, bottom, left, or right) the path anchors to on the starting node, and `side_to` dictates the same for the ending node.
 
-For further control, you can use `nudge_text_x` and `nudge_text_y` to adjust where a path's parameter estimate appears on the diagram. For covariances or correlations, the numeric `cov_curve` argument controls the scale of the arced path and the sign of the number dictates direction it bends. By default, variance and residual loops are toggled off (set show_variances = TRUE within `diyPaths` to display them). Explicitly defining a path for a node's variance/residual lets you override its default top position by setting the variance_position argument to the desired location on the node's perimeter (top, bottom, left, or right).
+For further control, you can use `nudge_text_x` and `nudge_text_y` to adjust where a path's parameter estimate appears on the diagram. For covariances or correlations, the numeric `cov_curve` argument controls the scale of the arced path and the sign of the number dictates direction it bends. By default, variance and residual loops are toggled off (set `show_variances` to `TRUE` within `diyPaths()` to display them). Explicitly defining a path for a node's variance/residual lets you override its default top position by setting the `variance_position` argument to the desired location on the node's perimeter (top, bottom, left, or right).
 
 Again as we have not rendered the diagram yet, we'll make an initial estimate for path positions.
 
@@ -90,13 +90,13 @@ diyPaths(fit = fit_cars,
          show_grid = TRUE)
 ```
 
-Now that we can see our render, it is time to do some fine-tuning. First, most notably, our covariance curve is facing the wrong way. We can fix this by adjusting the sign of the value within the path's `cov_curve` argument. For a mostly vertical path, a positive curvature bends it left and a negative curvature bends it right. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up. We will then use the grid to centres the boxes and give them a bit of space, and remove the grid by deleting the `show_grid` argument.
+Now that we can see our render, it is time to do some fine-tuning. First, most notably, our covariance curve is facing the wrong way. We can fix this by adjusting the sign of the value within the path's `cov_curve` argument. For a mostly vertical path, a positive curvature bends it left and a negative curvature bends it right. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up. We will then use the grid to center the boxes and give them a bit of space. We can then remove the grid by deleting the `show_grid` argument.
 
 We should add an indication of path significance. `diyPaths()` has a few options for this. For our plot, we will be maximal and include significance stars, 95% confidence intervals and p-values for the estimates by changing the arguments `est_stars`, `est_ci`, and `est_p` to equal `TRUE`. We will also change the line type to represent significance using the classic convention of dashed lines for non-significant paths and solid lines for significant paths by changing the argument `sig_linetype` equal to `TRUE`.
 
 This is quite a small model, so the default text size is not proportionate to the scale of the boxes. We can do some easy fine-tuning by scaling the path estimates' text size up via `path_text_size`, and since the nodes are observed variables, their text size via `observed_node_text_size`. The lines are a bit thin and the arrowheads are a bit small, so we can adjust them by increasing `line_thickness` (default = 0.6) and `arrow_size` (default = 0.2).
 
-Lastly, using foresight, I realised that the plot will not render properly within the margins (i.e. nodes appear cut off at the edges). We can fix this by increasing the margins via `margin_x` and `margin_y` arguments, which are currently set to 0.5.
+Lastly, the plot did not render properly within the margins (i.e. path estimates are cut off at edges). We can fix this by increasing the margins via `margin_x` and `margin_y` arguments, which are currently set to 0.5.
 
 ```{r, fig.width = 10, fig.height = 8,out.width = "100%"}
 node_list <- list(
@@ -400,12 +400,12 @@ p <- diyPaths(
 print(p)
 ```
 
-We can use the text rendered by `show_group_labels` to get information needed to construct proper titles for these diagrams. Diagram titles are specified in a similar way as nodes and paths. We first create an object called `title_list`, specifying it as a list of titles using the `panel_title()` helper function. This function takes two arguments: `panel_num`, which takes the panel number and identifies which diagram we are titling, and `title`, which is the actual text we want for that title. For models with no grouping variable, the panel argument can be omitted. The `title_list` object is then passed to the `panel_titles` argument in diyPaths().
+We can use the text rendered by `show_group_labels` to get information needed to construct proper titles for these diagrams. Diagram titles are specified in a similar way as nodes and paths. We first create an object called `title_list`, specifying it as a list of titles using the `panel_title()` helper function. This function takes two arguments: `panel_num`, which takes the panel number and identifies which diagram we are titling, and `title`, which is the actual text we want for that title. For models with no grouping variable, the panel argument can be omitted. The `title_list` object is then passed to the `panel_titles` argument in `diyPaths()`.
 
 ```{r}
 title_list <- list(
-  panel_title(panel = 1, title = "SEM Diagram: Pasteur School"),
-  panel_title(panel = 2, title = "SEM Diagram: Grant-White School")
+  panel_title(panel_num = 1, title = "SEM Diagram: Pasteur School"),
+  panel_title(panel_num = 2, title = "SEM Diagram: Grant-White School")
 )
 ```
 

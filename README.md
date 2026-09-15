@@ -12,13 +12,13 @@ diagrams for structural equation models (SEM) in R. It avoids the
 inflexibility of automated SEM plotting tools and the tedium of drawing
 diagrams in external applications.
 
-Users manually specify node positions using x-y coordinates, as well as
-where on the perimeter of each node (top, bottom, left, or right) each
-path should begin and end. From there, the primary function `diyPaths()`
+Users manually specify node positions using x-y coordinates, and where
+on the perimeter of each node (top, bottom, left, or right) a paths
+should begin and end. From there, the primary function `diyPaths()`
 renders the diagram, automatically inserting estimates centered on the
-midpoint and adjusting each node’s shape to match its variable type. A
-range of fine-tuning options are included, facilitating the creation of
-a path diagram exactly as you envision it, entirely within R.
+midpoint of paths and adjusting each node’s shape to match its variable
+type. A range of fine-tuning options are included, facilitating the
+creation of a path diagram exactly as envisioned, entirely within R.
 
 ## Installation
 
@@ -38,9 +38,9 @@ pak::pkg_install("snagy86/diy.sem.plot")
 
 ## Example
 
-Below is a brief example of what the function is capable of. For more
-examples plus a full explanation of work flow and available arguments
-see vignette(“diy.sem.plot”)\`.
+Below is a brief example of using the package. For more examples, plus a
+full explanation of the workflow and available arguments, see the
+package’s vignette.
 
 ``` r
 

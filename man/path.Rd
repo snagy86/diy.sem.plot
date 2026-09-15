@@ -16,9 +16,9 @@ path(
 )
 }
 \arguments{
-\item{from}{The source variable name within lavaan model.}
+\item{from}{The source variable name within the \code{lavaan} model.}
 
-\item{to}{The target variable name within lavaan model.}
+\item{to}{The target variable name within the \code{lavaan} model.}
 
 \item{side_from}{Side of source node where path originates ("top", "bottom", "left", "right"). Default is "right".}
 
@@ -33,7 +33,7 @@ path(
 \item{variance_position}{Placement of variance/residual paths ("top", "bottom", "left", or "right"). Default is "top".}
 }
 \value{
-A list containing arguments that specify position for a given path within a diyPaths plot.
+A list containing arguments that specify a path's position and fine-tuning adjustments, for use within the \code{path_positions} argument of \code{\link[=diyPaths]{diyPaths()}}.
 }
 \description{
 Helper function that creates a list of arguments which specify a given path's position and fine-tuning adjustments,
@@ -43,7 +43,7 @@ designed for use within the \code{path_positions} argument of \code{\link[=diyPa
 \code{from}/\code{to} in \code{\link[=path]{path()}} must exactly match the variable name used in the \code{lavaan} model syntax.
 Furthermore, the order must also be correct for regression or loading paths. A misspelled or mismatched
 \code{path()} entry will not raise an error, instead, it will use default attachment points and values, not applying
-your specified customisations.
+specific customisations.
 
 \code{cov_curve}'s value can be used to adjust direction of curve on covariance/correlation path.
 For a mostly vertical path (i.e. node1: x = 0, y = 1 -> node2: x = 0, y = 2), positive curvature bends it left and negative curvature

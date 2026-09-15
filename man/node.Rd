@@ -7,16 +7,16 @@
 node(name, x = 0, y = 0, label = NULL)
 }
 \arguments{
-\item{name}{The name of the variable within the lavaan model.}
+\item{name}{The name of the variable within the \code{lavaan} model.}
 
-\item{x}{Numeric value for the x-coordinate of the node's center. Default is \code{0}.}
+\item{x}{Numeric value for the x-coordinate of the node's centre. Default is \code{0}.}
 
-\item{y}{Numeric value for the y-coordinate of the node's center. Default is \code{0}.}
+\item{y}{Numeric value for the y-coordinate of the node's centre. Default is \code{0}.}
 
-\item{label}{Custom label to display instead of lavaan variable name. Defaults to the lavaan variable name.}
+\item{label}{Custom label to display instead of \code{lavaan} variable name. Defaults to the \code{lavaan} variable name.}
 }
 \value{
-A list containing arguments for an individual node's position and label within a diyPaths plot.
+A list containing arguments that specify a node's position and label, for use within the \code{node_positions} argument of \code{\link[=diyPaths]{diyPaths()}}.
 }
 \description{
 Helper function that creates a list of arguments which specify a given node's position and its name in the diagram,
@@ -25,7 +25,7 @@ designed for use within the \code{node_positions} argument of \code{\link[=diyPa
 \examples{
 
 #a list that specifies a node positioned on x = 1, y = 2,
-#and relabelled from  its lavaan model name
+#and relabelled from its `lavaan` model name.
 
 node(name = "bpm", x = 1, y = 2,  label = "Beats per Minute")
 

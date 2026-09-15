@@ -42,9 +42,9 @@ diyPaths(
 \arguments{
 \item{fit}{A fitted model object of class \code{lavaan}.}
 
-\item{node_positions}{Specify a list of node position objects, I highly suggest using the \code{\link[=node]{node()}} helper function.}
+\item{node_positions}{Specify a list of node position objects. Use the \code{\link[=node]{node()}} helper function to assist with this.}
 
-\item{path_positions}{Specify a list of path configuration objects, I highly suggest using the \code{\link[=path]{path()}} helper function.}
+\item{path_positions}{Specify a list of path configuration objects. Use the \code{\link[=path]{path()}} helper function to assist with this.}
 
 \item{standardised}{Logical. If \code{TRUE}, uses standardised parameter estimates (\code{est.std}). Default is \code{FALSE}.}
 
@@ -97,7 +97,7 @@ with its panel number and the raw group value it represents (e.g. "Panel 1: Grou
 Needed to identify which diagram represents each group and its internal panel number when creating panel titles.
 Default is \code{FALSE}.}
 
-\item{panel_titles}{Specify a list of titles for panels, I highly suggest \code{\link[=panel_title]{panel_title()}} helper function. Any panel not referenced is
+\item{panel_titles}{Specify a list of titles for panels. Use the \code{\link[=panel_title]{panel_title()}} helper function to assist with this. Any panel not referenced is
 left untitled. Default is \code{NULL}.}
 
 \item{panel_cols}{Integer for number columns to use when arranging multi-group panels. Default is \code{NULL}.}
@@ -118,26 +118,26 @@ path diagram. If \code{look_up_table = TRUE}, a list containing the diagram (\ve
 \description{
 Plot fully customisable path diagrams for structural equation models fitted with \pkg{lavaan}, rendered using \pkg{ggplot2}.
 
-Diagrams are built by specifying each node's coordinates and the attachment points (sides of relevant node) where each
-paths begins and ends. A range of further fine-tuning options are included, facilitating creation of a path diagram
-exactly as you envision it, entirely within R.
+To render the \code{ggplot} object of the diagram, the function only requires users to supply a fitted \code{lavaan} model, specify node positions using x-y coordinates, and detail where on
+the perimeter of each node (top, bottom, left, or right) each path should begin and end. The render automatically inserts estimates centered on the midpoint and adjusts each node's
+shape to match its variable type. A range of optional fine-tuning arguments are included, facilitating the creation of a path diagram exactly as you envision it, entirely within R.
 }
 \details{
 Using the function requires 4 steps and is illustrated by the example below.
-See the vignette for in-depth examples and guidance on using the function's arguments.
+See \code{vignette("diy.sem.plot")} for in-depth examples and guidance on using the function's arguments.
 \enumerate{
 \item Specify and fit the SEM using \pkg{lavaan}.
-\item Specify \code{node_positions} as a list (\code{node_positions <- list(...)}) and,
+\item Specify \code{node_positions} as a list (\code{node_list <- list(...)}) and,
 within it, define each node's position and label using the \code{\link[=node]{node()}}
 helper function.
-\item Specify \code{path_positions} as a list (\code{path_positions <- list(...)}) and,
+\item Specify \code{path_positions} as a list (\code{path_list <- list(...)}) and,
 within it, define each path's connection points, curvature, and label
 adjustments using the \code{\link[=path]{path()}} helper function.
 \item Call \code{diyPaths()}, passing in the fitted model, \code{node_positions},
 and \code{path_positions}, along with any additional display augmentations (i.e. show significance stars on estimates).
 }
 
-Creating a diagram for your specific model is inherently an iterative process. As such, steps 2-4 will likely need to be repeated
+Creating a diagram for a specific model is inherently an iterative process. As such, steps 2-4 will likely need to be repeated
 with additional fine-tuning adjustments to achieve the desired result.
 }
 \examples{
@@ -218,7 +218,7 @@ p <- diyPaths(
   path_positions = path_list,
   standardised = TRUE,
   est_stars = TRUE,
-  observed_node_size_adjust = 0.55, #making observed nodes smaller than latent
+  observed_node_size_adjust = 0.55,
   observed_node_text_size = 3,
   show_grid = TRUE,
   grid_axis_scale = 0.4,

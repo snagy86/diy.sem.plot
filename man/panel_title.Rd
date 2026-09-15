@@ -12,13 +12,13 @@ panel_title(panel_num = 1, title = NULL)
 \item{title}{The title text to display.}
 }
 \value{
-A list containing the panel index and its title.
+A list containing arguments that specify a panel's number and title, for use within the \code{panel_titles} argument of \code{\link[=diyPaths]{diyPaths()}}.
 }
 \description{
-Helper function to assign a custom title to a specific panel produced by
-\code{\link[=diyPaths]{diyPaths()}}.
-Use the \code{show_group_labels} argument in \code{\link[=diyPaths]{diyPaths()}} to view each panel's plot
-number and which group it refers to.
+Helper function that creates a list of arguments which specify custom titles and its target panel,
+designed for use within the \code{panel_titles} argument of \code{\link[=diyPaths]{diyPaths()}}. Use the
+\code{show_group_labels} argument in \code{\link[=diyPaths]{diyPaths()}} to view each panel's number and
+which group it refers to.
 }
 \examples{
 # titling a single, non-grouped model

@@ -17,11 +17,11 @@ utils::globalVariables(c(
 #' @examples
 #'
 #' #a list that specifies a node positioned on x = 1, y = 2,
-#' #and relabelled from  its `lavaan` model name
+#' #and relabelled from its `lavaan` model name.
 #'
 #' node(name = "bpm", x = 1, y = 2,  label = "Beats per Minute")
 #'
-#' @return A list containing arguments for an individual node's position and label within a `diyPaths` plot.
+#' @return A list containing arguments that specify a node's position and label, for use within the `node_positions` argument of [diyPaths()].
 #' @export
 
 node <- function(name, x = 0, y = 0, label = NULL) {
@@ -39,8 +39,8 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #' Helper function that creates a list of arguments which specify a given path's position and fine-tuning adjustments,
 #' designed for use within the `path_positions` argument of [diyPaths()].
 #'
-#' @param from The source variable name within `lavaan` model.
-#' @param to The target variable name within `lavaan` model.
+#' @param from The source variable name within the `lavaan` model.
+#' @param to The target variable name within the `lavaan` model.
 #' @param side_from Side of source node where path originates ("top", "bottom", "left", "right"). Default is "right".
 #' @param side_to Side of target node where path terminates ("top", "bottom", "left", "right"). Default is "left".
 #' @param cov_curve Numeric value for curvature of covariance/correlation paths. Default is NULL.
@@ -74,7 +74,7 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #'
 #' path(from = "dep", to = "anx", side_from = "left", side_to = "left", cov_curve = -0.6)
 #'
-#' @return A list containing arguments that specify position for a given path within a diyPaths plot.
+#' @return A list containing arguments that specify a path's position and fine-tuning adjustments, for use within the `path_positions` argument of [diyPaths()].
 #' @export
 
 path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NULL,
@@ -93,10 +93,10 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 #' Create a title for a diyPaths panel
 #'
 #' @description
-#' Helper function to assign a custom title to a specific panel produced by
-#' [diyPaths()].
-#' Use the `show_group_labels` argument in [diyPaths()] to view each panel's plot
-#' number and which group it refers to.
+#' Helper function that creates a list of arguments which specify custom titles and its target panel,
+#' designed for use within the `panel_titles` argument of [diyPaths()]. Use the
+#' `show_group_labels` argument in [diyPaths()] to view each panel's number and
+#' which group it refers to.
 #'
 #' @param panel_num Integer value for the panel number this title applies to. Default is `1`.
 #' @param title The title text to display.
@@ -108,7 +108,7 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 #' # titling the second panel of a multi-group model
 #' panel_title(panel_num = 2, title = "Female Participants")
 #'
-#' @return A list containing the panel index and its title.
+#' @return A list containing arguments that specify a panel's number and title, for use within the `panel_titles` argument of [diyPaths()].
 #' @export
 
 panel_title <- function(panel_num = 1, title = NULL) {
@@ -121,8 +121,8 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'
 #' Plot fully customisable path diagrams for structural equation models fitted with \pkg{lavaan}, rendered using \pkg{ggplot2}.
 #'
-#' To render the `ggplot` object of the diagram, function only requires users to supply a fitted `lavaan` model, specify node positions using x-y coordinates, and detail where on
-#' the perimeter of each node (top, bottom, left, or right) each path should begin and end. The render automatically inserts estimates centered on the midpoint and adjusting each node's
+#' To render the `ggplot` object of the diagram, the function only requires users to supply a fitted `lavaan` model, specify node positions using x-y coordinates, and detail where on
+#' the perimeter of each node (top, bottom, left, or right) each path should begin and end. The render automatically inserts estimates centered on the midpoint and adjusts each node's
 #' shape to match its variable type. A range of optional fine-tuning arguments are included, facilitating the creation of a path diagram exactly as you envision it, entirely within R.
 #'
 #'

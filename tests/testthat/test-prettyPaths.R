@@ -7,21 +7,21 @@ test_that("node() creates correct position and label defaults", {
 })
 
 test_that("path() creates correct connection and defaults", {
-  path <- path(from = "x", to = "x1", side_from = "bottom")
-  expect_equal(path$from, "x")
-  expect_equal(path$to, "x1")
-  expect_equal(path$side_from, "bottom")
-  expect_equal(path$side_to, "left")
-  expect_null(path$cov_curve)
+  p <- path(from = "x", to = "x1", side_from = "bottom")
+  expect_equal(p$from, "x")
+  expect_equal(p$to, "x1")
+  expect_equal(p$side_from, "bottom")
+  expect_equal(p$side_to, "left")
+  expect_null(p$cov_curve)
 })
 
 test_that("panel_title() creates correct panel and defaults", {
   pt <- panel_title()
-  expect_equal(pt$panel, 1)
+  expect_equal(pt$panel_num, 1)
   expect_equal(pt$title, character(0))
 
-  pt_custom <- panel_title(panel = 2, title = "Female Participants")
-  expect_equal(pt_custom$panel, 2)
+  pt_custom <- panel_title(panel_num = 2, title = "Female Participants")
+  expect_equal(pt_custom$panel_num, 2)
   expect_equal(pt_custom$title, "Female Participants")
 })
 
@@ -66,7 +66,7 @@ test_that("diyPaths defaults, panel numbers, and group labels work correctly", {
     path(from = "visual", to = "x3", side_from = "bottom", side_to = "top")
   )
 
-  # Test single-group / default behavior (returns ggplot directly)
+
   fit_single <- lavaan::sem(sem_model, data = HolzingerSwineford1939)
   p_single <- diyPaths(
     fit = fit_single,
@@ -84,9 +84,8 @@ test_that("diyPaths defaults, panel numbers, and group labels work correctly", {
   )
   expect_s3_class(p_multi_default, "patchwork")
 
-  # Test multi-group with custom panel_title for only one panel (leaving others untitled)
-  partial_titles <- list(
-    panel_title(panel = 1, title = "Custom Group 1")
+ partial_titles <- list(
+    panel_title(panel_num = 1, title = "Custom Group 1")
   )
   p_multi_partial <- diyPaths(
     fit = fit,
@@ -95,4 +94,5 @@ test_that("diyPaths defaults, panel numbers, and group labels work correctly", {
     panel_titles = partial_titles
   )
   expect_s3_class(p_multi_partial, "patchwork")
+  expect_equal(p_multi_partial[[1]]$labels$title, "Custom Group 1")
 })
