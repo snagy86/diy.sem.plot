@@ -40,7 +40,7 @@ pak::pkg_install("snagy86/diy.sem.plot")
 Run this code if you want include vignette for development version as well.
 
 ```{r, eval = FALSE}
-install.packages("remote")
+install.packages("remotes")
 
 install_github("snagy86/diy.sem.plot", build_vignettes = TRUE, force = TRUE)
 ```

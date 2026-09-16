@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/snagy86/diy.sem.plot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/snagy86/diy.sem.plot/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `diy.sem.plot` allows users to manually plot fully customisable path
@@ -34,6 +35,15 @@ Run the following to install the development version of the package.
 ``` r
 install.packages("pak")
 pak::pkg_install("snagy86/diy.sem.plot")
+```
+
+Run this code if you want include vignette for development version as
+well.
+
+``` r
+install.packages("remotes")
+
+install_github("snagy86/diy.sem.plot", build_vignettes = TRUE, force = TRUE)
 ```
 
 ## Example
