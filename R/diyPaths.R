@@ -1,6 +1,6 @@
 utils::globalVariables(c(
   "xmin", "xmax", "ymin", "ymax", "x", "y", "label",
-  "a", "b", "xend", "yend", "linetype", "mid_x", "mid_y", "label_text", ".data"
+  "a", "b", "xend", "yend", "linetype", "mid_x", "mid_y", "label_text", ".data", "diyPaths_arguments_all_args", "diyPaths_arguments_minimal_args"
 ))
 
 #' Create a template for use in diyPaths
@@ -37,15 +37,15 @@ utils::globalVariables(c(
 #'
 #' fit <- sem(sem_model, data = HolzingerSwineford1939)
 #'
-#' template(fit = fit, include_variance_paths = TRUE, diyPath_arguments = "max")
+#' template(fit = fit, include_variance_paths = TRUE, diyPaths_arguments = "max")
 
-template <- function(fit, include_variance_paths = TRUE, diyPath_arguments = c("max", "min")) {
+template <- function(fit, include_variance_paths = TRUE, diyPaths_arguments = c("max", "min")) {
 
   pe_full <- lavaan::parameterestimates(fit)
   pe_full <- pe_full[, colnames(pe_full) %in% c("lhs", "op", "rhs")]
 
   fit_name <- deparse(substitute(fit))
-  diyPath_arguments <- match.arg(diyPath_arguments)
+  diyPaths_arguments <- match.arg(diyPaths_arguments)
 
   nodes <- data.frame(node = unique(pe_full$lhs))
 
@@ -184,7 +184,7 @@ template <- function(fit, include_variance_paths = TRUE, diyPath_arguments = c("
 
   diyPaths_arguments_minimal_args <- paste0("my_sem_diagram <- diyPaths(fit = ", fit_name, ", ", "node_positions = node_list, path_positions = path_list)")
 
-  which_template <- if (diyPath_arguments == "max") diyPath_arguments_all_args else diyPath_arguments_minimal_args
+  which_template <- if (diyPaths_arguments == "max") diyPaths_arguments_all_args else diyPaths_arguments_minimal_args
 
   cat(node_text, "\n", path_text, "\n", "\n", which_template)
 }

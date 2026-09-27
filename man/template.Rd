@@ -7,7 +7,7 @@
 template(
   fit,
   include_variance_paths = TRUE,
-  diyPath_arguments = c("max", "min")
+  diyPaths_arguments = c("max", "min")
 )
 }
 \arguments{
@@ -43,5 +43,5 @@ sem_model <- '
 
 fit <- sem(sem_model, data = HolzingerSwineford1939)
 
-template(fit = fit, include_variance_paths = TRUE, diyPath_arguments = "max")
+template(fit = fit, include_variance_paths = TRUE, diyPaths_arguments = "max")
 }
