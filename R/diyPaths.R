@@ -90,6 +90,7 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
     variance_position = variance_position
   )
 }
+
 #' Create a title for a diyPaths panel
 #'
 #' @description
@@ -664,4 +665,6 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
   }
 
   final
+
 }
+
