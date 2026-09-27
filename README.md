@@ -7,12 +7,12 @@
 
 [![R-CMD-check](https://github.com/snagy86/diy.sem.plot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/snagy86/diy.sem.plot/actions/workflows/R-CMD-check.yaml)
 [![CRAN
-status](https://www.r-pkg.org/badges/version/yourpkg)](https://CRAN.R-project.org/package=yourpkg)
+status](https://www.r-pkg.org/badges/version/diy.sem.plot)](https://CRAN.R-project.org/package=diy.sem.plot)
 [![CRAN
-checks](https://badges.cranchecks.info/worst/yourpkg.svg)](https://cran.r-project.org/web/checks/check_results_yourpkg.html)
-[![Downloads](https://cranlogs.r-pkg.org/badges/yourpkg)](https://cran.r-project.org/package=yourpkg)
+checks](https://badges.cranchecks.info/worst/diy.sem.plot.svg)](https://cran.r-project.org/web/checks/check_results_diy.sem.plot.html)
+[![Downloads](https://cranlogs.r-pkg.org/badges/diy.sem.plot)](https://cran.r-project.org/package=diy.sem.plot)
 [![Total
-downloads](https://cranlogs.r-pkg.org/badges/grand-total/yourpkg)](https://cran.r-project.org/package=yourpkg)
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/diy.sem.plot)](https://cran.r-project.org/package=diy.sem.plot)
 <!-- badges: end -->
 
 `diy.sem.plot` allows users to manually plot fully customisable path
