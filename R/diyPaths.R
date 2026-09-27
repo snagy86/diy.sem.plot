@@ -3,6 +3,193 @@ utils::globalVariables(c(
   "a", "b", "xend", "yend", "linetype", "mid_x", "mid_y", "label_text", ".data"
 ))
 
+#' Create a template for use in diyPaths
+#'
+#' @description
+#'
+#' Takes your model produces a complete template to save time when using diyPaths.
+#'
+#' @param fit the `lavaan` object of fitted model
+#' @param include_variance_paths Logical. Whether to include specification for variance/residual paths in paths_lists
+#' @param diyPaths_arguments Logical. Whether to display a maximal template for diyPaths function (all arguements) or minimal (just necessary arguments)
+#' @export
+#'
+#' @examples
+#'
+#' library(lavaan)
+#' library(ggplot2)
+#'
+#' data(HolzingerSwineford1939, package = "lavaan")
+#'
+#'
+#' #specify the model
+#'
+#' sem_model <- '
+#'   visual  =~ x1 + x2 + x3
+#'   textual =~ x4 + x5 + x6
+#'   speed   =~ x7 + x8 + x9
+#'
+#'   speed ~ visual + textual
+#'   visual ~~ textual
+#' '
+#'
+#' #fit the model
+#'
+#' fit <- sem(sem_model, data = HolzingerSwineford1939)
+#'
+#' template(fit = fit, include_variance_paths = TRUE, diyPath_arguments = "max")
+
+template <- function(fit, include_variance_paths = TRUE, diyPath_arguments = c("max", "min")) {
+
+  pe_full <- lavaan::parameterestimates(fit)
+  pe_full <- pe_full[, colnames(pe_full) %in% c("lhs", "op", "rhs")]
+
+  fit_name <- deparse(substitute(fit))
+  diyPath_arguments <- match.arg(diyPath_arguments)
+
+  nodes <- data.frame(node = unique(pe_full$lhs))
+
+  node_paste <- data.frame(output = paste0(
+    '\t', 'node(',
+    'name = "', nodes$node, '"', ', ',
+    'x = 0, ',
+    'y = 0, ',
+    'label = "', nodes$node, '"', ')',
+    ifelse(seq_len(nrow(nodes)) < nrow(nodes), ',', ''),
+    ' #EDIT ME!'
+  ))
+
+  node_text <- paste0(
+    "node_list <- list(\n",
+    paste(node_paste$output, collapse = "\n"),   # just newline — comma already baked in per row
+    "\n)"
+  )
+
+  is_loading <- pe_full$op == "=~"
+  is_reg <- pe_full$op == "~"
+  is_cov <- pe_full$op == "~~" & pe_full$lhs != pe_full$rhs
+  is_var <- pe_full$op == "~~" & pe_full$lhs == pe_full$rhs
+
+  reg_paths <- data.frame(
+    from = rep(NA, sum(is_reg)),
+    to = rep(NA, sum(is_reg))
+  )
+
+  reg_paths$from <- pe_full$rhs[is_reg]
+  reg_paths$to <- pe_full$lhs[is_reg]
+
+  reg_paste <- data.frame(output = paste0('\t',
+                                          'path(', 'from = "', reg_paths$from, '"', ', ', 'to = "', reg_paths$to, '"', ', ',
+                                          'side_from = "right" ', ', ', 'side_to = "left"', ', ', "nudge_text_x = 0", ', ', "nudge_text_y = 0", ')',
+                                          ',',
+                                          ' #EDIT ME!'
+  ))
+
+
+  loading_paths <- data.frame(
+    from = rep(NA, sum(is_loading)),
+    to = rep(NA, sum(is_loading))
+  )
+
+  loading_paths$from <- pe_full$lhs[is_loading]
+  loading_paths$to <- pe_full$rhs[is_loading]
+
+  loading_paste <- data.frame(output = paste0('\t',
+                                              'path(', 'from = "', loading_paths$from, '"', ', ', 'to = "', loading_paths$to, '"', ', ',
+                                              'side_from = "right" ', ', ', 'side_to = "left"', ', ', "nudge_text_x = 0", ', ', "nudge_text_y = 0", ')',
+                                              ',',
+                                              ' #EDIT ME!'
+  ))
+
+  cov_paths <- data.frame(
+    from = rep(NA, sum(is_cov)),
+    to = rep(NA, sum(is_cov))
+  )
+
+  cov_paths$from <- pe_full$rhs[is_cov]
+  cov_paths$to <- pe_full$lhs[is_cov]
+
+  cov_paste <- data.frame(output = paste0('\t',
+                                          'path(', 'from = "', cov_paths$from, '"', ', ', 'to = "', cov_paths$to, '"', ', ',
+                                          'side_from = "right" ', ', ', 'side_to = "left"', ', ', "nudge_text_x = 0", ', ', "nudge_text_y = 0", ', ', 'cov_curve = 0.4', ')',
+                                          ',',
+                                          ' #EDIT ME!'
+  ))
+
+  variance_paths <- data.frame(
+    from = rep(NA, sum(is_var)),
+    to = rep(NA, sum(is_var))
+  )
+
+  variance_paths$from <- pe_full$rhs[is_var]
+  variance_paths$to <- pe_full$lhs[is_var]
+
+  variance_paste <- data.frame(output = paste0('\t',
+                                               'path(', 'from = "', variance_paths$from, '"', ', ', 'to = "', variance_paths$to, '"', ', ',
+                                               "nudge_text_x = 0", ', ', "nudge_text_y = 0", ', ', 'variance_position = "top"', ')',
+                                               ',',
+                                               ' #EDIT ME!'
+  ))
+
+  reg_section <- if (nrow(reg_paths) > 0) paste0('\t',"# regression paths\n", paste(reg_paste$output, collapse = "\n"), "\n") else ""
+
+  loading_section <- if (nrow(loading_paths) > 0) paste0('\t',"# loading paths\n", paste(loading_paste$output, collapse = "\n"), "\n") else ""
+
+  cov_section <- if (nrow(cov_paths) > 0) paste0('\t',"# covariance/correlation paths\n", paste(cov_paste$output, collapse = "\n"), "\n") else ""
+
+  variance_section <- if (include_variance_paths && nrow(variance_paths) > 0) paste0('\t',"# variance paths\n", paste(variance_paste$output, collapse = "\n"), "\n") else ""
+
+  path_text <- paste0("\n",
+                      "path_list <- list(\n",
+                      reg_section, "\n",
+                      loading_section, "\n",
+                      cov_section, "\n",
+                      variance_section,
+                      "\n)"
+  )
+
+  # remove the last stray comma before #EDIT ME! right before the final )
+  path_text <- sub(",(\\s*#EDIT ME!\\s*\\n\\))", "\\1", path_text)
+
+  diyPaths_arguments_all_args <- paste0(
+    "my_sem_diagram <- diyPaths(fit = ", fit_name, ", ", "node_positions = node_list, path_positions = path_list,
+                           standardised = FALSE,
+                           digits = 3,
+                           est_stars = FALSE,
+                           est_p = FALSE,
+                           est_ci = FALSE,
+                           variance_stars = FALSE,
+                           variance_p = FALSE,
+                           variance_ci = FALSE,
+                           sig_linetype = FALSE,
+                           p_threshold = 0.05,
+                           show_variances = FALSE,
+                           show_grid = FALSE,
+                           grid_axis_scale = 1,
+                           non_transparent_text = TRUE,
+                           latent_node_text_size = 4,
+                           observed_node_text_size = 4,
+                           path_text_size = 3.5,
+                           line_thickness = 0.6,
+                           arrow_size = 0.2,
+                           node_width = 1.5, node_height = 1,
+                           latent_node_size_adjust = 1,
+                           observed_node_size_adjust = 1,
+                           show_group_labels = FALSE,
+                           panel_titles = NULL,
+                           panel_cols = NULL,
+                           margin_x = 0.5,
+                           margin_y = 0.5,
+                           look_up_table = FALSE)")
+
+  diyPaths_arguments_minimal_args <- paste0("my_sem_diagram <- diyPaths(fit = ", fit_name, ", ", "node_positions = node_list, path_positions = path_list)")
+
+  which_template <- if (diyPath_arguments == "max") diyPath_arguments_all_args else diyPath_arguments_minimal_args
+
+  cat(node_text, "\n", path_text, "\n", "\n", which_template)
+}
+
+
 #' Create a node position list
 #'
 #' @description
