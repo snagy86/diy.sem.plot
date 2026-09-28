@@ -28,20 +28,21 @@ creation of a path diagram exactly as envisioned, entirely within R.
 
 ## Installation
 
+Install the released version of `diy.sem.plot` from CRAN:
+
 ``` r
 install.packages("diy.sem.plot")
 ```
 
 Or install the development version from GitHub to get the latest
-features, including the `template()` helper function (not yet on CRAN!):
+features, including the `template()` helper function (not yet on CRAN):
 
 ``` r
 install.packages("remotes")
 remotes::install_github("snagy86/diy.sem.plot", build_vignettes = TRUE)
 ```
 
-NOTE: The vignettes in the development version have not been updated
-yet.
+The vignettes in the development version have not been updated yet.
 
 ## Example
 
@@ -55,41 +56,28 @@ model and prints the node list, path list and `diyPaths()` call with
 default values. I then edited these values to position everything. The
 original printed output is omitted here to save space.
 
-Arguments in `template` let you specify how much code is printed. For
-example, `diyPaths_arguments = "min"` prints only the necessary
+The arguments in `template()` let you specify how much code is printed.
+For example, `diyPaths_arguments = "min"` prints only the necessary
 `diyPaths()` arguments, `"max"` prints all of them, and
 `include_variance_paths = FALSE` leaves out the variance paths.
 
 ``` r
-
-# full SEM example, this model may not make theoretical sense.
-library(diy.sem.plot)
 library(lavaan)
-#> This is lavaan 0.7-2
-#> lavaan is FREE software! Please report any bugs.
-library(ggplot2)
-
-data(HolzingerSwineford1939, package = "lavaan")
-
-# specify the model
+library(diy.sem.plot)
 
 sem_model <- '
-   visual =~ x1 + x2 + x3
-   textual =~ x4 + x5 + x6
-   speed =~ x7 + x8 + x9
+  visual  =~ x1 + x2 + x3
+  textual =~ x4 + x5 + x6
+  speed   =~ x7 + x8 + x9
 
-   speed ~ visual + textual
-   visual ~~ textual
+  speed ~ visual + textual
+  visual ~~ textual
 '
-
-# fit the model
 
 fit_sem <- sem(sem_model, data = HolzingerSwineford1939)
 
-
-
-invisible(capture.output( # hiding default outut
-  template(fit = fit_sem, include_variance_paths = TRUE, diyPaths_arguments = "max"))) #prints template code to the console 
+invisible(capture.output( # hiding default output
+  template(fit = fit_sem, include_variance_paths = TRUE, diyPaths_arguments = "max"))) # template() prints its code to the console with cat()
 
 node_list <- list(
     node(name = "visual", x = 1, y = 1, label = "Visual"),
@@ -108,22 +96,22 @@ node_list <- list(
 
 path_list <- list(
     # regression paths
-    path(from = "visual", to = "speed", side_from = "right" , side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
-    path(from = "textual", to = "speed", side_from = "right" , side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
+    path(from = "visual", to = "speed", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
+    path(from = "textual", to = "speed", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
 
     # loading paths
-    path(from = "visual", to = "x1", side_from = "bottom" , side_to = "top", nudge_text_x = -0.1, nudge_text_y = 0),
-    path(from = "visual", to = "x2", side_from = "bottom" , side_to = "top", nudge_text_x = 0, nudge_text_y = 0),
-    path(from = "visual", to = "x3", side_from = "bottom" , side_to = "top", nudge_text_x = 0.1, nudge_text_y = 0),
-    path(from = "textual", to = "x4", side_from = "top" , side_to = "bottom", nudge_text_x = -0.1, nudge_text_y = 0),
-    path(from = "textual", to = "x5", side_from = "top" , side_to = "bottom", nudge_text_x = 0, nudge_text_y = 0),
-    path(from = "textual", to = "x6", side_from = "top" , side_to = "bottom", nudge_text_x = 0.1, nudge_text_y = 0),
-    path(from = "speed", to = "x7", side_from = "right" , side_to = "left", nudge_text_x = 0, nudge_text_y = -0.1),
-    path(from = "speed", to = "x8", side_from = "right" , side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
-    path(from = "speed", to = "x9", side_from = "right" , side_to = "left", nudge_text_x = 0, nudge_text_y = 0.1),
+    path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1, nudge_text_y = 0),
+    path(from = "visual", to = "x2", side_from = "bottom", side_to = "top", nudge_text_x = 0, nudge_text_y = 0),
+    path(from = "visual", to = "x3", side_from = "bottom", side_to = "top", nudge_text_x = 0.1, nudge_text_y = 0),
+    path(from = "textual", to = "x4", side_from = "top", side_to = "bottom", nudge_text_x = -0.1, nudge_text_y = 0),
+    path(from = "textual", to = "x5", side_from = "top", side_to = "bottom", nudge_text_x = 0, nudge_text_y = 0),
+    path(from = "textual", to = "x6", side_from = "top", side_to = "bottom", nudge_text_x = 0.1, nudge_text_y = 0),
+    path(from = "speed", to = "x7", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = -0.1),
+    path(from = "speed", to = "x8", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
+    path(from = "speed", to = "x9", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0.1),
 
     # covariance/correlation paths
-    path(from = "textual", to = "visual", side_from = "left" , side_to = "left", nudge_text_x = 0, nudge_text_y = 0, cov_curve = -0.6),
+    path(from = "textual", to = "visual", side_from = "left", side_to = "left", nudge_text_x = 0, nudge_text_y = 0, cov_curve = -0.6),
 
     # variance paths
     path(from = "x1", to = "x1", nudge_text_x = 0, nudge_text_y = 0, variance_position = "bottom"),
@@ -138,7 +126,6 @@ path_list <- list(
     path(from = "visual", to = "visual", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top"),
     path(from = "textual", to = "textual", nudge_text_x = 0, nudge_text_y = 0, variance_position = "bottom"),
     path(from = "speed", to = "speed", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top")
-
 )
 
 my_sem_diagram <- diyPaths(fit = fit_sem, node_positions = node_list, path_positions = path_list,
@@ -172,20 +159,10 @@ my_sem_diagram <- diyPaths(fit = fit_sem, node_positions = node_list, path_posit
                            look_up_table = TRUE)
 
 print(my_sem_diagram)
-#> $plot
 ```
-
-<img src="man/figures/README-example1-1.png" alt="" width="100%" />
-
-    #> 
-    #> $look_up_table
-    #>       type width height text_size
-    #> 1   latent  1.50    1.0       6.0
-    #> 2 observed  0.75    0.5       4.5
-    #> 3     path    NA     NA       4.5
 
 ## Coming soon
 
-A larger update and fully updated vignettes for the new `template()`
+A larger update and fully updated vignettes for the `template()`
 workflow are on the way. After that, I plan to add support for Bayesian
 SEM models fitted with `blavaan`.
