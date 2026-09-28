@@ -63,6 +63,8 @@ For example, `diyPaths_arguments = "min"` prints only the necessary
 
 ``` r
 library(lavaan)
+#> This is lavaan 0.7-2
+#> lavaan is FREE software! Please report any bugs.
 library(diy.sem.plot)
 
 sem_model <- '
@@ -159,7 +161,17 @@ my_sem_diagram <- diyPaths(fit = fit_sem, node_positions = node_list, path_posit
                            look_up_table = TRUE)
 
 print(my_sem_diagram)
+#> $plot
 ```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" alt="" width="100%" />
+
+    #> 
+    #> $look_up_table
+    #>       type width height text_size
+    #> 1   latent  1.50    1.0       6.0
+    #> 2 observed  0.75    0.5       4.5
+    #> 3     path    NA     NA       4.5
 
 ## Coming soon
 
