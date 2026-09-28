@@ -50,7 +50,7 @@ In this example, I used `template()` to generate the starting code, saving time 
 
 The arguments in `template()` let you specify how much code is printed. For example, `diyPaths_arguments = "min"` prints only the necessary `diyPaths()` arguments, `"max"` prints all of them, and `include_variance_paths = FALSE` leaves out the variance paths.
 
-```{r}
+```{r, fig.width = 10, fig.height = 8,out.width = "100%"}
 library(lavaan)
 library(diy.sem.plot)
 
