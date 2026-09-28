@@ -1,3 +1,5 @@
+
+
 test_that("node() creates correct position and label defaults", {
   n <- node("x", x = 2, label = "Visual")
   expect_equal(n$name, "x")
@@ -26,8 +28,9 @@ test_that("panel_title() creates correct panel and defaults", {
 })
 
 test_that("diyPaths generates a ggplot object from a simple fit", {
+
   data(HolzingerSwineford1939, package = "lavaan")
-  fit_simple <- lavaan::sem('visual =~ x1 + x2 + x3', data = HolzingerSwineford1939)
+  fit <- lavaan::sem('visual =~ x1 + x2 + x3', data = HolzingerSwineford1939)
 
   node_pos <- list(
     node("visual", x = 1, y = 1),
@@ -42,7 +45,7 @@ test_that("diyPaths generates a ggplot object from a simple fit", {
     path("visual", "x3")
   )
 
-  p <- diyPaths(fit = fit_simple, node_positions = node_pos, path_positions = path_pos)
+  p <- diyPaths(fit = fit, node_positions = node_pos, path_positions = path_pos)
   expect_s3_class(p, "ggplot")
 })
 
@@ -51,7 +54,7 @@ test_that("diyPaths defaults, panel numbers, and group labels work correctly", {
   sem_model <- '
     visual =~ x1 + x2 + x3
   '
-  fit <- lavaan::sem(sem_model, data = HolzingerSwineford1939, group = "school")
+  fit_group <- lavaan::sem(sem_model, data = HolzingerSwineford1939, group = "school")
 
   node_positions <- list(
     node("visual", x = 1, y = 1),
@@ -75,9 +78,8 @@ test_that("diyPaths defaults, panel numbers, and group labels work correctly", {
   )
   expect_s3_class(p_single, "ggplot")
 
-  # Test multi-group with default panel titles (NULL) and show_group_labels = TRUE
   p_multi_default <- diyPaths(
-    fit = fit,
+    fit = fit_group,
     node_positions = node_positions,
     path_positions = path_positions,
     show_group_labels = TRUE
@@ -88,11 +90,43 @@ test_that("diyPaths defaults, panel numbers, and group labels work correctly", {
     panel_title(panel_num = 1, title = "Custom Group 1")
   )
   p_multi_partial <- diyPaths(
-    fit = fit,
+    fit = fit_group,
     node_positions = node_positions,
     path_positions = path_positions,
     panel_titles = partial_titles
   )
   expect_s3_class(p_multi_partial, "patchwork")
   expect_equal(p_multi_partial[[1]]$labels$title, "Custom Group 1")
+})
+
+test_that("template works", {
+  n <- node("x", x = 2, label = "Visual")
+  expect_equal(n$name, "x")
+  expect_equal(n$x, 2)
+  expect_equal(n$y, 0)
+  expect_equal(n$label, "Visual")
+})
+
+test_that("template() prints with variance paths on", {
+  data(HolzingerSwineford1939, package = "lavaan")
+  fit <- lavaan::sem('visual =~ x1 + x2 + x3', data = HolzingerSwineford1939)
+  expect_output(template(fit, include_variance_paths = TRUE, diyPaths_arguments = "min"))
+})
+
+test_that("template() prints with variance paths off", {
+  data(HolzingerSwineford1939, package = "lavaan")
+  fit <- lavaan::sem('visual =~ x1 + x2 + x3', data = HolzingerSwineford1939)
+  expect_output(template(fit, include_variance_paths = FALSE, diyPaths_arguments = "min"))
+})
+
+test_that("template() prints with max arguments", {
+  data(HolzingerSwineford1939, package = "lavaan")
+  fit <- lavaan::sem('visual =~ x1 + x2 + x3', data = HolzingerSwineford1939)
+  expect_output(template(fit, diyPaths_arguments = "max"))
+})
+
+test_that("template() prints with min arguments", {
+  data(HolzingerSwineford1939, package = "lavaan")
+  fit <- lavaan::sem('visual =~ x1 + x2 + x3', data = HolzingerSwineford1939)
+  expect_output(template(fit, diyPaths_arguments = "min"))
 })
