@@ -18,10 +18,10 @@ utils::globalVariables(c(
 #'
 #' @param fit the `lavaan` object of fitted model
 #' @param include_variance_paths Logical. Whether to include specification for variance/residual paths in paths_lists
-#' @param diyPaths_arguments Logical. Whether to display a maximal template for diyPaths function (all argements) or minimal (just necessary arguments)
+#' @param diyPaths_arguments Use either "max" (the printed call shows every [diyPaths()] argument) or "min" (only the required arguments). Default is "max"
 #' @return Invisibly returns the template as a single character string, and prints it to the console.
 #' @seealso [diyPaths()] to render the diagram from the template;
-#'   [node()], [path()], and [panel_title()] for the helper functions the template uses.
+#'   [node()], [path()], [panel_title()], and [panel_note()] for the helper functions the template uses.
 #' @export
 #'
 #' @examples
@@ -56,11 +56,10 @@ utils::globalVariables(c(
 #' tmpl <- template(fit = fit, diyPaths_arguments = "min")
 #' writeLines(tmpl)
 
-
 template <- function(fit, include_variance_paths = TRUE, diyPaths_arguments = c("max", "min")) {
 
   pe_full <- lavaan::parameterestimates(fit)
-  pe_full <- pe_full[, colnames(pe_full) %in% c("lhs", "op", "rhs")]
+  pe_full <- unique(pe_full[, colnames(pe_full) %in% c("lhs", "op", "rhs")])
 
   fit_name <- deparse(substitute(fit))
   diyPaths_arguments <- match.arg(diyPaths_arguments)
@@ -264,6 +263,12 @@ my_path_diagram
 #' @param y Numeric value for the y-coordinate of the node's centre. Default is `0`.
 #' @param label Custom label to display instead of `lavaan` variable name. Defaults to the `lavaan` variable name.
 #'
+#'#' @seealso [path()] to specify the paths between nodes;
+#'   [diyPaths()] to render the diagram; [template()] to generate a starting `node_positions` list.
+#'
+#' @return A list containing arguments that specify a node's position and label, for use within the `node_positions` argument of [diyPaths()].
+#' @export
+#'
 #' @examples
 #'
 #' #a list that specifies a node positioned on x = 1, y = 2,
@@ -271,8 +276,6 @@ my_path_diagram
 #'
 #' node(name = "bpm", x = 1, y = 2,  label = "Beats per Minute")
 #'
-#' @return A list containing arguments that specify a node's position and label, for use within the `node_positions` argument of [diyPaths()].
-#' @export
 
 node <- function(name, x = 0, y = 0, label = NULL) {
   list(
@@ -310,7 +313,8 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #'  bends it right. For a mostly horizontal path (i.e. node1: x = 1, y = 0 -> node2: x = 2, y = 0), positive curvature bends
 #'  it down and negative curvature bends it up. Best results typically range from -1 to 1.
 #'
-#'
+#' @seealso [node()] to specify node positions;
+#'   [diyPaths()] to render the diagram; [template()] to generate a starting `path_positions` list.
 #'
 #' @examples
 #'
@@ -343,20 +347,30 @@ path <- function(from, to, side_from = "right", side_to = "left", cov_curve = NU
 
 #' Create a note for a diyPaths panel
 #'
-#' #' Helper function that creates a list of arguments which specify custom notes and its target panel,
+#' @description
+#' Helper function that creates a list of arguments which specify a custom note and its target panel,
 #' designed for use within the `panel_notes` argument of [diyPaths()]. Use the
 #' `show_group_labels` argument in [diyPaths()] to view each panel's number and
 #' which group it refers to.
 #'
-#' @param panel_num Integer value for the panel number this title applies to. Default is `1`.
-#' @param note_text Text to display with in the note.
-#' @param x  Numeric value for the x-coordinate for the note. Default is `0`.
-#' @param y  Numeric value for the y-coordinate for the note. Default is `0`.
+#' @param panel_num Integer value for the panel number this note applies to.
+#' @param note_text Text to display in the note. If `NULL`, no note is drawn.
+#' @param x Numeric value for the x-coordinate of the note. Default is `0`.
+#' @param y Numeric value for the y-coordinate of the note. Default is `0`.
 #'
-#' @return A list containing arguments that specify a path's position and fine-tuning adjustments, for use within the `path_positions` argument of [diyPaths()].
+#' @seealso [diyPaths()], where the list of notes is passed to `panel_notes`;
+#' [panel_title()] for adding titles to panels; [template()], whose output includes a starting note list.
+#'
+#' @return A list containing arguments that specify a panel's note text and position, for use within the `panel_notes` argument of [diyPaths()].
 #' @export
 #'
+#'
 #' @examples
+#' # a note on the first panel, placed at x = 2.5, y = 0
+#' panel_note(panel_num = 1, note_text = "n = 100", x = 2.5, y = 0)
+#'
+#' # a note on the second panel of a multi-group model
+#' panel_note(panel_num = 2, note_text = "Source: my data", x = 2.5, y = 0)
 #'
 
 panel_note <- function(panel_num, note_text = NULL, x = 0, y = 0) {
@@ -377,15 +391,20 @@ panel_note <- function(panel_num, note_text = NULL, x = 0, y = 0) {
 #' @param panel_num Integer value for the panel number this title applies to. Default is `1`.
 #' @param title The title text to display.
 #'
+#' @seealso [diyPaths()], where the list of titles is passed to `panel_titles`;
+#'   [panel_note()] for adding notes to panels; [template()], whose output includes a starting title list.
+#'
+#' @return A list containing arguments that specify a panel's number and title, for use within the `panel_titles` argument of [diyPaths()].
+#' @export
+#'
 #' @examples
 #' # titling a single, non-grouped model
 #' panel_title(title = "My SEM Model")
 #'
 #' # titling the second panel of a multi-group model
 #' panel_title(panel_num = 2, title = "Female Participants")
-#'
-#' @return A list containing arguments that specify a panel's number and title, for use within the `panel_titles` argument of [diyPaths()].
-#' @export
+
+
 
 panel_title <- function(panel_num = 1, title = NULL) {
   list(panel_num = as.integer(panel_num),
@@ -474,6 +493,10 @@ panel_title <- function(panel_num = 1, title = NULL) {
 #'   path diagram(s). If `look_up_table = TRUE`, a list containing the diagram(s) (`$plot`) and a look-up
 #'   `data.frame` of node width/height and text sizes for latent, observed, and path labels
 #'   (`$look_up_table`).
+#'
+#' @seealso [template()] to generate starting code for `node_positions`, `path_positions`, `panel_titles` and `panel_notes`;
+#'   [node()], [path()], [panel_title()], and [panel_note()] for the helper functions used within them.
+#'
 #' @export
 #'
 #' @examples
@@ -727,19 +750,19 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
              0)
     )
 
-    for (pi in path_positions) {
+    for (pp in path_positions) {
       match <- ifelse(
         paths$type == "~~",
-        (paths$from == pi$from & paths$to == pi$to) | (paths$from == pi$to & paths$to == pi$from),
-        paths$from == pi$from & paths$to == pi$to
+        (paths$from == pp$from & paths$to == pp$to) | (paths$from == pp$to & paths$to == pp$from),
+        paths$from == pp$from & paths$to == pp$to
       )
       if (any(match)) {
-        paths$side_from[match] <- pi$side_from
-        paths$side_to[match] <- pi$side_to
-        if (!is.null(pi$cov_curve)) paths$curvature[match] <- pi$cov_curve
-        if (!is.null(pi$nudge_text_x)) paths$nudge_x[match] <- pi$nudge_text_x
-        if (!is.null(pi$nudge_text_y)) paths$nudge_y[match] <- pi$nudge_text_y
-        if (!is.null(pi$variance_position)) paths$variance_position[match] <- pi$variance_position
+        paths$side_from[match] <- pp$side_from
+        paths$side_to[match] <- pp$side_to
+        if (!is.null(pp$cov_curve)) paths$curvature[match] <- pp$cov_curve
+        if (!is.null(pp$nudge_text_x)) paths$nudge_x[match] <- pp$nudge_text_x
+        if (!is.null(pp$nudge_text_y)) paths$nudge_y[match] <- pp$nudge_text_y
+        if (!is.null(pp$variance_position)) paths$variance_position[match] <- pp$variance_position
       }
     }
 
@@ -913,7 +936,7 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
     if (!is.null(titles_df)) {
       match_id_title <- titles_df[titles_df$panel_num == g & !is.na(titles_df$title), ]
       if (nrow(match_id_title) > 0)
-        p <- p + ggplot2::labs(title = match_id_title$title)
+        p <- p + ggplot2::labs(title = match_id_title$title[1])
     }
 
 
@@ -971,7 +994,5 @@ diyPaths <- function(fit, node_positions, path_positions, standardised = FALSE, 
   }
 
   final
-
-
 }
 

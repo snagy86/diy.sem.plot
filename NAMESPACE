@@ -2,7 +2,7 @@
 
 export(diyPaths)
 export(node)
-export(note)
+export(panel_note)
 export(panel_title)
 export(path)
 export(template)

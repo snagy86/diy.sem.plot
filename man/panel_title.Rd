@@ -26,5 +26,8 @@ panel_title(title = "My SEM Model")
 
 # titling the second panel of a multi-group model
 panel_title(panel_num = 2, title = "Female Participants")
-
+}
+\seealso{
+\code{\link[=diyPaths]{diyPaths()}}, where the list of titles is passed to \code{panel_titles};
+\code{\link[=panel_note]{panel_note()}} for adding notes to panels; \code{\link[=template]{template()}}, whose output includes a starting title list.
 }

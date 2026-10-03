@@ -13,31 +13,35 @@ diyPaths(
   est_stars = FALSE,
   est_p = FALSE,
   est_ci = FALSE,
+  show_variances = FALSE,
   variance_stars = FALSE,
   variance_p = FALSE,
   variance_ci = FALSE,
   sig_linetype = FALSE,
   p_threshold = 0.05,
-  show_variances = FALSE,
-  show_grid = FALSE,
-  grid_axis_scale = 1,
-  non_transparent_text = TRUE,
-  latent_node_text_size = 4,
-  observed_node_text_size = 4,
-  path_text_size = 3.5,
-  line_thickness = 0.6,
-  arrow_size = 0.2,
   node_width = 1.5,
   node_height = 1,
   latent_node_size_adjust = 1,
   observed_node_size_adjust = 1,
-  show_group_labels = FALSE,
-  panel_titles = NULL,
+  latent_node_text_size = 4,
+  observed_node_text_size = 4,
+  path_transparent_text = FALSE,
+  path_text_size = 3.5,
+  line_thickness = 0.6,
+  arrow_size = 0.2,
   panel_cols = NULL,
+  show_group_labels = FALSE,
+  title_text_size = 25,
+  panel_titles = NULL,
+  panel_notes = NULL,
+  note_text_size = 4,
+  note_transparent_text = FALSE,
+  note_outline = TRUE,
+  show_grid = FALSE,
+  grid_axis_scale = 1,
   margin_x = 0.5,
   margin_y = 0.5,
-  look_up_table = FALSE,
-  note = NULL
+  look_up_table = FALSE
 )
 }
 \arguments{
@@ -57,6 +61,8 @@ diyPaths(
 
 \item{est_ci}{Logical. Whether to display confidence intervals on path estimates. Default is \code{FALSE}.}
 
+\item{show_variances}{Logical. Whether to display variance and residual paths. Default is \code{FALSE}.}
+
 \item{variance_stars}{Logical. Whether to display significance stars on variance paths. Default is \code{FALSE}.}
 
 \item{variance_p}{Logical. Whether to display p-values on variance paths. Default is \code{FALSE}.}
@@ -67,24 +73,6 @@ diyPaths(
 
 \item{p_threshold}{Statistical significance threshold used to determine non-significant paths when \code{sig_linetype = TRUE}. Default is \code{0.05}.}
 
-\item{show_variances}{Logical. Whether to display variance and residual paths. Default is \code{FALSE}.}
-
-\item{show_grid}{Logical. Whether to overlay a coordinate grid. Default is \code{FALSE}.}
-
-\item{grid_axis_scale}{Sets the spacing of grid-lines when \code{show_grid = TRUE}. Default is \code{1}.}
-
-\item{non_transparent_text}{Logical. If \code{TRUE}, path estimate labels receive a white background mask. Default is \code{TRUE}.}
-
-\item{latent_node_text_size}{Text font size for latent node labels. Default is \code{4}.}
-
-\item{observed_node_text_size}{Text font size for observed node labels. Default is \code{4}.}
-
-\item{path_text_size}{Text font size for path estimate labels. Default is \code{3.5}.}
-
-\item{line_thickness}{Sets thickness of paths. Default is \code{0.6}.}
-
-\item{arrow_size}{Sets the size of arrow heads. Default is \code{0.2}.}
-
 \item{node_width}{Base width for nodes. Default is \code{1.5}.}
 
 \item{node_height}{Base height for node shapes. Default is \code{1}.}
@@ -93,19 +81,46 @@ diyPaths(
 
 \item{observed_node_size_adjust}{Numeric multiplier scaling observed node rectangles. Default is \code{1}.}
 
+\item{latent_node_text_size}{Text font size for latent node labels. Default is \code{4}.}
+
+\item{observed_node_text_size}{Text font size for observed node labels. Default is \code{4}.}
+
+\item{path_transparent_text}{Logical. If \code{TRUE}, path estimate labels have a transparent background. If \code{FALSE}, they receive a white background mask. Default is \code{FALSE}.}
+
+\item{path_text_size}{Text font size for path estimate labels. Default is \code{3.5}.}
+
+\item{line_thickness}{Sets thickness of paths. Default is \code{0.6}.}
+
+\item{arrow_size}{Sets the size of arrow heads. Default is \code{0.2}.}
+
+\item{panel_cols}{Integer for number of columns to use when arranging multi-group panels. Default is \code{NULL}.}
+
 \item{show_group_labels}{Logical. For multi-group models, whether to annotate each panel
 with its panel number and the raw group value it represents (e.g. "Panel 1: Group = male").
-Needed to identify which diagram represents each group and its internal panel number when creating panel titles.
+Needed to identify which diagram represents each group and its internal panel number when creating panel titles and notes.
 Default is \code{FALSE}.}
+
+\item{title_text_size}{Font size for panel titles. Default is \code{25}.}
 
 \item{panel_titles}{Specify a list of titles for panels. Use the \code{\link[=panel_title]{panel_title()}} helper function to assist with this. Any panel not referenced is
 left untitled. Default is \code{NULL}.}
 
-\item{panel_cols}{Integer for number columns to use when arranging multi-group panels. Default is \code{NULL}.}
+\item{panel_notes}{Specify a list of notes and their positions for panels. Use the \code{\link[=panel_note]{panel_note()}} helper function to assist with this. Any panel not referenced is
+left without a note. Notes placed outside the plot limits are clipped, so increase \code{margin_x}/\code{margin_y} if needed. Default is \code{NULL}.}
+
+\item{note_text_size}{Font size for panel notes. Default is \code{4}.}
+
+\item{note_transparent_text}{Logical. If \code{TRUE}, panel notes have a transparent background. If \code{FALSE}, they receive a white background mask. Default is \code{FALSE}.}
+
+\item{note_outline}{Logical. If \code{TRUE}, panel notes receive a black outline. Default is \code{TRUE}.}
+
+\item{show_grid}{Logical. Whether to overlay a coordinate grid. Default is \code{FALSE}.}
+
+\item{grid_axis_scale}{Sets the spacing of grid-lines when \code{show_grid = TRUE}. Default is \code{1}.}
 
 \item{margin_x}{Padding for plot limits along the x-axis. Default is \code{0.5}.}
 
-\item{margin_y}{Padding for plot limits along y-axis. Default is \code{0.5}.}
+\item{margin_y}{Padding for plot limits along the y-axis. Default is \code{0.5}.}
 
 \item{look_up_table}{Logical. If \code{TRUE}, also returns a look-up table detailing the width (x scale) and height (y scale) of latent and observed nodes,
 along with the text sizes used for latent, observed, and path labels. Default is \code{FALSE}.}
@@ -218,16 +233,16 @@ p <- diyPaths(fit = fit, node_positions = node_list, path_positions = path_list,
               est_stars = TRUE,
               est_p = FALSE,
               est_ci = FALSE,
+              show_variances = FALSE,
               variance_stars = FALSE,
               variance_p = FALSE,
               variance_ci = FALSE,
               sig_linetype = FALSE,
               p_threshold = 0.05,
-              show_variances = FALSE,
               panel_titles = title_list,
               show_grid = TRUE,
               grid_axis_scale = 0.5,
-              non_transparent_text = TRUE,
+              path_transparent_text = FALSE,
               latent_node_text_size = 4,
               observed_node_text_size = 3,
               path_text_size = 3.5,
@@ -243,4 +258,8 @@ p <- diyPaths(fit = fit, node_positions = node_list, path_positions = path_list,
               look_up_table = TRUE)
 
 print(p)
+}
+\seealso{
+\code{\link[=template]{template()}} to generate starting code for \code{node_positions}, \code{path_positions}, \code{panel_titles} and \code{panel_notes};
+\code{\link[=node]{node()}}, \code{\link[=path]{path()}}, \code{\link[=panel_title]{panel_title()}}, and \code{\link[=panel_note]{panel_note()}} for the helper functions used within them.
 }

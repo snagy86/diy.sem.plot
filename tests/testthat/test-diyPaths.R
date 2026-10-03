@@ -20,7 +20,7 @@ test_that("path() creates correct connection and defaults", {
 test_that("panel_title() creates correct panel and defaults", {
   pt <- panel_title()
   expect_equal(pt$panel_num, 1)
-  expect_equal(pt$title, character(0))
+  expect_true(is.na(pt$title))
 
   pt_custom <- panel_title(panel_num = 2, title = "Female Participants")
   expect_equal(pt_custom$panel_num, 2)

@@ -15,7 +15,7 @@ template(
 
 \item{include_variance_paths}{Logical. Whether to include specification for variance/residual paths in paths_lists}
 
-\item{diyPaths_arguments}{Logical. Whether to display a maximal template for diyPaths function (all argements) or minimal (just necessary arguments)}
+\item{diyPaths_arguments}{Use either "max" (the printed call shows every \code{\link[=diyPaths]{diyPaths()}} argument) or "min" (only the required arguments). Default is "max"}
 }
 \value{
 Invisibly returns the template as a single character string, and prints it to the console.
@@ -63,5 +63,5 @@ writeLines(tmpl)
 }
 \seealso{
 \code{\link[=diyPaths]{diyPaths()}} to render the diagram from the template;
-\code{\link[=node]{node()}}, \code{\link[=path]{path()}}, and \code{\link[=panel_title]{panel_title()}} for the helper functions the template uses.
+\code{\link[=node]{node()}}, \code{\link[=path]{path()}}, \code{\link[=panel_title]{panel_title()}}, and \code{\link[=panel_note]{panel_note()}} for the helper functions the template uses.
 }

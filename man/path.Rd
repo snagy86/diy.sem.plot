@@ -63,3 +63,7 @@ path(from = "anx", to = "dep", side_from = "right", side_to = "left")
 path(from = "dep", to = "anx", side_from = "left", side_to = "left", cov_curve = -0.6)
 
 }
+\seealso{
+\code{\link[=node]{node()}} to specify node positions;
+\code{\link[=diyPaths]{diyPaths()}} to render the diagram; \code{\link[=template]{template()}} to generate a starting \code{path_positions} list.
+}

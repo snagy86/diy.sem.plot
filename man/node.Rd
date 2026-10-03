@@ -13,7 +13,10 @@ node(name, x = 0, y = 0, label = NULL)
 
 \item{y}{Numeric value for the y-coordinate of the node's centre. Default is \code{0}.}
 
-\item{label}{Custom label to display instead of \code{lavaan} variable name. Defaults to the \code{lavaan} variable name.}
+\item{label}{Custom label to display instead of \code{lavaan} variable name. Defaults to the \code{lavaan} variable name.
+
+#' @seealso \code{\link[=path]{path()}} to specify the paths between nodes;
+\code{\link[=diyPaths]{diyPaths()}} to render the diagram; \code{\link[=template]{template()}} to generate a starting \code{node_positions} list.}
 }
 \value{
 A list containing arguments that specify a node's position and label, for use within the \code{node_positions} argument of \code{\link[=diyPaths]{diyPaths()}}.
