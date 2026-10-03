@@ -15,10 +15,19 @@ template(
 
 \item{include_variance_paths}{Logical. Whether to include specification for variance/residual paths in paths_lists}
 
-\item{diyPaths_arguments}{Logical. Whether to display a maximal template for diyPaths function (all arguements) or minimal (just necessary arguments)}
+\item{diyPaths_arguments}{Logical. Whether to display a maximal template for diyPaths function (all argements) or minimal (just necessary arguments)}
+}
+\value{
+Invisibly returns the template as a single character string, and prints it to the console.
 }
 \description{
-Takes your model produces a complete template to save time when using diyPaths.
+Takes your fitted model and prints a ready-to-run starting template (node list, path list, title list, and
+\code{diyPaths()} call) to the console. Every variable and path from your model is already filled in
+with the correct names, so the code will render a diagram as soon as you run it. All arguments will be at their default values,
+so your job is to fine-tune: copy the output into your script, then edit the lines marked \verb{#EDIT ME!}.
+
+The template is also returned invisibly as a character string, so it can be stored as an object then viewed
+with \code{writeLines()} (see examples).
 }
 \examples{
 
@@ -43,5 +52,16 @@ sem_model <- '
 
 fit <- sem(sem_model, data = HolzingerSwineford1939)
 
-template(fit = fit, include_variance_paths = TRUE, diyPaths_arguments = "max")
+#print the template to the console
+
+# template(fit = fit, include_variance_paths = TRUE, diyPaths_arguments = "max")
+
+#store the template, then view it properly formatted
+
+tmpl <- template(fit = fit, diyPaths_arguments = "min")
+writeLines(tmpl)
+}
+\seealso{
+\code{\link[=diyPaths]{diyPaths()}} to render the diagram from the template;
+\code{\link[=node]{node()}}, \code{\link[=path]{path()}}, and \code{\link[=panel_title]{panel_title()}} for the helper functions the template uses.
 }

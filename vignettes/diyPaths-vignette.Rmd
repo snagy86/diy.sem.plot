@@ -17,25 +17,40 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(diy.sem.plot)
-library(ggplot2)
-library(lavaan)
-```
-
 ## Introduction
 
 When plotting path diagrams for structural equation models (SEM) in R, users must choose between automated plotting tools or drawing diagrams entirely by hand. While automated SEM plotting tools are fast, they lack granular customisability and are often not suitable for use as a final product. Conversely, doing this work manually in an external drawing programme is tedious for large models and is completely disconnected from R, meaning estimates must be individually adjusted if the data or model changes.
 
-`diy.sem.plot` bridges these approaches to give users the best of both worlds, enabling manual specification of the layout and design while handling the rendering automatically. The basic workflow of the package is simple. Users fit their model as a `lavaan` object, then create a list specifying each node's position on the diagram using x-y coordinates. Next, users create another list which specifies, for each path, which nodes it connects to and where on the perimeter (top, bottom, left, right) of the relevant nodes the path should begin and end. 
+`diy.sem.plot` bridges these approaches to give users the best of both worlds, enabling manual specification of the layout and design while handling the rendering automatically.
 
-The primary function, `diyPaths()`, processes this information and returns a `ggplot2` object of the diagram. It automatically centers estimates on each path's midpoint and assigns the correct geometric shapes to each variable type. The package includes extensive arguments that facilitate near-complete control for fine-tuning every visual detail.
+The primary function, `diyPaths()`, takes a fitted `lavaan` model along with your specification of the layout, and returns a `ggplot2` object of the diagram. It automatically centers estimates on each path's midpoint and assigns the correct geometric shapes to each variable type. The package includes extensive arguments that facilitate near-complete control for fine-tuning every visual detail.
 
-The package contains four functions: the primary `diyPaths()` function alongside three helper functions (`node()`, `path()`, and `panel_title()`) designed to simplify argument specification and prevent errors. The most intuitive way to learn how to use `diy.sem.plot` is through practical examples. Through each, I will demonstrate the basic workflow and explore the arguments available.
+The package contains five functions: the primary `diyPaths()` function alongside three helper functions (`node()`, `path()`, and `panel_title()`) designed to simplify argument specification and prevent errors, and `template()`, which generates starting code for the layout specification from your fitted model.
+
+The basic workflow of the package is simple:
+
+1. Fit your model as a `lavaan` object.
+2. Optionally, get a rough idea of the layout by plotting the model with `semPaths()` from the `semPlot` package.
+3. Run `template()` on your fitted model. It prints code for a list specifying each node, a list specifying each path, a list specifying panel titles, and a `diyPaths()` call, with every variable name and path in your model already filled in.
+4. Edit the node list to specify each node's position on the diagram using x-y coordinates.
+5. Edit the path list to specify, for each path, where on the perimeter (top, bottom, left, right) of the relevant nodes a path should begin and end.
+6. Edit the title list to give each panel of the diagram a title. Models without a grouping variable have a single panel, while multi-group models have one panel per group.
+7. Render the diagram with `diyPaths()`, then fine-tune and re-render until the layout looks right.
+
+You can skip steps 3 and write the lists by hand, but for larger models, generating them with `template()` saves a lot of time and avoids syntax errors. 
+
+Below are a series of fully worked examples. Through each, I will demonstrate this workflow and explore the arguments available.
 
 ## Examples
 
 ### Example 1: Making a Path Diagram  for a Simple Path Model
+
+```{r setup}
+library(diy.sem.plot)
+library(ggplot2)
+library(lavaan)
+library(semPlot)
+```
 
 The first step is to specify and fit your model as a `lavaan` object. Here, we use the mtcars dataset to specify a multiple regression model where vehicle weight (wt) and horsepower (hp) simultaneously predict miles per gallon (mpg), while also estimating the covariance between the two predictors.
 

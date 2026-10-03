@@ -36,7 +36,8 @@ diyPaths(
   panel_cols = NULL,
   margin_x = 0.5,
   margin_y = 0.5,
-  look_up_table = FALSE
+  look_up_table = FALSE,
+  note = NULL
 )
 }
 \arguments{
@@ -123,7 +124,9 @@ the perimeter of each node (top, bottom, left, or right) each path should begin 
 shape to match its variable type. A range of optional fine-tuning arguments are included, facilitating the creation of a path diagram exactly as you envision it, entirely within R.
 }
 \details{
-Using the function requires 4 steps and is illustrated by the example below.
+Using the function requires 4 steps and is illustrated by the example below. To save time and avoid syntax/logical errors, \code{\link[=template]{template()}} prints starting code
+for \code{node_positions}, \code{path_positions}, \code{panel_titles} and the \code{diyPaths()} call based on your fitted model.
+
 See \code{vignette("diy.sem.plot")} for in-depth examples and guidance on using the function's arguments.
 \enumerate{
 \item Specify and fit the SEM using \pkg{lavaan}.
@@ -131,7 +134,7 @@ See \code{vignette("diy.sem.plot")} for in-depth examples and guidance on using 
 within it, define each node's position and label using the \code{\link[=node]{node()}}
 helper function.
 \item Specify \code{path_positions} as a list (\code{path_positions = list(...)}) and,
-within it, define each path's connection points, curvature, and label
+within it, define each path's connection points, curvature if covariance/correlations, and fine-tune estimate positions
 adjustments using the \code{\link[=path]{path()}} helper function.
 \item Call \code{diyPaths()}, passing in the fitted model, \code{node_positions},
 and \code{path_positions}, along with any additional display augmentations (i.e. show significance stars on estimates).
@@ -149,7 +152,6 @@ library(ggplot2)
 
 data(HolzingerSwineford1939, package = "lavaan")
 
-
 #specify the model
 
 sem_model <- '
@@ -165,73 +167,80 @@ sem_model <- '
 
 fit <- sem(sem_model, data = HolzingerSwineford1939)
 
-#specify the node position, this was done iteratively with show_grid to help with layout.
+#generate a starting template
+
+temp <- template(fit = fit, diyPaths_arguments = "max")
+
+#### edited template ####
 
 node_list <- list(
-  #main latent variable structure
-  node("visual", x = 1, y = 1, label = "Visual"),
-  node("textual", x = 1, y = 2, label = "Textual"),
-  node("speed", x = 4, y = 1.5, label = "Speed"),
-
-  # observed variables that visual perception ability loads onto
-  node("x1", x = -0.06, y = -0.5, label = "Visual\nPerception"), #\n creates a line break
-  node("x2", x = 1, y = -0.5, label = "Cubes"),
-  node("x3", x = 2.06, y = -0.5, label = "Lozenges"),
-
-  #observed variables that textual ability loads onto
-  node("x4", x = -0.06, y = 3.5, label = "Paragraph\nComprehension"),
-  node("x5", x = 1, y = 3.5, label = "Sentence\nCompletion"),
-  node("x6", x = 2.06, y = 3.5, label = "Word\nMeaning"),
-
-  #observed variables that speeded cognitive processing loads onto
-  node("x7", x = 6, y = 0.5, label = "Speeded\nAddition"),
-  node("x8", x = 6, y = 1.5, label = "Speeded\nCounting"),
-  node("x9", x = 6, y = 2.5, label = "Speeded\nDiscrimination")
+  node(name = "visual", x = 1, y = 1, label = "Visual"),
+  node(name = "textual", x = 1, y = 2, label = "Textual"),
+  node(name = "speed", x = 4, y = 1.5, label = "Speed"),
+  node(name = "x1", x = -0.06, y = -0.5, label = "Visual\nPerception"),
+  node(name = "x2", x = 1, y = -0.5, label = "Cubes"),
+  node(name = "x3", x = 2.06, y = -0.5, label = "Lozenges"),
+  node(name = "x4", x = -0.06, y = 3.5, label = "Paragraph\nComprehension"),
+  node(name = "x5", x = 1, y = 3.5, label = "Sentence\nCompletion"),
+  node(name = "x6", x = 2.06, y = 3.5, label = "Word\nMeaning"),
+  node(name = "x7", x = 6, y = 0.5, label = "Speeded\nAddition"),
+  node(name = "x8", x = 6, y = 1.5, label = "Speeded\nCounting"),
+  node(name = "x9", x = 6, y = 2.5, label = "Speeded\nDiscrimination")
 )
 
-#Specify the paths
-
 path_list <- list(
+  # regression paths
+  path(from = "visual", to = "speed", side_from = "right", side_to = "left"),
+  path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
+
+  # loading paths
   path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1),
   path(from = "visual", to = "x2", side_from = "bottom", side_to = "top"),
   path(from = "visual", to = "x3", side_from = "bottom", side_to = "top", nudge_text_x = 0.1),
-
   path(from = "textual", to = "x4", side_from = "top", side_to = "bottom", nudge_text_x = -0.1),
   path(from = "textual", to = "x5", side_from = "top", side_to = "bottom"),
   path(from = "textual", to = "x6", side_from = "top", side_to = "bottom", nudge_text_x = 0.1),
+  path(from = "speed", to = "x7", side_from = "right", side_to = "left"),
+  path(from = "speed", to = "x8", side_from = "right", side_to = "left"),
+  path(from = "speed", to = "x9", side_from = "right", side_to = "left"),
 
-  path(from = "speed",   to = "x7", side_from = "right", side_to = "left"),
-  path(from = "speed",   to = "x8", side_from = "right", side_to = "left"),
-  path(from = "speed",   to = "x9", side_from = "right", side_to = "left"),
-
-  path(from = "visual",  to = "speed", side_from = "right", side_to = "left"),
-  path(from = "textual", to = "speed", side_from = "right", side_to = "left"),
-
-  path(from = "visual",  to = "textual", side_from = "left", side_to = "left", cov_curve = -0.6)
+  # covariance/correlation paths
+  path(from = "visual", to = "textual", side_from = "left", side_to = "left", cov_curve = -0.6)
 )
-
-#Creating title
 
 title_list <- list(
-  panel_title(panel_num = 1,
-              title = "My SEM Plot"))
-
-#creating the diagram
-
-p <- diyPaths(
-  fit = fit,
-  node_positions = node_list,
-  path_positions = path_list,
-  panel_titles = title_list,
-  standardised = TRUE,
-  est_stars = TRUE,
-  observed_node_size_adjust = 0.55,
-  observed_node_text_size = 3,
-  latent_node_size_adjust = 0.8,
-  show_grid = TRUE,
-  grid_axis_scale = 0.5,
-  look_up_table = TRUE
+  panel_title(panel_num = 1, title = "My SEM Plot")
 )
+
+p <- diyPaths(fit = fit, node_positions = node_list, path_positions = path_list,
+              standardised = TRUE,
+              digits = 3,
+              est_stars = TRUE,
+              est_p = FALSE,
+              est_ci = FALSE,
+              variance_stars = FALSE,
+              variance_p = FALSE,
+              variance_ci = FALSE,
+              sig_linetype = FALSE,
+              p_threshold = 0.05,
+              show_variances = FALSE,
+              panel_titles = title_list,
+              show_grid = TRUE,
+              grid_axis_scale = 0.5,
+              non_transparent_text = TRUE,
+              latent_node_text_size = 4,
+              observed_node_text_size = 3,
+              path_text_size = 3.5,
+              line_thickness = 0.6,
+              arrow_size = 0.2,
+              node_width = 1.5, node_height = 1,
+              latent_node_size_adjust = 0.8,
+              observed_node_size_adjust = 0.55,
+              show_group_labels = FALSE,
+              panel_cols = NULL,
+              margin_x = 0.5,
+              margin_y = 0.5,
+              look_up_table = TRUE)
 
 print(p)
 }

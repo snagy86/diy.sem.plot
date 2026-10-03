@@ -43,7 +43,7 @@ designed for use within the \code{path_positions} argument of \code{\link[=diyPa
 \code{from}/\code{to} in \code{path()} must exactly match the variable name used in the \code{lavaan} model syntax.
 Furthermore, the order must also be correct for regression or loading paths. A misspelled or mismatched
 \code{path()} entry will not raise an error, instead, it will use default attachment points and values, not applying
-specific customisations.
+specific customisations. This can be completely avoided using \code{\link[=template]{template()}}.
 
 \code{cov_curve}'s value can be used to adjust direction of curve on covariance/correlation path.
 For a mostly vertical path (i.e. node1: x = 0, y = 1 -> node2: x = 0, y = 2), positive curvature bends it left and negative curvature
