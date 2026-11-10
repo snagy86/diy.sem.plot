@@ -50,7 +50,7 @@ library(ggplot2)
 library(lavaan)
 ```
 
-The first step is to specify and fit your model as a `lavaan` object. Here, we use the `mtcars` dataset to specify a simple mediation model, where vehicle weight (wt) mediates the effect of horsepower (hp) on miles per gallon (mpg). We also include engine displacement (disp) as a covariate predicting mpg, and allow it to covary with horsepower. 
+The first step is to specify and fit the model as a `lavaan` object. Here, I use the `mtcars` dataset to specify a simple mediation model, where vehicle weight (wt) mediates the effect of horsepower (hp) on miles per gallon (mpg). I also include engine displacement (disp) as a covariate predicting mpg, and allow it to covary with horsepower. 
 
 
 ```{r}
@@ -69,21 +69,21 @@ model_cars <- '
 fit_cars <- sem(model = model_cars, data = data_cars)
 ```
 
-Next, we need to specify the layout of the diagram. Rather than writing this from scratch, we can use `template()`. It takes the fitted model and prints ready-to-run starter code, with every variable name and path in the model already filled in. The code is organised into labelled sections, with comments grouping nodes by variable type and paths by type (regression, loading, covariance, and variance), making larger models easier to navigate. Since `diyPaths()` relies on these names matching the `lavaan` model exactly, generating them this way saves time and prevents errors. All we need to do is copy the output into our script and edit the values on each line marked `#EDIT ME!`.
+Next, I need to specify the layout of the diagram. Rather than writing this from scratch, I will use `template()`. It takes the fitted model and prints ready-to-run starter code, with every variable name and path in the model already filled in. The code is organised into labelled sections, with comments grouping nodes by variable type and paths by type (regression, loading, covariance, and variance), making larger models easier to navigate. Since `diyPaths()` relies on these names matching the `lavaan` model exactly, generating them this way saves time and prevents errors. All I need to do is copy the output into the script and edit the values on each line marked `#EDIT ME!`.
 
-`template()` has a few arguments that control how much code it prints. For example, setting `include_variance_paths = FALSE` leaves out the variance paths and specifying `diyPaths_arguments = "min"` prints only the arguments `diyPaths()` needs to run, while `"max"` prints every available argument with its default value.
+`template()` has a few arguments that control how much code it prints. For example, setting `include_variance_paths = FALSE` leaves out the code for individual variance path customisation and specifying `diyPaths_arguments = "min"` prints only the arguments `diyPaths()` needs to run, while `"max"` prints every available argument with its default value.
 
-Below is what the raw output of `template()` looks like for our fitted model. In the later examples, we will omit it to save space by setting the argument `quiet` to `TRUE`.
+Below is what the raw output of `template()` looks like for the fitted model. In the later examples, I will omit it to save space by setting the argument `quiet` to `TRUE`.
 
 ```{r comment = ""}
 template(fit = fit_cars, include_variance_paths = FALSE, diyPaths_arguments = "min", quiet = FALSE)
 ```
 
-The template is made up of five components: a node list, a path list, a title list, a note list, and the `diyPaths()` call that renders the diagram. In this example, we will break down each component in turn.
+The template is made up of five components: a node list, a path list, a title list, a note list, and the `diyPaths()` call that renders the diagram. In this example, I will break down each component in turn.
 
-The first component is the node list, which specifies where each node sits on the diagram. Each node is created using the helper function `node()`, which takes four arguments: `name` (the variable name in your `lavaan` model), `x` and `y` (its coordinates on the diagram), and an optional `label` that specifies the text displayed on the node in the final diagram, defaulting to the variable name if left unspecified.
+The first component is the node list, which specifies where each node sits on the diagram. Each node is created using the helper function `node()`, which takes four arguments: `name` (the variable name in the `lavaan` model), `x` and `y` (its coordinates on the diagram), and an optional `label` that specifies the text displayed on the node in the final diagram, defaulting to the variable name if left unspecified.
 
-`template()` sets every node to `x = 0, y = 0`, so rendering it as-is would stack every node on top of one another. Since we have not rendered the diagram yet, we will make an initial estimate for each node's position and fine-tune them afterwards. We will also give each node a more readable label, using `\n` to add a line break where a label is long.
+`template()` sets every node to `x = 0, y = 0`, so rendering it as-is would stack every node on top of one another. Since I have not rendered the diagram yet, I will make an initial estimate for each node's position and fine-tune them afterwards. I will also give each node a more readable label, using `\n` to add a line break where a label is long.
 
 ```{r}
 node_list <- list(
@@ -95,11 +95,11 @@ node_list <- list(
 )
 ```
 
-The second component is the path list, which specifies where each path begins and ends. Each path is created using the helper function `path()`. Each path requires a starting node (`from`) and an ending node (`to`), matched to their `lavaan` variable names, which `template()` has already filled in. The `side_from` argument dictates which perimeter edge (top, bottom, left, or right) the path anchors to on the starting node, and `side_to` dictates the same for the ending node.
+The second component is the path list, which specifies where each path begins and ends. Each path is created using the helper function `path()`. A path requires a starting node (`from`) and an ending node (`to`), matched to their `lavaan` variable names. The `side_from` argument dictates which perimeter edge (top, bottom, left, or right) the path anchors to on the starting node, and `side_to` dictates the same for the ending node.
 
-For further control, `nudge_text_x` and `nudge_text_y` adjust where a path's estimate appears along the x and y axes. For covariances or correlations, the numeric `cov_curve` argument controls how strongly the path arcs, and its sign dictates which way it bends. Variance and residual paths, which we left out of this example, also take a `variance_position` argument that sets which side of the node (top, bottom, left, or right) the loop sits on.
+For further control, `nudge_text_x` and `nudge_text_y` adjust where a path's estimate appears along the x and y axes. For covariances or correlations, the numeric `cov_curve` argument controls how strongly the path arcs, and its sign dictates which way it bends. Variance and residual paths, which I left out of this example, also take a `variance_position` argument that sets which side of the node (top, bottom, left, or right) the loop sits on.
 
-As with the nodes, we will make an initial estimate for each path's position, then fine-tune after rendering.
+As with the nodes, I will make an initial estimate for each path's position, then fine-tune after rendering.
 
 ```{r}
 path_list <- list(
@@ -114,9 +114,9 @@ path_list <- list(
 )
 ```
 
-The next components are the title list and the note list. Titles are created using `panel_title()`, which takes two arguments: `panel_num`, identifying which panel of the diagram the title belongs to, and `title`, the text to display. Since this model has no grouping variable, the diagram has a single panel, so `panel_num` is always `1`. Notes are created using `panel_note()`, which works the same way but takes `note_text`, the text displayed as a caption beneath the panel.
+The next components are the title list and the note list. Titles are created using the `panel_title()` helper function, which takes two arguments: `panel_num`, identifying which panel of the diagram the title belongs to, and `title`, the text to display. Since this model has no grouping variable, the diagram has a single panel, so `panel_num` is always `1`. Notes are created using the `panel_note()` helper function, which works the same way but takes `note_text`, the text displayed as a caption beneath the panel. Both titles and notes support basic Markdown and HTML formatting, such as `**bold**`, `*italics*`, and `<br>` for line breaks.
 
-We will title our diagram and use the note to report the indirect effect we defined in the model.
+I will title the diagram and use the note to report the indirect effect I defined in the model.
 
 ```{r}
 title_list <- list(
@@ -128,9 +128,9 @@ note_list <- list(
 )
 ```
 
-The final component is the `diyPaths()` call, which renders the diagram as a `ggplot` object. It only requires three arguments: `fit` takes the fitted `lavaan` model, `node_positions` takes our node list, and `path_positions` takes our path list. The title and note lists are passed to `panel_titles` and `panel_notes`; if omitted, no title or note is shown.
+The final component is the `diyPaths()` call, which renders the diagram as a `ggplot` object. It only requires three arguments: `fit` takes the fitted `lavaan` model, `node_positions` takes the node list, and `path_positions` takes the path list. The title and note lists are passed to `panel_titles` and `panel_notes`; if omitted, no title or note is shown.
 
-We will now run our first draft render. To help with fine-tuning the layout, we will overlay a grid on the diagram by setting the optional argument `show_grid` to `TRUE`.
+I will now run the first draft render. To help with fine-tuning the layout, I will overlay a grid on the diagram by setting the optional argument `show_grid` to `TRUE`.
 
 ```{r, fig.width = 10, fig.height = 8, out.width = "100%"}
 diyPaths(fit = fit_cars,
@@ -141,13 +141,13 @@ diyPaths(fit = fit_cars,
          show_grid = TRUE)
 ```
 
-Now that we can see our render, it is time to do some fine-tuning. The layout works well, so we can remove the grid by deleting the `show_grid` argument. However, our covariance curve bends in the wrong direction; we can fix this by flipping the sign of the path's `cov_curve` value. For a mostly vertical path, a positive curvature bends it left and a negative curvature bends it right. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up.
+Now that I can see the render, it is time to do some fine-tuning. The layout works well, so I can remove the grid by deleting the `show_grid` argument. However, the covariance curve bends in the wrong direction; I can fix this by flipping the sign of the path's `cov_curve` value. For a mostly vertical path, a positive curvature bends it left and a negative curvature bends it right. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up.
 
-We should add an indication of path significance. `diyPaths()` has a few options for this. For our plot, we will be maximal and include significance stars, 95% confidence intervals and p-values for the estimates by setting the arguments `est_stars`, `est_ci`, and `est_p` to `TRUE`. We will also change the line type to represent significance, using the common convention of dashed lines for non-significant paths and solid lines for significant paths, by setting `sig_linetype` to `TRUE`. By default, estimates are displayed to three decimal places, which can be changed via the `digits` argument.
+I should add an indication of path significance. `diyPaths()` has a few options for this. For the plot, I will be maximal and include significance stars, 95% confidence intervals and p-values for the estimates by setting the arguments `est_stars`, `est_ci`, and `est_p` to `TRUE`. I will also change the line type to represent significance, using the common convention of dashed lines for non-significant paths and solid lines for significant paths, by setting `sig_linetype` to `TRUE`. By default, estimates are displayed to three decimal places, which can be changed via the `digits` argument.
 
-This is quite a small model, so the default text size is not proportionate to the scale of the boxes. We can scale up the path estimates' text size via `path_text_size`, and, since all the nodes are observed variables, their text size via `observed_node_text_size`. Likewise, the title and note use `ggplot2`'s default text sizes, which look small next to the diagram, so we can increase them via `title_text_size` and `note_text_size`. The lines are a bit thin and the arrowheads are a bit small, so we can increase `line_thickness` (default = 0.6) and `arrow_size` (default = 0.2). We can also specify the fonts used in the diagram. The `font_family` argument sets the font for all text in the diagram, while `title_note_font_family` sets a separate font for the title and note.
+This is quite a small model, so the default text size is not proportionate to the scale of the boxes. I can scale up the path estimates' text size via `path_text_size`, and, since all the nodes are observed variables, their text size via `observed_node_text_size`. Likewise, the title and note use `ggplot2`'s default text sizes, which look small next to the diagram, so I can increase them via `title_text_size` and `note_text_size`. The lines are a bit thin and the arrowheads are a bit small, so I can increase `line_thickness` (default = 0.6) and `arrow_size` (default = 0.2). I can also specify the fonts used in the diagram. The `font_family` argument sets the font for all text in the diagram, while `title_note_font_family` sets a separate font for the title and note.
 
-Lastly, the plot did not render properly within the margins (e.g. path estimates are cut off at the edges). We can fix this by increasing the horizontal margin via the `margin_x` argument, which defaults to 0.5.
+Lastly, the plot did not render properly within the margins (e.g. path estimates are cut off at the edges). I can fix this by increasing the horizontal margin via the `margin_x` argument, which defaults to 0.5.
 
 
 ```{r, fig.width = 10, fig.height = 8,out.width = "100%"}
@@ -170,8 +170,8 @@ diyPaths(fit = fit_cars,
          est_ci = TRUE,
          est_p = TRUE,
          sig_linetype = TRUE,
-         observed_node_text_size = 7,
-         path_text_size = 5,
+         observed_node_text_size = 6,
+         path_text_size = 4,
          title_text_size = 18,
          note_text_size = 14,
          font_family = "sans",
@@ -185,7 +185,7 @@ diyPaths(fit = fit_cars,
 
 ### Example 2: Making a Path Diagram for a Full SEM
 
-Here, we use the `HolzingerSwineford1939` dataset from the `lavaan` package to specify a full SEM. The model has three latent variables, visual perception ability, textual ability, and speeded cognitive processing, each measured by three observed variables. Structurally, speeded cognitive processing is regressed on both visual perception ability and textual ability, with the latter two allowed to covary.
+Here, I use the `HolzingerSwineford1939` dataset from the `lavaan` package to specify a full SEM. The model has three latent variables, visual perception ability, textual ability, and speeded cognitive processing, each measured by three observed variables. Structurally, speeded cognitive processing is regressed on both visual perception ability and textual ability, with the latter two allowed to covary.
 
 ```{r}
 sem_model <- '
@@ -202,17 +202,17 @@ sem_model <- '
 fit_sem <- sem(model = sem_model, data = HolzingerSwineford1939)
 ```
 
-As before, we start by running `template(fit = fit_sem, include_variance_paths = TRUE, quiet = TRUE, diyPaths_arguments = "min")` and editing its output. The raw output is omitted here to save space. Because this model has latent variables, the template groups the nodes into latent variables and the observed variables that load onto each one, and groups the loading paths the same way. This makes larger models like this much easier to navigate. As I want to include variance loops, I will set `include_variance_paths` to `TRUE` to give me access to the specific paths for later fine-tuning.
+As before, I start by running `template(fit = fit_sem, include_variance_paths = TRUE, quiet = TRUE, diyPaths_arguments = "min")` and editing its output. The raw output is omitted here to save space. As I want to include variance loops, I will set `include_variance_paths` to `TRUE` to give me access to the specific paths for later fine-tuning.
 
 ```{r}
 template(fit = fit_sem, include_variance_paths = TRUE, quiet = TRUE, diyPaths_arguments = "min")
 ```
 
-Next, we will draft our path diagram with rough estimations of where each node should go. As it is common convention in SEM to draw observed variables smaller than latent, we will scale them smaller by setting `observed_node_size_adjust` in `diyPaths()` to be a decimal. To see the exact width and height of these scaled boxes, we set `look_up_table` to `TRUE`, which returns the width and height of latent and observed nodes on the x and y scale, along with the text sizes used for latent, observed, and path labels. We will also set `show_grid` to `TRUE` and `grid_axis_scale` to a finer `0.5` rather than `1`, giving us a more precise reference to plot against.
+Next, I will draft the path diagram with rough estimations of where each node should go. As it is common convention in SEM to draw observed variables smaller than latent, I will scale them smaller by setting `observed_node_size_adjust` in `diyPaths()` to be a decimal. To see the exact width and height of these scaled boxes, I set `look_up_table` to `TRUE`, which returns the width and height of latent and observed nodes on the x and y scale, along with the text sizes used for latent, observed, and path labels. I will also set `show_grid` to `TRUE` and `grid_axis_scale` to a finer `0.5` rather than `1`, giving a more precise reference to plot against.
 
-For this diagram, I want to use standardised estimates, so I set the argument `standardised` to `TRUE`. To include variance loops, I set the argument `show_variances` to `TRUE`.
+For this diagram, I want to use standardised estimates and include the variance loops, so I set both `standardised` and `show_variances` to `TRUE`.
 
-We will also give the diagram a title, following the same format as Example 1. Since we don't need a note, we do not specify a `note_list` and simply leave `panel_notes` out of the call.
+I will also give the diagram a title, following the same format as Example 1. Since I don't need a note, I do not specify a `note_list` and simply leave `panel_notes` out of the call.
 
 ```{r, fig.width = 10, fig.height = 8, out.width = "100%"}
 node_list <- list(
@@ -296,11 +296,11 @@ p <- diyPaths(
 print(p)
 ```
 
-This looks decent for a first draft. However, the observed variable nodes for textual and visual clearly do not have enough room on the x-axis. Looking at the grid and look-up table, we can see the boxes need at least 0.9 x units of space, not 0.5. We will also give the observed variables more space from their latent variables, and increase the spacing between the textual and visual latent variables. The estimates on the outer loading paths sit quite close together, so we nudge them apart along the x-axis using `nudge_text_x`.
+This looks decent for a first draft. However, the observed variable nodes for textual and visual clearly do not have enough room on the x-axis. Looking at the grid and look-up table, I can see the boxes need at least 0.9 x units of space, not 0.5. I will also give the observed variables more space from their latent variables, and increase the spacing between the textual and visual latent variables. The estimates on the outer loading paths sit quite close together, so I nudge them apart along the x-axis using `nudge_text_x`.
 
-Lastly, the variance loops are awkwardly placed, as the template positions every loop at the top of its node. We can fix this by editing each variance path's `variance_position` to the side of the node (top, bottom, left, or right) we want it to sit on. 
+Lastly, the variance loops are awkwardly placed, as the template positions every loop at the top of its node. I can fix this by editing each variance path's `variance_position` to the side of the node (top, bottom, left, or right) I want it to sit on. 
 
-As with the previous example, now that the layout is fixed, we can move on to the final touches: adding an indication of statistical significance, adjusting text sizes, removing the grid overlay, and applying the same title size and fonts as Example 1.
+As with the previous example, now that the layout is fixed, I can move on to the final touches: adding an indication of statistical significance, adjusting text sizes, removing the grid overlay, and applying the same title size and fonts as Example 1.
 
 ```{r, fig.width = 10, fig.height = 8, out.width = "100%"}
 node_list <- list(
@@ -390,15 +390,15 @@ print(p)
 
 ### Example 3: Making a Path Diagram for a Multi-Group SEM
 
-In this example, we will explore how to create a multi-group path diagram using `diyPaths()`. We will use the model from Example 2 with the `HolzingerSwineford1939` dataset, but this time fit it separately by the school the children attended, either "Grant-White" or "Pasteur".
+In this example, I will demonstrate how to create a multi-group path diagram using `diyPaths()`. I will use the model from Example 2 with the `HolzingerSwineford1939` dataset, but this time fit it separately by the school the children attended, either "Grant-White" or "Pasteur".
 
 ```{r}
 fit_sem_groups <- sem(model = sem_model, data = HolzingerSwineford1939, group = "school")
 ```
 
-Since the model is the same, running `template(fit = fit_sem_groups)` produces the same node and path lists as Example 2, so we can reuse `node_list` and `path_list` as they are. The difference is that, because the model now has two groups, the template prints one `panel_title()` and one `panel_note()` line for each panel.
+Since the model is the same, running `template(fit = fit_sem_groups)` produces the same node and path lists as Example 2, so I can reuse `node_list` and `path_list` as they are. The difference is that, because the model now has two groups, the template prints one `panel_title()` and one `panel_note()` line for each panel.
 
-Rendering this model produces two SEM diagrams, separated into two panels side by side, with no indication of which school each one represents. We can figure this out by setting `show_group_labels` to `TRUE`, which adds a small label to the bottom corner of each panel, showing its group name and panel number.
+Rendering this model produces two SEM diagrams, separated into two panels side by side, with no indication of which school each one represents. I can figure this out by setting `show_group_labels` to `TRUE`, which adds a small label to the bottom corner of each panel, showing its group name and panel number.
 
 ```{r, fig.width = 10, fig.height = 8, out.width = "100%"}
 p <- diyPaths(
@@ -419,7 +419,7 @@ p <- diyPaths(
 print(p)
 ```
 
-We can use the labels rendered by `show_group_labels` to fill in the template's title and note lists. In both `panel_title()` and `panel_note()`, `panel_num` identifies which diagram the title or note belongs to, matching the panel numbers shown in the labels. We will title each panel with its school, and use the notes to report each group's sample size.
+I can use the labels rendered by `show_group_labels` to fill in the template's title and note lists. In both `panel_title()` and `panel_note()`, `panel_num` identifies which diagram the title or note belongs to, matching the panel numbers shown in the labels. I will title each panel with its school, and use the notes to report each group's sample size.
 
 ```{r}
 title_list <- list(
@@ -433,9 +433,9 @@ note_list <- list(
 )
 ```
 
-We will apply our standard fine-tuning, as well as set `show_group_labels` to `FALSE`, since we now have proper titles instead.
+I will apply the standard fine-tuning, as well as set `show_group_labels` to `FALSE`, since I now have proper titles instead.
 
-Currently, the panels are cluttered because they are crammed to fit the width of the document. To fix this, we'll stack the plots atop each other rather than side by side by adjusting the `panel_cols` argument, which controls the number of columns used when arranging multi-group panels. For two groups, setting this to 1 will give vertical stacking.
+Currently, the panels are cluttered because they are crammed to fit the width of the document. To fix this, I will stack the plots atop each other rather than side by side by adjusting the `panel_cols` argument, which controls the number of columns used when arranging multi-group panels. For two groups, setting this to 1 will give vertical stacking.
 
 ```{r, fig.width = 10, fig.height = 16, out.width = "100%"}
 p <- diyPaths(

@@ -359,10 +359,9 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #'  `path()` entry will not raise an error, instead, it will use default attachment points and values, not applying
 #'   specific customisations. This can be completely avoided using [template()].
 #'
-#' `cov_curve`'s value can be used to adjust direction of curve on covariance/correlation path.
-#'  For a mostly vertical path (e.g. node1: x = 0, y = 1 -> node2: x = 0, y = 2), positive curvature bends it left and negative curvature
-#'  bends it right. For a mostly horizontal path (e.g. node1: x = 1, y = 0 -> node2: x = 2, y = 0), positive curvature bends
-#'  it down and negative curvature bends it up. Best results typically range from -1 to 1.
+#' `cov_curve` controls the curvature of covariance/correlation paths: its size sets how strongly the
+#'  path bends, and its sign sets which way. If a path bends the wrong way, flip the sign. Best results
+#'  typically range from -1 to 1.
 #'
 #' @seealso [node()] to specify node positions;
 #'   [diyPaths()] to render the diagram; [template()] to generate a starting `path_positions` list.

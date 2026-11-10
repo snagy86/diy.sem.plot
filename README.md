@@ -48,7 +48,7 @@ Below is a brief example of using the package. For more examples, plus a
 full explanation of the workflow and available arguments, see the
 package’s vignette.
 
-In this example, I used `template()` to generate the starting code,
+In this example, I use `template()` to generate the starting code,
 saving time and avoiding syntax errors. It takes the fitted `lavaan`
 model and prints the node list, path list, title list, note list and
 `diyPaths()` call with default values. I then edited these values to

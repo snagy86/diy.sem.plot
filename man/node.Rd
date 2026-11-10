@@ -19,7 +19,7 @@ node(name, x = 0, y = 0, label = NULL)
 A list containing arguments that specify a node's position and label, for use within the \code{node_positions} argument of \code{\link[=diyPaths]{diyPaths()}}.
 }
 \description{
-Helper function that creates a list of arguments which specify a given node's position and its name in the diagram,
+Helper function that creates a list of arguments which specify a given node's position and its label in the diagram,
 designed for use within the \code{node_positions} argument of \code{\link[=diyPaths]{diyPaths()}}.
 }
 \examples{
