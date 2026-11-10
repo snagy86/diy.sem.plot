@@ -52,14 +52,10 @@ package’s vignette.
 
 In this example, I used `template()` to generate the starting code,
 saving time and avoiding syntax errors. It takes the fitted `lavaan`
-model and prints the node list, path list and `diyPaths()` call with
-default values. I then edited these values to position everything. The
-original printed output is omitted here to save space.
-
-The arguments in `template()` let you specify how much code is printed.
-For example, `diyPaths_arguments = "min"` prints only the necessary
-`diyPaths()` arguments, `"max"` prints all of them, and
-`include_variance_paths = FALSE` leaves out the variance paths.
+model and prints the node list, path list, title list, note list and
+`diyPaths()` call with default values. I then edited these values to
+position everything. The original printed output is omitted here to save
+space.
 
 ``` r
 library(lavaan)
@@ -76,58 +72,77 @@ sem_model <- '
   visual ~~ textual
 '
 
-fit_sem <- sem(sem_model, data = HolzingerSwineford1939)
+fit_sem <- sem(model = sem_model, data = HolzingerSwineford1939)
 
-invisible(capture.output( # hiding default output
-  template(fit = fit_sem, include_variance_paths = TRUE, diyPaths_arguments = "max"))) # template() prints its code to the console with cat()
+template(fit = fit_sem, include_variance_paths = TRUE, diyPaths_arguments = "max", quiet = TRUE) # quiet hides the raw template output
 
 node_list <- list(
-    node(name = "visual", x = 1, y = 1, label = "Visual"),
-    node(name = "textual", x = 1, y = 3, label = "Textual"),
-    node(name = "speed", x = 4, y = 2, label = "Speed"),
-    node(name = "x1", x = 0, y = -0.5, label = "Visual\nPerception"),
-    node(name = "x2", x = 1, y = -0.5, label = "Cubes"),
-    node(name = "x3", x = 2, y = -0.5, label = "Lozenges"),
-    node(name = "x4", x = 0, y = 4.5, label = "Paragraph\nComprehension"),
-    node(name = "x5", x = 1, y = 4.5, label = "Sentence\nCompletion"),
-    node(name = "x6", x = 2, y = 4.5, label = "Word\nMeaning"),
-    node(name = "x7", x = 6, y = 1.25, label = "Speeded\nAddition"),
-    node(name = "x8", x = 6, y = 2, label = "Speeded\nCounting"),
-    node(name = "x9", x = 6, y = 2.75, label = "Speeded\nDiscrimination")
+  #node(s) for latent variable(s) (<-- These tags are automatic with template())
+  node(name = "visual", x = 1, y = 1, label = "Visual"),
+  node(name = "textual", x = 1, y = 3, label = "Textual"),
+  node(name = "speed", x = 4, y = 2, label = "Speed"),
+
+  #node(s) for observed variables loading onto latent variable visual
+  node(name = "x1", x = 0, y = -0.5, label = "Visual\nPerception"),
+  node(name = "x2", x = 1, y = -0.5, label = "Cubes"),
+  node(name = "x3", x = 2, y = -0.5, label = "Lozenges"),
+
+  #node(s) for observed variables loading onto latent variable textual
+  node(name = "x4", x = 0, y = 4.5, label = "Paragraph\nComprehension"),
+  node(name = "x5", x = 1, y = 4.5, label = "Sentence\nCompletion"),
+  node(name = "x6", x = 2, y = 4.5, label = "Word\nMeaning"),
+
+  #node(s) for observed variables loading onto latent variable speed
+  node(name = "x7", x = 6, y = 1.25, label = "Speeded\nAddition"),
+  node(name = "x8", x = 6, y = 2, label = "Speeded\nCounting"),
+  node(name = "x9", x = 6, y = 2.75, label = "Speeded\nDiscrimination")
 )
 
 path_list <- list(
-    # regression paths
-    path(from = "visual", to = "speed", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
-    path(from = "textual", to = "speed", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
+  # regression path(s)
+  path(from = "visual", to = "speed", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
+  path(from = "textual", to = "speed", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
 
-    # loading paths
-    path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1, nudge_text_y = 0),
-    path(from = "visual", to = "x2", side_from = "bottom", side_to = "top", nudge_text_x = 0, nudge_text_y = 0),
-    path(from = "visual", to = "x3", side_from = "bottom", side_to = "top", nudge_text_x = 0.1, nudge_text_y = 0),
-    path(from = "textual", to = "x4", side_from = "top", side_to = "bottom", nudge_text_x = -0.1, nudge_text_y = 0),
-    path(from = "textual", to = "x5", side_from = "top", side_to = "bottom", nudge_text_x = 0, nudge_text_y = 0),
-    path(from = "textual", to = "x6", side_from = "top", side_to = "bottom", nudge_text_x = 0.1, nudge_text_y = 0),
-    path(from = "speed", to = "x7", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = -0.1),
-    path(from = "speed", to = "x8", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
-    path(from = "speed", to = "x9", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0.1),
+  #loading path(s) from visual
+  path(from = "visual", to = "x1", side_from = "bottom", side_to = "top", nudge_text_x = -0.1, nudge_text_y = 0),
+  path(from = "visual", to = "x2", side_from = "bottom", side_to = "top", nudge_text_x = 0, nudge_text_y = 0),
+  path(from = "visual", to = "x3", side_from = "bottom", side_to = "top", nudge_text_x = 0.1, nudge_text_y = 0),
 
-    # covariance/correlation paths
-    path(from = "textual", to = "visual", side_from = "left", side_to = "left", nudge_text_x = 0, nudge_text_y = 0, cov_curve = -0.6),
+  #loading path(s) from textual
+  path(from = "textual", to = "x4", side_from = "top", side_to = "bottom", nudge_text_x = -0.1, nudge_text_y = 0),
+  path(from = "textual", to = "x5", side_from = "top", side_to = "bottom", nudge_text_x = 0, nudge_text_y = 0),
+  path(from = "textual", to = "x6", side_from = "top", side_to = "bottom", nudge_text_x = 0.1, nudge_text_y = 0),
 
-    # variance paths
-    path(from = "x1", to = "x1", nudge_text_x = 0, nudge_text_y = 0, variance_position = "bottom"),
-    path(from = "x2", to = "x2", nudge_text_x = 0, nudge_text_y = 0, variance_position = "bottom"),
-    path(from = "x3", to = "x3", nudge_text_x = 0, nudge_text_y = 0, variance_position = "bottom"),
-    path(from = "x4", to = "x4", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top"),
-    path(from = "x5", to = "x5", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top"),
-    path(from = "x6", to = "x6", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top"),
-    path(from = "x7", to = "x7", nudge_text_x = 0, nudge_text_y = 0, variance_position = "right"),
-    path(from = "x8", to = "x8", nudge_text_x = 0, nudge_text_y = 0, variance_position = "right"),
-    path(from = "x9", to = "x9", nudge_text_x = 0, nudge_text_y = 0, variance_position = "right"),
-    path(from = "visual", to = "visual", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top"),
-    path(from = "textual", to = "textual", nudge_text_x = 0, nudge_text_y = 0, variance_position = "bottom"),
-    path(from = "speed", to = "speed", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top")
+  #loading path(s) from speed
+  path(from = "speed", to = "x7", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = -0.1),
+  path(from = "speed", to = "x8", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0),
+  path(from = "speed", to = "x9", side_from = "right", side_to = "left", nudge_text_x = 0, nudge_text_y = 0.1),
+
+  # covariance/correlation path(s)
+  path(from = "textual", to = "visual", side_from = "left", side_to = "left", nudge_text_x = 0, nudge_text_y = 0, cov_curve = -0.6),
+
+  # variance path(s)
+  # REMEMBER TO SET show_variances IN diyPaths CALL = TRUE TO INCLUDE IN DIAGRAM!
+  path(from = "x1", to = "x1", nudge_text_x = 0, nudge_text_y = 0, variance_position = "bottom"),
+  path(from = "x2", to = "x2", nudge_text_x = 0, nudge_text_y = 0, variance_position = "bottom"),
+  path(from = "x3", to = "x3", nudge_text_x = 0, nudge_text_y = 0, variance_position = "bottom"),
+  path(from = "x4", to = "x4", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top"),
+  path(from = "x5", to = "x5", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top"),
+  path(from = "x6", to = "x6", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top"),
+  path(from = "x7", to = "x7", nudge_text_x = 0, nudge_text_y = 0, variance_position = "right"),
+  path(from = "x8", to = "x8", nudge_text_x = 0, nudge_text_y = 0, variance_position = "right"),
+  path(from = "x9", to = "x9", nudge_text_x = 0, nudge_text_y = 0, variance_position = "right"),
+  path(from = "visual", to = "visual", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top"),
+  path(from = "textual", to = "textual", nudge_text_x = 0, nudge_text_y = 0, variance_position = "bottom"),
+  path(from = "speed", to = "speed", nudge_text_x = 0, nudge_text_y = 0, variance_position = "top")
+)
+
+title_list <- list(
+  panel_title(panel_num = 1, title = "**Figure 1**<br>*Visual and Textual Ability Predicting Speeded Cognitive Processing*")
+)
+
+note_list <- list(
+  panel_note(panel_num = 1, note_text = "*Note.* Standardised estimates with 95% confidence intervals. Dashed lines indicate non-significant paths.")
 )
 
 my_sem_diagram <- diyPaths(fit = fit_sem, node_positions = node_list, path_positions = path_list,
@@ -136,45 +151,36 @@ my_sem_diagram <- diyPaths(fit = fit_sem, node_positions = node_list, path_posit
                            est_stars = TRUE,
                            est_p = FALSE,
                            est_ci = TRUE,
+                           show_variances = TRUE,
                            variance_stars = FALSE,
                            variance_p = FALSE,
                            variance_ci = FALSE,
                            sig_linetype = TRUE,
                            p_threshold = 0.05,
-                           show_variances = TRUE,
-                           show_grid = TRUE,
-                           grid_axis_scale = 1,
-                           non_transparent_text = TRUE,
-                           latent_node_text_size = 6,
-                           observed_node_text_size = 4.5,
-                           path_text_size = 4.5,
-                           line_thickness = 0.6,
-                           arrow_size = 0.2,
                            node_width = 1.5, node_height = 1,
                            latent_node_size_adjust = 1,
                            observed_node_size_adjust = 0.5,
-                           show_group_labels = FALSE,
-                           panel_titles = NULL,
+                           latent_node_text_size = 6,
+                           observed_node_text_size = 4.5,
+                           non_transparent_text = TRUE,
+                           path_text_size = 4.5,
+                           line_thickness = 0.6,
+                           arrow_size = 0.2,
                            panel_cols = NULL,
+                           show_group_labels = FALSE,
+                           title_text_size = 22,
+                           panel_titles = title_list,
+                           panel_notes = note_list,
+                           note_text_size = 16,
+                           font_family = "sans",
+                           title_note_font_family = "serif",
+                           show_grid = FALSE,
+                           grid_axis_scale = 1,
                            margin_x = 0.3,
                            margin_y = 0.3,
-                           look_up_table = TRUE)
+                           look_up_table = FALSE)
 
 print(my_sem_diagram)
-#> $plot
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" alt="" width="100%" />
-
-    #> 
-    #> $look_up_table
-    #>       type width height text_size
-    #> 1   latent  1.50    1.0       6.0
-    #> 2 observed  0.75    0.5       4.5
-    #> 3     path    NA     NA       4.5
-
-## Coming soon
-
-A larger update and fully updated vignettes for the `template()`
-workflow are on the way. After that, I plan to add support for Bayesian
-SEM models fitted with `blavaan`.

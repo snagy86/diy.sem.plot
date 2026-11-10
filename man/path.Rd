@@ -24,7 +24,7 @@ path(
 
 \item{side_to}{Side of target node where path ends ("top", "bottom", "left", "right"). Default is "left".}
 
-\item{cov_curve}{Numeric value for curvature of covariance/correlation paths. Default is NULL.}
+\item{cov_curve}{Numeric value for curvature of covariance/correlation paths. Default is 0.4.}
 
 \item{nudge_text_x}{Numeric fine tuning adjustment for path estimate text along the x-axis. Default is \code{0}.}
 
@@ -46,8 +46,8 @@ Furthermore, the order must also be correct for regression or loading paths. A m
 specific customisations. This can be completely avoided using \code{\link[=template]{template()}}.
 
 \code{cov_curve}'s value can be used to adjust direction of curve on covariance/correlation path.
-For a mostly vertical path (i.e. node1: x = 0, y = 1 -> node2: x = 0, y = 2), positive curvature bends it left and negative curvature
-bends it right. For a mostly horizontal path (i.e. node1: x = 1, y = 0 -> node2: x = 2, y = 0), positive curvature bends
+For a mostly vertical path (e.g. node1: x = 0, y = 1 -> node2: x = 0, y = 2), positive curvature bends it left and negative curvature
+bends it right. For a mostly horizontal path (e.g. node1: x = 1, y = 0 -> node2: x = 2, y = 0), positive curvature bends
 it down and negative curvature bends it up. Best results typically range from -1 to 1.
 }
 \examples{

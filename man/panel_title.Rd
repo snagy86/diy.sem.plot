@@ -15,7 +15,7 @@ panel_title(panel_num = 1, title = NULL)
 A list containing arguments that specify a panel's number and title, for use within the \code{panel_titles} argument of \code{\link[=diyPaths]{diyPaths()}}.
 }
 \description{
-Helper function that creates a list of arguments which specify custom titles and its target panel,
+Helper function that creates a list of arguments which specify a custom title and its target panel,
 designed for use within the \code{panel_titles} argument of \code{\link[=diyPaths]{diyPaths()}}. Use the
 \code{show_group_labels} argument in \code{\link[=diyPaths]{diyPaths()}} to view each panel's number and
 which group it refers to.

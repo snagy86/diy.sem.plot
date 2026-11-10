@@ -4,32 +4,28 @@
 \alias{panel_note}
 \title{Create a note for a diyPaths panel}
 \usage{
-panel_note(panel_num, note_text = NULL, x = 0, y = 0)
+panel_note(panel_num, note_text = NULL)
 }
 \arguments{
 \item{panel_num}{Integer value for the panel number this note applies to.}
 
 \item{note_text}{Text to display in the note. If \code{NULL}, no note is drawn.}
-
-\item{x}{Numeric value for the x-coordinate of the note. Default is \code{0}.}
-
-\item{y}{Numeric value for the y-coordinate of the note. Default is \code{0}.}
 }
 \value{
-A list containing arguments that specify a panel's note text and position, for use within the \code{panel_notes} argument of \code{\link[=diyPaths]{diyPaths()}}.
+A list containing arguments that specify a panel's note text, for use within the \code{panel_notes} argument of \code{\link[=diyPaths]{diyPaths()}}.
 }
 \description{
-Helper function that creates a list of arguments which specify a custom note and its target panel,
+Helper function that creates a list of arguments which specify a custom note, displayed as a caption beneath its target panel,
 designed for use within the \code{panel_notes} argument of \code{\link[=diyPaths]{diyPaths()}}. Use the
 \code{show_group_labels} argument in \code{\link[=diyPaths]{diyPaths()}} to view each panel's number and
 which group it refers to.
 }
 \examples{
-# a note on the first panel, placed at x = 2.5, y = 0
-panel_note(panel_num = 1, note_text = "n = 100", x = 2.5, y = 0)
+# a note on the first panel noting sample size was 100.
+panel_note(panel_num = 1, note_text = "n = 100")
 
-# a note on the second panel of a multi-group model
-panel_note(panel_num = 2, note_text = "Source: my data", x = 2.5, y = 0)
+# a note on the second panel of a multi-group model noting sample size for Group 2 was 50
+panel_note(panel_num = 2, note_text = "Group 2: n = 50")
 
 }
 \seealso{

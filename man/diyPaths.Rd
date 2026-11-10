@@ -13,35 +13,35 @@ diyPaths(
   est_stars = FALSE,
   est_p = FALSE,
   est_ci = FALSE,
-  show_variances = FALSE,
   variance_stars = FALSE,
   variance_p = FALSE,
   variance_ci = FALSE,
   sig_linetype = FALSE,
   p_threshold = 0.05,
+  show_variances = FALSE,
+  show_grid = FALSE,
+  grid_axis_scale = 1,
+  non_transparent_text = TRUE,
+  latent_node_text_size = 4,
+  observed_node_text_size = 4,
+  path_text_size = 3.5,
+  line_thickness = 0.6,
+  arrow_size = 0.2,
   node_width = 1.5,
   node_height = 1,
   latent_node_size_adjust = 1,
   observed_node_size_adjust = 1,
-  latent_node_text_size = 4,
-  observed_node_text_size = 4,
-  path_transparent_text = FALSE,
-  path_text_size = 3.5,
-  line_thickness = 0.6,
-  arrow_size = 0.2,
-  panel_cols = NULL,
   show_group_labels = FALSE,
-  title_text_size = 25,
   panel_titles = NULL,
-  panel_notes = NULL,
-  note_text_size = 4,
-  note_transparent_text = FALSE,
-  note_outline = TRUE,
-  show_grid = FALSE,
-  grid_axis_scale = 1,
+  panel_cols = NULL,
   margin_x = 0.5,
   margin_y = 0.5,
-  look_up_table = FALSE
+  look_up_table = FALSE,
+  panel_notes = NULL,
+  note_text_size = NULL,
+  title_text_size = NULL,
+  font_family = "",
+  title_note_font_family = NULL
 )
 }
 \arguments{
@@ -53,15 +53,13 @@ diyPaths(
 
 \item{standardised}{Logical. If \code{TRUE}, uses standardised parameter estimates (\code{est.std}). Default is \code{FALSE}.}
 
-\item{digits}{Number of digits to display for estimates. Default is \code{3}.}
+\item{digits}{Number of decimal places to display for estimates. Default is \code{3}.}
 
 \item{est_stars}{Logical. Whether to display significance stars on path estimates. Default is \code{FALSE}.}
 
 \item{est_p}{Logical. Whether to display p-values on path estimates. Default is \code{FALSE}.}
 
 \item{est_ci}{Logical. Whether to display confidence intervals on path estimates. Default is \code{FALSE}.}
-
-\item{show_variances}{Logical. Whether to display variance and residual paths. Default is \code{FALSE}.}
 
 \item{variance_stars}{Logical. Whether to display significance stars on variance paths. Default is \code{FALSE}.}
 
@@ -73,6 +71,24 @@ diyPaths(
 
 \item{p_threshold}{Statistical significance threshold used to determine non-significant paths when \code{sig_linetype = TRUE}. Default is \code{0.05}.}
 
+\item{show_variances}{Logical. Whether to display variance and residual paths. Default is \code{FALSE}.}
+
+\item{show_grid}{Logical. Whether to overlay a coordinate grid. Default is \code{FALSE}.}
+
+\item{grid_axis_scale}{Sets the spacing of grid-lines when \code{show_grid = TRUE}. Default is \code{1}.}
+
+\item{non_transparent_text}{Logical. If \code{TRUE}, path estimates receive a white background mask, if \code{FALSE}, they have a transparent background. Default is \code{TRUE}.}
+
+\item{latent_node_text_size}{Text font size for latent node labels. Default is \code{4}.}
+
+\item{observed_node_text_size}{Text font size for observed node labels. Default is \code{4}.}
+
+\item{path_text_size}{Text font size for path estimate labels. Default is \code{3.5}.}
+
+\item{line_thickness}{Sets thickness of paths. Default is \code{0.6}.}
+
+\item{arrow_size}{Sets the size of arrow heads. Default is \code{0.2}.}
+
 \item{node_width}{Base width for nodes. Default is \code{1.5}.}
 
 \item{node_height}{Base height for node shapes. Default is \code{1}.}
@@ -81,42 +97,15 @@ diyPaths(
 
 \item{observed_node_size_adjust}{Numeric multiplier scaling observed node rectangles. Default is \code{1}.}
 
-\item{latent_node_text_size}{Text font size for latent node labels. Default is \code{4}.}
-
-\item{observed_node_text_size}{Text font size for observed node labels. Default is \code{4}.}
-
-\item{path_transparent_text}{Logical. If \code{TRUE}, path estimate labels have a transparent background. If \code{FALSE}, they receive a white background mask. Default is \code{FALSE}.}
-
-\item{path_text_size}{Text font size for path estimate labels. Default is \code{3.5}.}
-
-\item{line_thickness}{Sets thickness of paths. Default is \code{0.6}.}
-
-\item{arrow_size}{Sets the size of arrow heads. Default is \code{0.2}.}
-
-\item{panel_cols}{Integer for number of columns to use when arranging multi-group panels. Default is \code{NULL}.}
-
 \item{show_group_labels}{Logical. For multi-group models, whether to annotate each panel
 with its panel number and the raw group value it represents (e.g. "Panel 1: Group = male").
 Needed to identify which diagram represents each group and its internal panel number when creating panel titles and notes.
 Default is \code{FALSE}.}
 
-\item{title_text_size}{Font size for panel titles. Default is \code{25}.}
-
 \item{panel_titles}{Specify a list of titles for panels. Use the \code{\link[=panel_title]{panel_title()}} helper function to assist with this. Any panel not referenced is
 left untitled. Default is \code{NULL}.}
 
-\item{panel_notes}{Specify a list of notes and their positions for panels. Use the \code{\link[=panel_note]{panel_note()}} helper function to assist with this. Any panel not referenced is
-left without a note. Notes placed outside the plot limits are clipped, so increase \code{margin_x}/\code{margin_y} if needed. Default is \code{NULL}.}
-
-\item{note_text_size}{Font size for panel notes. Default is \code{4}.}
-
-\item{note_transparent_text}{Logical. If \code{TRUE}, panel notes have a transparent background. If \code{FALSE}, they receive a white background mask. Default is \code{FALSE}.}
-
-\item{note_outline}{Logical. If \code{TRUE}, panel notes receive a black outline. Default is \code{TRUE}.}
-
-\item{show_grid}{Logical. Whether to overlay a coordinate grid. Default is \code{FALSE}.}
-
-\item{grid_axis_scale}{Sets the spacing of grid-lines when \code{show_grid = TRUE}. Default is \code{1}.}
+\item{panel_cols}{Integer for number of columns to use when arranging multi-group panels. Default is \code{NULL}.}
 
 \item{margin_x}{Padding for plot limits along the x-axis. Default is \code{0.5}.}
 
@@ -124,6 +113,18 @@ left without a note. Notes placed outside the plot limits are clipped, so increa
 
 \item{look_up_table}{Logical. If \code{TRUE}, also returns a look-up table detailing the width (x scale) and height (y scale) of latent and observed nodes,
 along with the text sizes used for latent, observed, and path labels. Default is \code{FALSE}.}
+
+\item{panel_notes}{Specify a list of notes, displayed as captions beneath each panel. Use the \code{\link[=panel_note]{panel_note()}} helper function to assist with this. Any panel not referenced is
+left without a note. Default is \code{NULL}.}
+
+\item{note_text_size}{Font size for panel notes (captions). Default is NULL (ggplot2's default caption size).}
+
+\item{title_text_size}{Font size for panel titles. Default is NULL (ggplot2's default title size).}
+
+\item{font_family}{Font family used for all text in the diagram. Default is \code{""}, the graphics device's default font.}
+
+\item{title_note_font_family}{Font family for panel titles and notes. Default is \code{NULL}, which
+uses \code{font_family}.}
 }
 \value{
 A \code{ggplot} (or \code{patchwork}, for multi-group models) object representing the SEM
@@ -135,28 +136,13 @@ path diagram(s). If \code{look_up_table = TRUE}, a list containing the diagram(s
 Plot fully customisable path diagrams for structural equation models fitted with \pkg{lavaan}, rendered using \pkg{ggplot2}.
 
 To render the \code{ggplot} object of the diagram, the function only requires users to supply a fitted \code{lavaan} model, specify node positions using x-y coordinates, and detail where on
-the perimeter of each node (top, bottom, left, or right) each path should begin and end. The render automatically inserts estimates centered on the midpoint and adjusts each node's
+the perimeter of each node (top, bottom, left, or right) each path should begin and end. The render automatically inserts estimates centred on the midpoint and adjusts each node's
 shape to match its variable type. A range of optional fine-tuning arguments are included, facilitating the creation of a path diagram exactly as you envision it, entirely within R.
 }
 \details{
-Using the function requires 4 steps and is illustrated by the example below. To save time and avoid syntax/logical errors, \code{\link[=template]{template()}} prints starting code
-for \code{node_positions}, \code{path_positions}, \code{panel_titles} and the \code{diyPaths()} call based on your fitted model.
-
-See \code{vignette("diy.sem.plot")} for in-depth examples and guidance on using the function's arguments.
-\enumerate{
-\item Specify and fit the SEM using \pkg{lavaan}.
-\item Specify \code{node_positions} as a list (\code{node_positions = list(...)}) and,
-within it, define each node's position and label using the \code{\link[=node]{node()}}
-helper function.
-\item Specify \code{path_positions} as a list (\code{path_positions = list(...)}) and,
-within it, define each path's connection points, curvature if covariance/correlations, and fine-tune estimate positions
-adjustments using the \code{\link[=path]{path()}} helper function.
-\item Call \code{diyPaths()}, passing in the fitted model, \code{node_positions},
-and \code{path_positions}, along with any additional display augmentations (i.e. show significance stars on estimates).
-}
-
-Creating a diagram for a specific model is inherently an iterative process. As such, steps 2-4 will likely need to be repeated
-with additional fine-tuning adjustments to achieve the desired result.
+The easiest way to start is with \code{\link[=template]{template()}}, which prints ready-to-run code for your fitted model.
+Edit the node positions and path sides it generates, render with \code{diyPaths()}, then fine-tune and
+re-render until the layout looks right. See \code{vignette("diy.sem.plot")} for worked examples.
 }
 \examples{
 
@@ -184,7 +170,7 @@ fit <- sem(sem_model, data = HolzingerSwineford1939)
 
 #generate a starting template
 
-temp <- template(fit = fit, diyPaths_arguments = "max")
+temp <- template(fit = fit, diyPaths_arguments = "max", quiet = TRUE)
 
 #### edited template ####
 
@@ -227,6 +213,10 @@ title_list <- list(
   panel_title(panel_num = 1, title = "My SEM Plot")
 )
 
+note_list <- list(
+  panel_note(panel_num = 1, note_text = "Standardised estimates shown.")
+)
+
 p <- diyPaths(fit = fit, node_positions = node_list, path_positions = path_list,
               standardised = TRUE,
               digits = 3,
@@ -240,9 +230,10 @@ p <- diyPaths(fit = fit, node_positions = node_list, path_positions = path_list,
               sig_linetype = FALSE,
               p_threshold = 0.05,
               panel_titles = title_list,
+              panel_notes = note_list,
               show_grid = TRUE,
               grid_axis_scale = 0.5,
-              path_transparent_text = FALSE,
+              non_transparent_text = TRUE,
               latent_node_text_size = 4,
               observed_node_text_size = 3,
               path_text_size = 3.5,
@@ -253,6 +244,8 @@ p <- diyPaths(fit = fit, node_positions = node_list, path_positions = path_list,
               observed_node_size_adjust = 0.55,
               show_group_labels = FALSE,
               panel_cols = NULL,
+              font_family = "sans",
+              title_note_font_family = "serif",
               margin_x = 0.5,
               margin_y = 0.5,
               look_up_table = TRUE)
