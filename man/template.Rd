@@ -7,24 +7,27 @@
 template(
   fit,
   include_variance_paths = TRUE,
-  diyPaths_arguments = c("max", "min")
+  diyPaths_arguments = c("max", "min"),
+  quiet = FALSE
 )
 }
 \arguments{
-\item{fit}{the \code{lavaan} object of fitted model}
+\item{fit}{A fitted model object of class \code{lavaan}.}
 
-\item{include_variance_paths}{Logical. Whether to include specification for variance/residual paths in paths_lists}
+\item{include_variance_paths}{Logical. Whether to include variance/residual paths in the path list. Default is \code{TRUE}.}
 
-\item{diyPaths_arguments}{Use either "max" (the printed call shows every \code{\link[=diyPaths]{diyPaths()}} argument) or "min" (only the required arguments). Default is "max"}
+\item{diyPaths_arguments}{Use either "max" (the printed call shows every \code{\link[=diyPaths]{diyPaths()}} argument) or "min" (only the required arguments). Default is "max".}
+
+\item{quiet}{Logical. If \code{TRUE}, the template is not printed to the console and is only returned
+invisibly. Default is \code{FALSE}.}
 }
 \value{
-Invisibly returns the template as a single character string, and prints it to the console.
+Invisibly returns the template as a single character string. Unless \code{quiet = TRUE},
+it is also printed to the console.
 }
 \description{
-Takes your fitted model and prints a ready-to-run starting template (node list, path list, title list, and
-\code{diyPaths()} call) to the console. Every variable and path from your model is already filled in
-with the correct names, so the code will render a diagram as soon as you run it. All arguments will be at their default values,
-so your job is to fine-tune: copy the output into your script, then edit the lines marked \verb{#EDIT ME!}.
+Takes your fitted model and prints a ready-to-run starting template (node list, path list, title list, note list, and
+\code{diyPaths()} call) to the console. Copy the output into your script, then fine-tune the diagram by adjusting values in the lines marked \verb{#EDIT ME!}
 
 The template is also returned invisibly as a character string, so it can be stored as an object then viewed
 with \code{writeLines()} (see examples).
@@ -32,7 +35,6 @@ with \code{writeLines()} (see examples).
 \examples{
 
 library(lavaan)
-library(ggplot2)
 
 data(HolzingerSwineford1939, package = "lavaan")
 
@@ -52,13 +54,13 @@ sem_model <- '
 
 fit <- sem(sem_model, data = HolzingerSwineford1939)
 
-#print the template to the console
+#print the maximal template to the console
 
-# template(fit = fit, include_variance_paths = TRUE, diyPaths_arguments = "max")
+# template(fit = fit, include_variance_paths = TRUE, diyPaths_arguments = "max", quiet = FALSE)
 
-#store the template, then view it properly formatted
+#store the template without printing it, then view it
 
-tmpl <- template(fit = fit, diyPaths_arguments = "min")
+tmpl <- template(fit = fit, diyPaths_arguments = "min", quiet = TRUE)
 writeLines(tmpl)
 }
 \seealso{
