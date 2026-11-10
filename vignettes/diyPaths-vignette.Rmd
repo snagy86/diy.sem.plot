@@ -141,7 +141,7 @@ diyPaths(fit = fit_cars,
          show_grid = TRUE)
 ```
 
-Now that I can see the render, it is time to do some fine-tuning. The layout works well, so I can remove the grid by deleting the `show_grid` argument. However, the covariance curve bends in the wrong direction; I can fix this by flipping the sign of the path's `cov_curve` value. For a mostly vertical path, a positive curvature bends it left and a negative curvature bends it right. For a mostly horizontal path, positive curvature bends it down and negative curvature bends it up.
+Now that I can see the render, it is time to do some fine-tuning. The layout works well, so I can remove the grid by deleting the `show_grid` argument. However, the covariance curve bends in the wrong direction; I can fix this by flipping the sign of the path's `cov_curve` value.
 
 I should add an indication of path significance. `diyPaths()` has a few options for this. For the plot, I will be maximal and include significance stars, 95% confidence intervals and p-values for the estimates by setting the arguments `est_stars`, `est_ci`, and `est_p` to `TRUE`. I will also change the line type to represent significance, using the common convention of dashed lines for non-significant paths and solid lines for significant paths, by setting `sig_linetype` to `TRUE`. By default, estimates are displayed to three decimal places, which can be changed via the `digits` argument.
 

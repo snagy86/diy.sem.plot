@@ -139,7 +139,7 @@ template <- function(fit, include_variance_paths = TRUE, diyPaths_arguments = c(
 
   temp_reg_paste <- data.frame(output = paste0('\t',
                                           'path(', 'from = "', temp_reg_paths$from, '"', ', ', 'to = "', temp_reg_paths$to, '"', ', ',
-                                          'side_from = "right" ', ', ', 'side_to = "left"', ', ', "nudge_text_x = 0", ', ', "nudge_text_y = 0", ')',
+                                          'side_from = "right"', ', ', 'side_to = "left"', ', ', "nudge_text_x = 0", ', ', "nudge_text_y = 0", ')',
                                           ',',
                                           ' #EDIT ME!'
   ))
