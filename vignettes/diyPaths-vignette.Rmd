@@ -63,7 +63,7 @@ model_cars <- '
   disp ~~ hp
 
   indirect := a * b
-  total    := c + a * b
+  total := c + a * b
 '
 
 fit_cars <- sem(model = model_cars, data = data_cars)
