@@ -33,7 +33,7 @@ Install the released version of `diy.sem.plot` from CRAN:
 install.packages("diy.sem.plot")
 ```
 
-Or install the development version from GitHub to get the latest features, including the `template()` helper function (not yet on CRAN):
+Or install the development version from GitHub to get the latest features.
 
 ```{r, eval = FALSE}
 install.packages("remotes")
