@@ -35,14 +35,12 @@ install.packages("diy.sem.plot")
 ```
 
 Or install the development version from GitHub to get the latest
-features, including the `template()` helper function (not yet on CRAN):
+features.
 
 ``` r
 install.packages("remotes")
 remotes::install_github("snagy86/diy.sem.plot", build_vignettes = TRUE)
 ```
-
-The vignettes in the development version have not been updated yet.
 
 ## Example
 
@@ -54,8 +52,7 @@ In this example, I used `template()` to generate the starting code,
 saving time and avoiding syntax errors. It takes the fitted `lavaan`
 model and prints the node list, path list, title list, note list and
 `diyPaths()` call with default values. I then edited these values to
-position everything. The original printed output is omitted here to save
-space.
+position everything.
 
 ``` r
 library(lavaan)
