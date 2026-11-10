@@ -306,7 +306,7 @@ my_path_diagram
 #' Create a node position list
 #'
 #' @description
-#' Helper function that creates a list of arguments which specify a given node's position and its name in the diagram,
+#' Helper function that creates a list of arguments which specify a given node's position and its label in the diagram,
 #' designed for use within the `node_positions` argument of [diyPaths()].
 #'
 #' @param name The name of the variable within the `lavaan` model.
@@ -347,7 +347,7 @@ node <- function(name, x = 0, y = 0, label = NULL) {
 #' @param to The target variable name within the `lavaan` model.
 #' @param side_from Side of source node where path starts ("top", "bottom", "left", "right"). Default is "right".
 #' @param side_to Side of target node where path ends ("top", "bottom", "left", "right"). Default is "left".
-#' @param cov_curve Numeric value for curvature of covariance/correlation paths. Default is 0.4.
+#' @param cov_curve Numeric value for curvature of covariance/correlation paths. Default is NULL.
 #' @param nudge_text_x Numeric fine tuning adjustment for path estimate text along the x-axis. Default is `0`.
 #' @param nudge_text_y Numeric fine tuning adjustment for path estimate text along the y-axis. Default is `0`.
 #' @param variance_position Placement of variance/residual paths ("top", "bottom", "left", or "right"). Default is "top".

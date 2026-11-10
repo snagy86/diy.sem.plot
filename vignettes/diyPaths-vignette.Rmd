@@ -79,7 +79,7 @@ Below is what the raw output of `template()` looks like for our fitted model. In
 template(fit = fit_cars, include_variance_paths = FALSE, diyPaths_arguments = "min", quiet = FALSE)
 ```
 
-The template is made up of five components: a node list, a path list, a title list, a note list, and the `diyPaths()` call that renders the diagram. In this example, we will break down each component in turn, starting with the node list.
+The template is made up of five components: a node list, a path list, a title list, a note list, and the `diyPaths()` call that renders the diagram. In this example, we will break down each component in turn.
 
 The first component is the node list, which specifies where each node sits on the diagram. Each node is created using the helper function `node()`, which takes four arguments: `name` (the variable name in your `lavaan` model), `x` and `y` (its coordinates on the diagram), and an optional `label` that specifies the text displayed on the node in the final diagram, defaulting to the variable name if left unspecified.
 
